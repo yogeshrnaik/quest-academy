@@ -393,6 +393,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
 .lr-open-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(251,188,5,.5);}
 /* pb badge */
 .pb-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#FDD663,#FBBC05);border-radius:99px;padding:3px 12px;font-family:'Fredoka One',cursive;font-size:13px;color:#594300;margin-bottom:14px;}
+/* auto-next toggle */
+.tbtn.an-on{background:var(--green);border-color:var(--green);color:#fff;}
+[data-theme="dark"] .tbtn.an-on{background:#2d6e40;border-color:#2d6e40;}
 /* daily streak banner */
 .day-streak-banner{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--coral),#FBBC05);border-radius:14px;padding:10px 16px;margin-bottom:14px;color:#fff;font-weight:700;font-size:15px;}
 .day-streak-banner .dsn{font-family:'Fredoka One',cursive;font-size:26px;line-height:1;}
@@ -428,6 +431,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
   <div class="xpbo"><div class="xpbi" id="xpbar" style="width:0%"></div></div>
   <button class="tbtn" id="tbtn" onclick="toggleTheme()">🌙</button>
   <button class="tbtn" id="sbtn" onclick="toggleSFX()" title="Toggle sound">🔊</button>
+  <button class="tbtn an-on" id="anbtn" onclick="toggleAutoNext()" title="Auto-next on correct answer">⚡→</button>
 </div>
 
 <!-- ═══ HOME ═══ -->
@@ -680,6 +684,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
   </div>
   <div class="ansgrid" id="lr-ans"></div>
   <div class="feedback hidden" id="lr-fb"></div>
+  <button class="drill-next-btn" id="lr-next-btn" style="display:none;margin-top:10px" onclick="lrNext()">Next →</button>
 </div>
 </div>
 
@@ -978,6 +983,7 @@ let S={
   sr:{},          // spaced repetition: factKey → {n,ef,interval,due,errors}
   dailyStreak:0,  // days in a row
   lastPlayDate:'',// ISO date string of last session
+  autoNext:true,  // auto-advance to next question on correct answer
 };
 
 // ════════════════════════════════════════
@@ -994,6 +1000,7 @@ function saveState(){
       weak:S.weak,lrBest:S.lrBest,sr:S.sr,
       dailyStreak:S.dailyStreak,lastPlayDate:S.lastPlayDate,
       theme:document.documentElement.getAttribute('data-theme')||'light',
+      autoNext:S.autoNext,
     };
     localStorage.setItem(SAVE_KEY,JSON.stringify(d));
   }catch(e){}
@@ -1011,6 +1018,7 @@ function loadState(){
     S.fortressCleared=new Set(d.fortressCleared||[]);
     S.weak=d.weak||{}; S.lrBest=d.lrBest||{}; S.sr=d.sr||{};
     S.dailyStreak=d.dailyStreak||0; S.lastPlayDate=d.lastPlayDate||'';
+    if(d.autoNext!==undefined) S.autoNext=d.autoNext;
     if(d.theme){document.documentElement.setAttribute('data-theme',d.theme);document.getElementById('tbtn').textContent=d.theme==='dark'?'☀️':'🌙';}
   }catch(e){S.sr={};}
   // Update daily streak
@@ -2374,6 +2382,13 @@ function showExplanation(type, verdict, ansLine, working, steps, why){
     advance();
   };
   panel.parentNode.insertBefore(nextBtn, panel.nextSibling);
+
+  // Auto-next: skip the button and advance automatically on correct
+  const isEndState = S.monHP<=0 || S.plrHP<=0 || S.qi>=QC;
+  if(S.autoNext && type==='correct' && !isEndState){
+    nextBtn.style.display='none';
+    setTimeout(()=>{if(nextBtn.parentNode){panel.remove();nextBtn.remove();advance();}},700);
+  }
 }
 
 // ─── Advance ──────────────────────────────────────────────
@@ -2609,10 +2624,15 @@ function submitDrillAnswer(val, correct, formulaUsed, suffix, btn, grid){
     wk.style.display='block';
   }
 
-  // Next button
+  // Next button — show always on wrong, auto-advance on correct if autoNext
   const nb=document.getElementById('drill-next-btn');
-  nb.style.display='block';
-  nb.textContent='Next Question →';
+  if(ok && S.autoNext){
+    nb.style.display='none';
+    setTimeout(()=>renderDrillQ(), 700);
+  } else {
+    nb.style.display='block';
+    nb.textContent='Next Question →';
+  }
 }
 
 function drillNext(){
@@ -3022,6 +3042,17 @@ function toggleSFX(){
   _sfxMuted=!_sfxMuted;
   document.getElementById('sbtn').textContent=_sfxMuted?'🔇':'🔊';
 }
+function toggleAutoNext(){
+  S.autoNext=!S.autoNext;
+  const btn=document.getElementById('anbtn');
+  btn.classList.toggle('an-on',S.autoNext);
+  toast(S.autoNext?'Auto-next ON ⚡':'Auto-next OFF — manual next');
+  saveState();
+}
+function _syncAutoNextBtn(){
+  const btn=document.getElementById('anbtn');
+  if(btn) btn.classList.toggle('an-on',S.autoNext);
+}
 function _tone(freq,type,vol,start,dur,endFreq){
   const ac=_getAC();if(!ac||_sfxMuted)return;
   const g=ac.createGain();g.connect(ac.destination);
@@ -3217,11 +3248,32 @@ function submitLR(val,correct,mult,btn,grid){
   document.getElementById('lr-streak').textContent=LR.streak;
   updateLRComboStrip();
   LR.qi++;
+  const lrnb=document.getElementById('lr-next-btn');
+  if(lrnb) lrnb.style.display='none';
   if(LR.qi>=LR_TOTAL){
     setTimeout(()=>{clearInterval(LR.tid);endLR(true);},500);
+  } else if(ok){
+    setTimeout(nextLRQ, 400);
+  } else if(S.autoNext){
+    setTimeout(nextLRQ, 700);
   } else {
-    setTimeout(nextLRQ, ok?400:700);
+    // Manual next on wrong — pause so child reads the correct answer
+    clearInterval(LR.tid); // pause timer while reading
+    if(lrnb){
+      lrnb.style.display='block';
+      lrnb.textContent='Next →';
+    }
   }
+}
+function lrNext(){
+  const lrnb=document.getElementById('lr-next-btn');
+  if(lrnb) lrnb.style.display='none';
+  LR.startMs=performance.now()-LR.elapsed*1000; // rebase timer
+  LR.tid=setInterval(()=>{
+    LR.elapsed=(performance.now()-LR.startMs)/1000;
+    document.getElementById('lrtimer').textContent=LR.elapsed.toFixed(1);
+  },50);
+  nextLRQ();
 }
 
 function updateLRComboStrip(){
@@ -3431,8 +3483,13 @@ function renderReviewQ(){
       fb.textContent=ok?`✓ ${correctVal}${suffix}`:`❌ Answer = ${correctVal}${suffix}`;
       fb.style.display='flex';
       if(formulaLine){wk.textContent=formulaLine;wk.style.display='block';}
-      nb.style.display='block';nb.textContent=RS.qi+1<RS.keys.length?'Next →':'Finish Review';
-      nb.onclick=()=>{RS.qi++;renderReviewQ();};
+      if(ok && S.autoNext){
+        nb.style.display='none';
+        setTimeout(()=>{RS.qi++;renderReviewQ();},700);
+      } else {
+        nb.style.display='block';nb.textContent=RS.qi+1<RS.keys.length?'Next →':'Finish Review';
+        nb.onclick=()=>{RS.qi++;renderReviewQ();};
+      }
     };
     g.appendChild(btn);
   });
@@ -3442,6 +3499,7 @@ function renderReviewQ(){
 // INIT
 // ════════════════════════════════════════
 loadState();
+_syncAutoNextBtn();
 updateHUD();
 renderHomeExtras();
 show('home');
