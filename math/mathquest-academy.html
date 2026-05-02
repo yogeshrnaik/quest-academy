@@ -357,6 +357,43 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
 [data-theme="dark"] .ssl-tri{background:#4A3800;border-color:#695800;}
 [data-theme="dark"] .ssl-mixed{background:#1A237E;border-color:#283593;}
 
+/* ── COMBO BANNER ── */
+.combo-banner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:500;pointer-events:none;text-align:center;animation:combopop .7s cubic-bezier(.17,.67,.35,1.3) forwards;}
+.combo-banner-inner{font-family:'Fredoka One',cursive;font-size:clamp(32px,10vw,60px);color:#fff;text-shadow:0 4px 20px rgba(0,0,0,.4);white-space:nowrap;line-height:1;}
+.combo-banner-sub{font-family:'Fredoka One',cursive;font-size:clamp(14px,4vw,22px);color:rgba(255,255,255,.9);margin-top:4px;}
+@keyframes combopop{0%{transform:translate(-50%,-50%) scale(0);opacity:0}40%{transform:translate(-50%,-50%) scale(1.15);opacity:1}70%{transform:translate(-50%,-50%) scale(.95);opacity:1}100%{transform:translate(-50%,-50%) scale(1);opacity:0}}
+/* ── SCREEN FLASH ── */
+.screen-flash{position:fixed;inset:0;z-index:490;pointer-events:none;opacity:0;animation:sflash .35s ease forwards;}
+@keyframes sflash{0%{opacity:.45}100%{opacity:0}}
+/* ── CONFETTI PARTICLE ── */
+.cparticle{position:fixed;pointer-events:none;z-index:480;border-radius:3px;animation:cfall var(--cd,.8s) ease-in forwards;}
+@keyframes cfall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(var(--cy,200px)) rotate(var(--cr,360deg));opacity:0}}
+/* ── MONSTER EXPLOSION ── */
+@keyframes monexplode{0%{transform:scale(1);opacity:1}30%{transform:scale(1.4);opacity:.8}60%{transform:scale(.5);opacity:.3}100%{transform:scale(0);opacity:0}}
+.mondie{animation:monexplode .5s ease forwards!important;}
+/* ── LIGHTNING ROUND screen ── */
+.lrwrap{width:100%;max-width:520px;margin-top:68px;padding-top:8px;}
+.lrhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.lrtitle{font-family:'Fredoka One',cursive;font-size:22px;color:var(--amber);}
+.lrtimer-box{display:flex;flex-direction:column;align-items:center;background:var(--card);border:2px solid var(--amber);border-radius:12px;padding:6px 14px;min-width:60px;}
+.lrtimer-val{font-family:'Fredoka One',cursive;font-size:28px;color:var(--amber);line-height:1;}
+.lrtimer-lbl{font-size:9px;font-weight:800;text-transform:uppercase;color:var(--t3);letter-spacing:.06em;}
+.lr-progress-bar{height:7px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:14px;border:1px solid var(--border);}
+.lr-progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--amber),var(--coral));transition:width .15s linear;}
+.lr-combo-strip{height:38px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-family:'Fredoka One',cursive;font-size:18px;border-radius:12px;transition:all .2s;}
+.lr-combo-strip.inactive{color:var(--t3);background:var(--bg2);}
+.lr-combo-strip.active{color:#fff;animation:stripglow .4s ease;}
+@keyframes stripglow{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
+.lr-score-row{display:flex;gap:8px;margin-bottom:12px;}
+.lr-sbox{flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:9px;text-align:center;}
+.lr-sval{font-family:'Fredoka One',cursive;font-size:26px;color:var(--purple);}
+.lr-slbl{font-size:9px;color:var(--t2);font-weight:700;text-transform:uppercase;}
+/* lightning round button on tower select */
+.lr-open-btn{width:100%;font-family:'Fredoka One',cursive;font-size:15px;background:linear-gradient(135deg,var(--amber),var(--coral));color:#fff;border:none;border-radius:12px;padding:12px;cursor:pointer;box-shadow:0 3px 12px rgba(251,188,5,.35);transition:all .2s;margin-bottom:10px;letter-spacing:.3px;}
+.lr-open-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(251,188,5,.5);}
+/* pb badge */
+.pb-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#FDD663,#FBBC05);border-radius:99px;padding:3px 12px;font-family:'Fredoka One',cursive;font-size:13px;color:#594300;margin-bottom:14px;}
+
 @media(max-width:480px){
   .wgrid{grid-template-columns:repeat(2,1fr);}
   .hpill.hides{display:none;}
@@ -410,6 +447,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
   <div class="bbtn" onclick="goHome()">← Home</div>
   <div class="wtitle">⚔ Times Table Tower</div>
   <div class="wsub">Tap any floor to battle · All 29 floors unlocked</div>
+  <button class="lr-open-btn" onclick="startLR(0)">⚡ Lightning Round — 20 Questions, Beat the Clock!</button>
   <button class="study-open-btn" onclick="showStudy('tower')">📖 Study All Tables First</button>
   <div class="flist" id="floor-list"></div>
 </div>
@@ -600,6 +638,49 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
   <div class="btnrow">
     <button class="bsec" onclick="goHome()">Home</button>
     <button class="bpri" onclick="startQB()">Play Again!</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══ LIGHTNING ROUND ═══ -->
+<div class="screen" id="screen-lr" style="display:none">
+<div class="lrwrap">
+  <div class="lrhdr">
+    <div style="display:flex;align-items:center;gap:7px">
+      <div class="bbtn" style="margin:0" onclick="endLR()">✕</div>
+      <div class="lrtitle">⚡ Lightning Round</div>
+    </div>
+    <div class="lrtimer-box">
+      <div class="lrtimer-val" id="lrtimer">0.0</div>
+      <div class="lrtimer-lbl">seconds</div>
+    </div>
+  </div>
+  <div class="lr-progress-bar"><div class="lr-progress-fill" id="lr-progress" style="width:0%"></div></div>
+  <div class="lr-combo-strip inactive" id="lr-combo-strip">Keep going!</div>
+  <div class="lr-score-row">
+    <div class="lr-sbox"><div class="lr-sval" id="lr-correct" style="color:var(--green)">0</div><div class="lr-slbl">Correct</div></div>
+    <div class="lr-sbox"><div class="lr-sval" id="lr-qnum" style="color:var(--purple)">1/20</div><div class="lr-slbl">Question</div></div>
+    <div class="lr-sbox"><div class="lr-sval" id="lr-streak" style="color:var(--coral)">0</div><div class="lr-slbl">🔥 Streak</div></div>
+  </div>
+  <div class="shape-card" style="padding:16px;margin-bottom:11px;">
+    <div class="shape-q-main" id="lr-q">? × ? = ?</div>
+  </div>
+  <div class="ansgrid" id="lr-ans"></div>
+  <div class="feedback hidden" id="lr-fb"></div>
+</div>
+</div>
+
+<!-- ═══ LIGHTNING RESULT ═══ -->
+<div class="screen" id="screen-lrr" style="display:none">
+<div class="rwrap">
+  <span class="remoji" id="lrremoji">⚡</span>
+  <div class="rtitle" style="color:var(--amber)" id="lrrtitle">Lightning!</div>
+  <div class="rsub" id="lrrsub"></div>
+  <div id="lr-pb-badge"></div>
+  <div class="rstats" id="lrrstats"></div>
+  <div class="btnrow">
+    <button class="bsec" onclick="showTower()">← Tower</button>
+    <button class="bpri" onclick="startLR(LR.mult)">Play Again!</button>
   </div>
 </div>
 </div>
@@ -879,7 +960,8 @@ let S={
   mode:'story',
   vaultLevel:0, dungeonLevel:0, fortressLevel:0,
   qbTid:null,qbLeft:60,qbC:0,qbW:0,qbSt:0,
-  currentShapeQ:null, // holds the current shrine question object
+  currentShapeQ:null,
+  lrBest:{}, // mult → best time in seconds (20 questions)
 };
 
 // ════════════════════════════════════════
@@ -917,9 +999,9 @@ function toast(msg){const t=document.createElement('div');t.className='toast';t.
 // ════════════════════════════════════════
 // NAVIGATION
 // ════════════════════════════════════════
-const SCRS=['home','tower','shrine','vault','dungeon','fortress','study','drill','battle','victory','defeat','qb','qbr'];
+const SCRS=['home','tower','shrine','vault','dungeon','fortress','study','drill','battle','victory','defeat','qb','qbr','lr','lrr'];
 function show(n){SCRS.forEach(s=>{const e=document.getElementById('screen-'+s);if(e)e.style.display=s===n?'flex':'none';});}
-function goHome(){clearInterval(S.tid);clearInterval(S.qbTid);show('home');updateHUD();}
+function goHome(){clearInterval(S.tid);clearInterval(S.qbTid);clearInterval(LR.tid);show('home');updateHUD();}
 function confirmQuit(){clearInterval(S.tid);if(S.world==='shrine')showShrine();else if(S.world==='vault')showVault();else if(S.world==='dungeon')showDungeon();else if(S.world==='fortress')showFortress();else showTower();}
 
 // ════════════════════════════════════════
@@ -930,15 +1012,17 @@ function renderFloorList(){
   const c=document.getElementById('floor-list');c.innerHTML='';
   FLOORS.forEach((f,i)=>{
     const done=S.cleared.has(f.id);
+    const pb=S.lrBest[f.mult];
     const b=document.createElement('div');b.className='fbtn';
     b.innerHTML=`
       <div class="fic">${f.monster}</div>
       <div class="finf">
         <div class="fnm">Floor ${f.id}: ×${f.mult} Table</div>
-        <div class="fds">${f.mname} · ${f.mlvl}${done?' · <span style="color:var(--green)">✓ Done</span>':''}</div>
+        <div class="fds">${f.mname} · ${f.mlvl}${done?' · <span style="color:var(--green)">✓ Done</span>':''}${pb?' · <span style="color:var(--amber)">⚡ PB '+pb+'s</span>':''}</div>
         <div class="level-actions">
           <button class="lbtn lbtn-fight" onclick="event.stopPropagation();S.floor=${i};S.world='tower';S.mode='story';startBattle()">⚔ Fight</button>
           <button class="lbtn lbtn-drill" onclick="event.stopPropagation();startDrill('tower',${i})">🥋 Drill</button>
+          <button class="lbtn" style="background:linear-gradient(135deg,var(--amber),var(--coral));color:#fff;box-shadow:0 2px 8px rgba(251,188,5,.3)" onclick="event.stopPropagation();startLR(${f.mult})">⚡ Race</button>
         </div>
       </div>`;
     c.appendChild(b);
@@ -2072,6 +2156,7 @@ function submitAnswer(val,correct,key,btn,world){
 
   if(ok){
     S.streak++;
+    fxOnAnswer(true, S.streak);
     const bonus=S.streak>=3?S.streak:1, tb=Math.floor(S.tleft/TSEC*20), xp=10*bonus+tb;
     addXP(xp);
     if(S.weak[key]>0)S.weak[key]--;
@@ -2203,7 +2288,7 @@ function advance(){
 }
 
 function showFb(ok,msg){const f=document.getElementById('feedback');f.className='feedback '+(ok?'correct':'wrong');f.textContent=msg;}
-function dmgPop(n,deal){const box=document.getElementById('mbox');const p=document.createElement('div');p.className='dpop '+(deal?'h':'d');p.textContent=(deal?'💥 -':'🗡 -')+n;box.appendChild(p);setTimeout(()=>p.remove(),1100);}
+function dmgPop(n,deal){const box=document.getElementById('mbox');const p=document.createElement('div');p.className='dpop '+(deal?'h':'d');p.textContent=(deal?'💥 -':'🗡 -')+n;box.appendChild(p);setTimeout(()=>p.remove(),1100);fxOnDmg(deal,S.monHP<=0);}
 function animMon(t){const el=document.getElementById('mbox');el.classList.remove('mshake','mhit');void el.offsetWidth;el.classList.add(t==='shake'?'mshake':'mhit');}
 
 // ════════════════════════════════════════
@@ -2812,6 +2897,196 @@ function renderFortressWall(){
     grid.appendChild(card);
   });
   el.appendChild(grid);
+}
+
+// ════════════════════════════════════════
+// VISUAL FX — confetti, combo banner, screen flash
+// ════════════════════════════════════════
+const CONFETTI_COLORS=['#4285F4','#34A853','#FBBC05','#EA4335','#FA7B17','#E91E63','#8AB4F8','#81C995'];
+
+function spawnConfetti(x, y, count){
+  for(let i=0;i<count;i++){
+    const p=document.createElement('div');
+    p.className='cparticle';
+    const size=rnd(5,11);
+    const angle=(Math.random()*360);
+    const dist=rnd(60,160);
+    const cx=Math.round(dist*Math.cos(angle*Math.PI/180));
+    const cy=Math.round(dist+rnd(60,120));
+    const rot=rnd(-360,360);
+    const dur=(Math.random()*.4+.5).toFixed(2);
+    p.style.cssText=`left:${x}px;top:${y}px;width:${size}px;height:${size*.6|0}px;background:${CONFETTI_COLORS[i%CONFETTI_COLORS.length]};--cd:${dur}s;--cy:${cy}px;--cr:${rot}deg;transform:translateX(${cx}px)`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(), dur*1000+100);
+  }
+}
+
+function burstConfetti(){
+  const cx=window.innerWidth/2, cy=window.innerHeight*0.38;
+  spawnConfetti(cx,cy,28);
+}
+
+function screenFlash(color){
+  const el=document.createElement('div');
+  el.className='screen-flash';
+  el.style.background=color||'rgba(66,133,244,.35)';
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),400);
+}
+
+function showComboBanner(streak){
+  // Remove any existing banner
+  document.querySelectorAll('.combo-banner').forEach(e=>e.remove());
+  const msgs=[
+    {min:3,text:'🔥 3× Combo!',   bg:'linear-gradient(135deg,#FA7B17,#FBBC05)'},
+    {min:5,text:'⚡ 5× COMBO!!',  bg:'linear-gradient(135deg,#4285F4,#8AB4F8)'},
+    {min:7,text:'💥 7× MEGA!!!',  bg:'linear-gradient(135deg,#EA4335,#E91E63)'},
+    {min:10,text:'🌟 10× GOD!!!', bg:'linear-gradient(135deg,#34A853,#FBBC05)'},
+  ];
+  const m=[...msgs].reverse().find(m=>streak>=m.min);
+  if(!m)return;
+  const el=document.createElement('div');
+  el.className='combo-banner';
+  el.innerHTML=`<div class="combo-banner-inner" style="background:${m.bg};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${m.text}</div><div class="combo-banner-sub">+${streak} streak bonus!</div>`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),800);
+}
+
+function monsterDie(){
+  const box=document.getElementById('mbox');
+  if(!box)return;
+  box.classList.add('mondie');
+  spawnConfetti(window.innerWidth/2, window.innerHeight*0.3, 40);
+  screenFlash('rgba(251,188,5,.25)');
+  setTimeout(()=>box.classList.remove('mondie'),600);
+}
+
+// Called from dmgPop and submitAnswer to layer in FX
+function fxOnDmg(deal, monDead){
+  if(deal && monDead) monsterDie();
+  else if(deal) screenFlash('rgba(52,168,83,.2)');
+  else screenFlash('rgba(234,67,53,.18)');
+}
+function fxOnAnswer(ok, streak){
+  if(!ok) return;
+  if(streak>=3) showComboBanner(streak);
+  if(streak>=5) burstConfetti();
+}
+
+// ════════════════════════════════════════
+// LIGHTNING ROUND
+// ════════════════════════════════════════
+const LR_TOTAL=20;
+const LR={mult:0,qi:0,correct:0,streak:0,startMs:0,elapsed:0,tid:null,answered:false};
+
+function startLR(mult){
+  clearInterval(LR.tid);clearInterval(S.tid);clearInterval(S.qbTid);
+  LR.mult=mult; LR.qi=0; LR.correct=0; LR.streak=0; LR.answered=false;
+  LR.startMs=performance.now();
+  show('lr');
+  const title=mult===0?'⚡ Lightning Round — All Tables':`⚡ ×${mult} Lightning Round`;
+  document.querySelector('#screen-lr .lrtitle').textContent=title;
+  document.getElementById('lr-correct').textContent=0;
+  document.getElementById('lr-streak').textContent=0;
+  document.getElementById('lr-progress').style.width='0%';
+  updateLRComboStrip();
+  LR.tid=setInterval(()=>{
+    LR.elapsed=(performance.now()-LR.startMs)/1000;
+    document.getElementById('lrtimer').textContent=LR.elapsed.toFixed(1);
+  },50);
+  nextLRQ();
+}
+
+function nextLRQ(){
+  LR.answered=false;
+  document.getElementById('lr-qnum').textContent=`${LR.qi+1}/${LR_TOTAL}`;
+  document.getElementById('lr-progress').style.width=(LR.qi/LR_TOTAL*100)+'%';
+  document.getElementById('lr-fb').className='feedback hidden';
+  const mult = LR.mult===0 ? rnd(2,12) : LR.mult;
+  const b=rnd(1,12), ans=mult*b;
+  document.getElementById('lr-q').textContent=`${mult} × ${b} = ?`;
+  const g=document.getElementById('lr-ans');g.innerHTML='';
+  genTowerOpts(ans,mult).forEach(opt=>{
+    const btn=document.createElement('button');btn.className='abtn';btn.textContent=opt;
+    btn.onclick=()=>submitLR(opt,ans,mult,btn,g);
+    g.appendChild(btn);
+  });
+}
+
+function submitLR(val,correct,mult,btn,grid){
+  if(LR.answered)return;
+  LR.answered=true;
+  const ok=val===correct;
+  grid.querySelectorAll('.abtn').forEach(b=>{
+    b.disabled=true;
+    if(Number(b.textContent)===correct)b.classList.add('correct');
+  });
+  if(!ok)btn.classList.add('wrong');
+  const fb=document.getElementById('lr-fb');
+  if(ok){
+    LR.correct++;LR.streak++;
+    fb.className='feedback correct';fb.textContent=`✓ ${correct}`;
+    addXP(LR.streak>=5?15:LR.streak>=3?10:5);
+    if(LR.streak>=3) showComboBanner(LR.streak);
+    if(LR.streak>=5){burstConfetti();screenFlash('rgba(52,168,83,.2)');}
+    else screenFlash('rgba(52,168,83,.15)');
+  } else {
+    LR.streak=0;
+    fb.className='feedback wrong';fb.textContent=`❌ ${correct}`;
+    screenFlash('rgba(234,67,53,.18)');
+  }
+  document.getElementById('lr-correct').textContent=LR.correct;
+  document.getElementById('lr-streak').textContent=LR.streak;
+  updateLRComboStrip();
+  LR.qi++;
+  if(LR.qi>=LR_TOTAL){
+    setTimeout(()=>{clearInterval(LR.tid);endLR(true);},500);
+  } else {
+    setTimeout(nextLRQ, ok?400:700);
+  }
+}
+
+function updateLRComboStrip(){
+  const el=document.getElementById('lr-combo-strip');
+  if(!el)return;
+  const s=LR.streak;
+  if(s===0){el.className='lr-combo-strip inactive';el.textContent='Keep going!';el.style.background='';}
+  else if(s<3){el.className='lr-combo-strip active';el.textContent=`🔥 ${s} in a row!`;el.style.background='linear-gradient(135deg,#FA7B17,#FBBC05)';}
+  else if(s<5){el.className='lr-combo-strip active';el.textContent=`⚡ ${s}× COMBO!`;el.style.background='linear-gradient(135deg,#4285F4,#8AB4F8)';}
+  else if(s<8){el.className='lr-combo-strip active';el.textContent=`💥 ${s}× MEGA COMBO!!`;el.style.background='linear-gradient(135deg,#EA4335,#E91E63)';}
+  else{el.className='lr-combo-strip active';el.textContent=`🌟 ${s}× UNSTOPPABLE!!!`;el.style.background='linear-gradient(135deg,#34A853,#FBBC05)';}
+}
+
+function endLR(finished){
+  clearInterval(LR.tid);
+  const elapsed=finished?(performance.now()-LR.startMs)/1000:LR.elapsed;
+  const t=elapsed.toFixed(1);
+  const mult=LR.mult;
+  const pct=Math.round(LR.correct/LR_TOTAL*100);
+  // Personal best
+  let isPB=false;
+  if(finished && LR.correct===LR_TOTAL){
+    if(!S.lrBest[mult]||elapsed<S.lrBest[mult]){S.lrBest[mult]=parseFloat(t);isPB=true;}
+  }
+  show('lrr');
+  const emoji=pct===100?'🏆':pct>=80?'⚡':pct>=60?'💪':'😤';
+  const title=pct===100?'PERFECT!':pct>=80?'Lightning Fast!':pct>=60?'Nice Work!':'Keep Practising!';
+  document.getElementById('lrremoji').textContent=emoji;
+  document.getElementById('lrrtitle').textContent=title;
+  document.getElementById('lrrsub').textContent=finished
+    ? `${LR.correct}/${LR_TOTAL} correct in ${t} seconds${mult?` on ×${mult} table`:' (mixed)'}!`
+    : `Stopped early — ${LR.correct}/${LR.qi} correct so far.`;
+  const pb=S.lrBest[mult];
+  document.getElementById('lr-pb-badge').innerHTML=isPB
+    ? `<div class="pb-badge">🏅 NEW PERSONAL BEST — ${t}s!</div>`
+    : (pb&&finished?`<div class="pb-badge">🏅 Best: ${pb}s</div>`:'');
+  document.getElementById('lrrstats').innerHTML=stbs([
+    {v:`${LR.correct}/${LR_TOTAL}`,c:'var(--green)',l:'Correct'},
+    {v:t+'s',c:'var(--amber)',l:'Time'},
+    {v:pct+'%',c:'var(--purple)',l:'Accuracy'},
+  ]);
+  if(isPB){burstConfetti();burstConfetti();}
+  renderFloorList(); // refresh PB badges in tower list
 }
 
 // ════════════════════════════════════════
