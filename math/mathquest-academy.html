@@ -263,6 +263,25 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
 .vv-vol{background:#FEF9E7;border-color:#FDD663;}.vv-sa{background:#E8F0FE;border-color:#ADC6FF;}.vv-boss{background:#FCE8E6;border-color:#F6AEA9;}
 [data-theme="dark"] .vv-vol{background:#4A3800;border-color:#695800;}[data-theme="dark"] .vv-sa{background:#1A237E;border-color:#283593;}[data-theme="dark"] .vv-boss{background:#4E0000;border-color:#7F0000;}
 
+/* ── FORMULA FORTRESS CHAMBERS ── */
+.fflevels{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:9px;margin-bottom:18px;}
+.ffcard{border-radius:14px;padding:12px 10px;cursor:pointer;border:2px solid transparent;transition:all .18s;text-align:center;}
+.ffcard:hover{transform:translateY(-2px);box-shadow:0 6px 18px var(--shadow);}
+.ffcard.done{border-color:var(--green)!important;}
+.ffic{font-size:26px;margin-bottom:5px;display:block;}.fft{font-size:12px;font-weight:800;color:var(--text);}.ffs{font-size:10px;color:var(--t2);margin-top:2px;}
+.ff-algebra{background:#FEF3E2;border-color:#FCAD70;}
+.ff-geometry{background:#E8F0FE;border-color:#ADC6FF;}
+.ff-trig{background:#E6F4EA;border-color:#A8D5B5;}
+.ff-stats{background:#FCE8E6;border-color:#F6AEA9;}
+.ff-applied{background:#FEF9E7;border-color:#FDD663;}
+.ff-boss{background:#FCE8E6;border-color:#EA4335;}
+[data-theme="dark"] .ff-algebra{background:#4A1700;border-color:#7A2800;}
+[data-theme="dark"] .ff-geometry{background:#1A237E;border-color:#283593;}
+[data-theme="dark"] .ff-trig{background:#1B5E20;border-color:#2E7D32;}
+[data-theme="dark"] .ff-stats{background:#4E0000;border-color:#7F0000;}
+[data-theme="dark"] .ff-applied{background:#4A3800;border-color:#695800;}
+[data-theme="dark"] .ff-boss{background:#4E0000;border-color:#7F0000;}
+
 /* ── STUDY MODE ── */
 .study-open-btn{width:100%;font-family:'Fredoka One',cursive;font-size:15px;background:linear-gradient(135deg,#FBBC05,#FDD663);color:#fff;border:none;border-radius:12px;padding:12px;cursor:pointer;box-shadow:0 3px 12px rgba(251,188,5,.3);transition:all .2s;margin-bottom:14px;letter-spacing:.3px;}
 .study-open-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(251,188,5,.4);}
@@ -379,7 +398,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
     <div class="wcard w2" onclick="showShrine()"><span class="wi">◻</span><div class="wt">Shape Shrine</div><div class="ws">Area & perimeter</div></div>
     <div class="wcard w3" onclick="showVault()"><span class="wi">◆</span><div class="wt">Volume Vault</div><div class="ws">3D solids & formulas</div></div>
     <div class="wcard w4" onclick="showDungeon()"><span class="wi">△</span><div class="wt">Geometry Dungeon</div><div class="ws">Angles & theorems</div></div>
-    <div class="wcard w5 cs"><span class="wi">∞</span><div class="wt">Formula Fortress</div><div class="ws">Mixed boss challenges</div><span class="soon">Coming soon</span></div>
+    <div class="wcard w5" onclick="showFortress()"><span class="wi">∞</span><div class="wt">Formula Fortress</div><div class="ws">Master key formulas</div></div>
   </div>
   </div>
 </div>
@@ -426,6 +445,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
   <div class="wsub">Angles · Triangles · Circles · Theorems · Tap a chamber to enter</div>
   <button class="study-open-btn" onclick="showStudy('dungeon')">📖 Study All Theorems First</button>
   <div id="dungeon-list"></div>
+</div>
+</div>
+
+<!-- ═══ FORTRESS SELECT ═══ -->
+<div class="screen" id="screen-fortress" style="display:none">
+<div class="ww">
+  <div class="bbtn" onclick="goHome()">← Home</div>
+  <div class="wtitle">∞ Formula Fortress</div>
+  <div class="wsub">Master the essential formulas · Tap a chamber to enter</div>
+  <button class="study-open-btn" onclick="showStudy('fortress')">📖 Study All Formulas First</button>
+  <div id="fortress-list"></div>
 </div>
 </div>
 
@@ -844,10 +874,10 @@ let S={
   shLevel:0,    // shrine level index
   plrHP:PHP, monHP:0,monMaxHP:0,
   qs:[],qi:0,results:[],
-  weak:{}, cleared:new Set(), shrineCleared:new Set(), vaultCleared:new Set(), dungeonCleared:new Set(),
+  weak:{}, cleared:new Set(), shrineCleared:new Set(), vaultCleared:new Set(), dungeonCleared:new Set(), fortressCleared:new Set(),
   tid:null,tleft:TSEC,answered:false,xpg:0,
   mode:'story',
-  vaultLevel:0, dungeonLevel:0,
+  vaultLevel:0, dungeonLevel:0, fortressLevel:0,
   qbTid:null,qbLeft:60,qbC:0,qbW:0,qbSt:0,
   currentShapeQ:null, // holds the current shrine question object
 };
@@ -877,7 +907,7 @@ function updateHUD(){
   document.getElementById('xpbar').style.width=pct+'%';
   document.getElementById('snxp').textContent=S.xp;
   document.getElementById('snstr').textContent=S.streak;
-  document.getElementById('snclr').textContent=S.cleared.size+S.shrineCleared.size+S.vaultCleared.size+S.dungeonCleared.size;
+  document.getElementById('snclr').textContent=S.cleared.size+S.shrineCleared.size+S.vaultCleared.size+S.dungeonCleared.size+S.fortressCleared.size;
   document.getElementById('snlvl').textContent=S.level;
   document.getElementById('snbar').style.width=pct+'%';
 }
@@ -887,10 +917,10 @@ function toast(msg){const t=document.createElement('div');t.className='toast';t.
 // ════════════════════════════════════════
 // NAVIGATION
 // ════════════════════════════════════════
-const SCRS=['home','tower','shrine','vault','dungeon','study','drill','battle','victory','defeat','qb','qbr'];
+const SCRS=['home','tower','shrine','vault','dungeon','fortress','study','drill','battle','victory','defeat','qb','qbr'];
 function show(n){SCRS.forEach(s=>{const e=document.getElementById('screen-'+s);if(e)e.style.display=s===n?'flex':'none';});}
 function goHome(){clearInterval(S.tid);clearInterval(S.qbTid);show('home');updateHUD();}
-function confirmQuit(){clearInterval(S.tid);if(S.world==='shrine')showShrine();else if(S.world==='vault')showVault();else if(S.world==='dungeon')showDungeon();else showTower();}
+function confirmQuit(){clearInterval(S.tid);if(S.world==='shrine')showShrine();else if(S.world==='vault')showVault();else if(S.world==='dungeon')showDungeon();else if(S.world==='fortress')showFortress();else showTower();}
 
 // ════════════════════════════════════════
 // TOWER SELECT
@@ -1459,6 +1489,294 @@ function renderDungeonList(){
 }
 
 // ════════════════════════════════════════
+// DATA + LOGIC: FORMULA FORTRESS
+// ════════════════════════════════════════
+const FORTRESS_LEVELS = [
+  {id:'f1', name:'Linear Gateway',    type:'algebra',  topic:'linear',            monster:'🧮',mname:'Algebra Golem',     mlvl:'Beginner',  maxHP:70, dmg:7, xpReward:85,
+   formula:'ax + b = c  →  x = (c−b)/a', fdesc:'Rearrange to isolate x: subtract b from both sides, then divide by a.',
+   why:'Equations are balanced scales. Whatever you do to one side, you must do to the other — keep the balance to find x.',
+   tip:'Move b to the right by subtracting, then divide both sides by a.',  color:'ff-algebra'},
+  {id:'f2', name:'Slope Spire',       type:'algebra',  topic:'slope',             monster:'📈',mname:'Gradient Ghoul',    mlvl:'Beginner',  maxHP:78, dmg:8, xpReward:95,
+   formula:'m = (y₂−y₁) / (x₂−x₁)', fdesc:'Gradient = rise over run. How much y changes per unit of x.',
+   why:'The slope measures steepness. Rise is the vertical change, run is the horizontal change — dividing them gives how steep the line is.',
+   tip:'Rise over run: subtract y-values on top, x-values on bottom.',  color:'ff-algebra'},
+  {id:'f3', name:'Quadratic Lair',    type:'algebra',  topic:'quadratic',         monster:'🌀',mname:'Parabola Phantom',  mlvl:'Easy',      maxHP:88, dmg:9, xpReward:105,
+   formula:'x = [−b ± √(b²−4ac)] / 2a', fdesc:'Factored form: (x−p)(x−q)=0 gives roots x=p and x=q.',
+   why:'A quadratic equals zero at two x-values (the roots). Factoring finds the values that make each bracket zero.',
+   tip:'If (x−p)(x−q)=0 then x=p or x=q. Find the two numbers that multiply to c and add to b.',  color:'ff-algebra'},
+  {id:'f4', name:'Distance Keep',     type:'algebra',  topic:'distance',          monster:'📏',mname:'Coordinate Creep',  mlvl:'Easy',      maxHP:96, dmg:10,xpReward:115,
+   formula:'d = √((x₂−x₁)² + (y₂−y₁)²)', fdesc:'Distance between two points — Pythagoras applied to coordinates!',
+   why:'Draw a right triangle between the two points. The horizontal leg is (x₂−x₁), vertical is (y₂−y₁). Pythagoras gives the hypotenuse = distance.',
+   tip:'Square both differences, add them, then take the square root.',  color:'ff-algebra'},
+  {id:'f5', name:'Pythagoras Pass',   type:'geometry', topic:'pythagoras',        monster:'🐍',mname:'Hypotenuse Hydra',  mlvl:'Easy',      maxHP:104,dmg:11,xpReward:125,
+   formula:'a² + b² = c²', fdesc:'In a right-angled triangle, the square of the longest side equals the sum of the squares of the other two.',
+   why:'Arrange four copies of the triangle around a tilted square — the algebra proves a²+b²=c² every time.',
+   tip:'c is always the hypotenuse (longest side, opposite the right angle).',  color:'ff-geometry'},
+  {id:'f6', name:'Circle Citadel',    type:'geometry', topic:'circle',            monster:'🔵',mname:'Circle Warlock',    mlvl:'Medium',    maxHP:114,dmg:12,xpReward:138,
+   formula:'Area = πr²   Circumference = 2πr', fdesc:'Every circle formula uses the radius. Area fills the inside; circumference wraps around.',
+   why:'π is the ratio of circumference to diameter for any circle. From that one constant, area and circumference both follow.',
+   tip:'Area = π×r×r (use 3.14). Circumference = 2×3.14×r.',  color:'ff-geometry'},
+  {id:'f7', name:'Trig Tower',        type:'trig',     topic:'sohcahtoa',         monster:'📐',mname:'SOHCAHTOA Sphinx', mlvl:'Medium',    maxHP:124,dmg:13,xpReward:150,
+   formula:'sin=O/H  cos=A/H  tan=O/A', fdesc:'SOHCAHTOA: in a right triangle, trig ratios relate angles to sides.',
+   why:'The ratios are fixed for a given angle in any right triangle — they never change no matter how big the triangle is.',
+   tip:'SOH: Sin=Opposite/Hypotenuse · CAH: Cos=Adjacent/Hyp · TOA: Tan=Opp/Adj',  color:'ff-trig'},
+  {id:'f8', name:'Unit Circle Vault', type:'trig',     topic:'unit_circle',       monster:'🎯',mname:'Angle Archer',      mlvl:'Medium',    maxHP:132,dmg:14,xpReward:160,
+   formula:'sin30°=0.5  cos60°=0.5  tan45°=1', fdesc:'Key angle values — memorise these exact values for sin, cos, tan.',
+   why:'On a unit circle (radius=1), the x-coordinate is cos and y-coordinate is sin of the angle. Special angles give exact fractions.',
+   tip:'30°/60°/45° are the key angles. sin30=cos60=0.5, sin60=cos30≈0.87, tan45=1.',  color:'ff-trig'},
+  {id:'f9', name:'Stats Sanctum',     type:'stats',    topic:'mean_median',       monster:'📊',mname:'Data Daemon',       mlvl:'Medium',    maxHP:140,dmg:15,xpReward:170,
+   formula:'Mean = Sum ÷ n   Median = middle value', fdesc:'Mean is the average; median is the middle value when data is sorted.',
+   why:'Mean spreads the total evenly across all values. Median is more robust to outliers because it just finds the physical middle.',
+   tip:'Mean: add all values and divide by count. Median: sort the list and find the middle.',  color:'ff-stats'},
+  {id:'f10',name:'Probability Pit',   type:'stats',    topic:'probability',       monster:'🎲',mname:'Chance Chimera',    mlvl:'Medium',    maxHP:148,dmg:16,xpReward:182,
+   formula:'P(event) = favourable outcomes / total outcomes', fdesc:'Probability is a fraction: what you want divided by everything possible.',
+   why:'Probability must be between 0 (impossible) and 1 (certain). The fraction counts how many ways you can succeed out of all possibilities.',
+   tip:'Count the favourable outcomes. Count the total outcomes. Divide.',  color:'ff-stats'},
+  {id:'f11',name:'Interest Fortress', type:'applied',  topic:'compound_interest', monster:'💰',mname:'Compound Colossus', mlvl:'Hard',      maxHP:162,dmg:18,xpReward:200,
+   formula:'A = P(1 + r)ⁿ', fdesc:'Compound interest grows on itself each period. P=principal, r=rate (decimal), n=years.',
+   why:'Each year you earn interest on last year\'s total (not just the original). This compounding makes money grow faster over time.',
+   tip:'Convert % to decimal (10% = 0.10). Multiply P by (1+r) for each year.',  color:'ff-applied'},
+  {id:'f12',name:'Speed & Time Hall', type:'applied',  topic:'speed_distance',    monster:'🚀',mname:'Velocity Vampire',  mlvl:'Hard',      maxHP:176,dmg:20,xpReward:218,
+   formula:'Distance = Speed × Time', fdesc:'The three key quantities — rearrange the triangle: cover what you need to find.',
+   why:'Speed is how far you go per unit time. Multiply by time to get total distance. Divide distance by time to get speed, etc.',
+   tip:'DST triangle: cover D → S×T. Cover S → D/T. Cover T → D/S.',  color:'ff-applied'},
+  {id:'f13',name:'Percentage Peak',   type:'applied',  topic:'percentage_change', monster:'%', mname:'Percent Predator',  mlvl:'Hard',      maxHP:192,dmg:22,xpReward:238,
+   formula:'% change = (new−old)/old × 100', fdesc:'Percentage change compares how much something increased or decreased relative to the original.',
+   why:'We divide by the original to express the change as a fraction of the starting point, then multiply by 100 to convert to a percentage.',
+   tip:'Subtract old from new, divide by old, multiply by 100. Positive = increase, negative = decrease.',  color:'ff-applied'},
+  {id:'f14',name:'BOSS: Formula Master',type:'boss',   topic:'mixed',             monster:'🏰',mname:'FORMULA MASTER',   mlvl:'FINAL BOSS',maxHP:250,dmg:28,xpReward:500,
+   formula:'All formulas!', fdesc:'Linear, slope, quadratic, distance, Pythagoras, circles, trig, stats, probability, interest, speed, percentage — you know them all!',
+   why:'Every formula in this fortress is a tool. Mathematics is the language of patterns — master the tools and you can solve any problem.',
+   tip:'Read carefully. Identify the formula. Apply it precisely. You\'ve beaten every chamber — now defeat the Master!',  color:'ff-boss'},
+];
+
+// ── Generate a Formula Fortress question ─────────────────
+function genFortressQ(level) {
+  const topic = level.type==='boss'
+    ? ['linear','slope','quadratic','distance','pythagoras','circle','sohcahtoa','unit_circle','mean_median','probability','compound_interest','speed_distance','percentage_change'][Math.floor(Math.random()*13)]
+    : level.topic;
+
+  let questionText='', answer=0, formulaUsed='', steps='';
+
+  if(topic==='linear'){
+    const a=rnd(2,9), x=rnd(1,10), b=rnd(1,15);
+    const c=a*x+b;
+    answer=x; questionText=`Solve for x:  ${a}x + ${b} = ${c}`;
+    formulaUsed=`x = (${c} − ${b}) / ${a} = ${answer}`; steps='ax+b=c → x=(c−b)/a';
+  } else if(topic==='slope'){
+    const x1=rnd(1,5),y1=rnd(1,5),dx=rnd(1,4);
+    const m=[-3,-2,-1,1,2,3][Math.floor(Math.random()*6)];
+    const x2=x1+dx, y2=y1+m*dx;
+    answer=m; questionText=`Find the gradient between (${x1}, ${y1}) and (${x2}, ${y2})`;
+    formulaUsed=`m = (${y2}−${y1}) / (${x2}−${x1}) = ${m}`; steps='m=(y₂−y₁)/(x₂−x₁)';
+  } else if(topic==='quadratic'){
+    const p=rnd(1,7), q=rnd(1,7);
+    const b=-(p+q), c=p*q;
+    const bStr=b<0?`${b}`:`+${b}`;
+    answer=Math.max(p,q);
+    questionText=`Solve x² ${bStr}x + ${c} = 0. Give the LARGER root.`;
+    formulaUsed=`(x−${p})(x−${q})=0  →  x=${p} or x=${q}`; steps='Factor and find roots';
+  } else if(topic==='distance'){
+    const triples=[[3,4,5],[5,12,13],[8,15,17],[6,8,10],[9,12,15],[5,5,7]]; // last is approx, skip
+    const tr=triples[Math.floor(Math.random()*5)];
+    const x1=rnd(1,5),y1=rnd(1,5),x2=x1+tr[0],y2=y1+tr[1];
+    answer=tr[2]; questionText=`Find the distance between (${x1}, ${y1}) and (${x2}, ${y2})`;
+    formulaUsed=`√(${tr[0]}² + ${tr[1]}²) = √${tr[0]*tr[0]+tr[1]*tr[1]} = ${answer}`; steps='d=√((x₂−x₁)²+(y₂−y₁)²)';
+  } else if(topic==='pythagoras'){
+    const triples=[[3,4,5],[5,12,13],[8,15,17],[6,8,10],[9,12,15],[7,24,25]];
+    const tr=triples[Math.floor(Math.random()*triples.length)];
+    if(Math.random()<0.5){
+      answer=tr[2]; questionText=`Right triangle with legs ${tr[0]} and ${tr[1]}. Find the hypotenuse.`;
+      formulaUsed=`√(${tr[0]}²+${tr[1]}²) = √${tr[0]*tr[0]+tr[1]*tr[1]} = ${answer}`;
+    } else {
+      answer=tr[0]; questionText=`Right triangle: hypotenuse=${tr[2]}, one leg=${tr[1]}. Find the other leg.`;
+      formulaUsed=`√(${tr[2]}²−${tr[1]}²) = √${tr[2]*tr[2]-tr[1]*tr[1]} = ${answer}`;
+    }
+    steps='a²+b²=c²';
+  } else if(topic==='circle'){
+    const PI=3.14;
+    const radii=[2,3,4,5,7,10];
+    const r=radii[Math.floor(Math.random()*radii.length)];
+    if(Math.random()<0.5){
+      answer=Math.round(PI*r*r); questionText=`Find the AREA of a circle with radius ${r} cm. (π=3.14)`;
+      formulaUsed=`3.14 × ${r}² = 3.14 × ${r*r} = ${answer}`;
+    } else {
+      answer=Math.round(2*PI*r); questionText=`Find the CIRCUMFERENCE of a circle with radius ${r} cm. (π=3.14)`;
+      formulaUsed=`2 × 3.14 × ${r} = ${answer}`;
+    }
+    steps='Area=πr²  Circ=2πr';
+  } else if(topic==='sohcahtoa'){
+    const triangles=[
+      {o:3,a:4,h:5},{o:5,a:12,h:13},{o:8,a:15,h:17},{o:4,a:3,h:5}
+    ];
+    const tr=triangles[Math.floor(Math.random()*triangles.length)];
+    const pick=Math.floor(Math.random()*3);
+    const opts10=[[5,6,7,8],[5,12,13,10],[8,15,17,10],[10,12,13,8]];
+    if(pick===0){
+      const n=tr.o, d=tr.h, v=Math.round(n/d*10);
+      answer=v; questionText=`In a right triangle with opposite=${tr.o} and hypotenuse=${tr.h}, find sin(θ)×10 (as a whole number).`;
+      formulaUsed=`sin = ${tr.o}/${tr.h} = ${(n/d).toFixed(1)} → ×10 = ${answer}`; steps='sin=O/H';
+    } else if(pick===1){
+      const n=tr.a, d=tr.h, v=Math.round(n/d*10);
+      answer=v; questionText=`In a right triangle with adjacent=${tr.a} and hypotenuse=${tr.h}, find cos(θ)×10 (whole number).`;
+      formulaUsed=`cos = ${tr.a}/${tr.h} = ${(n/d).toFixed(1)} → ×10 = ${answer}`; steps='cos=A/H';
+    } else {
+      const n=tr.o, d=tr.a;
+      answer=Math.round(n/d*10); questionText=`In a right triangle with opposite=${tr.o} and adjacent=${tr.a}, find tan(θ)×10 (whole number).`;
+      formulaUsed=`tan = ${tr.o}/${tr.a} = ${(n/d).toFixed(1)} → ×10 = ${answer}`; steps='tan=O/A';
+    }
+  } else if(topic==='unit_circle'){
+    const vals=[
+      {q:'sin(30°)',a:5,f:'sin 30° = 1/2 = 0.5  → ×10 = 5'},
+      {q:'cos(60°)',a:5,f:'cos 60° = 1/2 = 0.5  → ×10 = 5'},
+      {q:'sin(90°)',a:10,f:'sin 90° = 1  → ×10 = 10'},
+      {q:'cos(0°)', a:10,f:'cos 0° = 1  → ×10 = 10'},
+      {q:'sin(45°)',a:7,f:'sin 45° ≈ 0.707 → ×10 ≈ 7'},
+      {q:'cos(45°)',a:7,f:'cos 45° ≈ 0.707 → ×10 ≈ 7'},
+      {q:'tan(45°)',a:10,f:'tan 45° = 1  → ×10 = 10'},
+      {q:'sin(60°)',a:9,f:'sin 60° ≈ 0.866 → ×10 ≈ 9'},
+      {q:'cos(30°)',a:9,f:'cos 30° ≈ 0.866 → ×10 ≈ 9'},
+    ];
+    const v=vals[Math.floor(Math.random()*vals.length)];
+    answer=v.a; questionText=`What is ${v.q} × 10? (Give as a whole number)`;
+    formulaUsed=v.f; steps='Unit circle exact values';
+  } else if(topic==='mean_median'){
+    const n=rnd(5,7);
+    const data=Array.from({length:n},()=>rnd(2,20)).sort((a,b)=>a-b);
+    const pick=Math.floor(Math.random()*3);
+    if(pick===0){
+      const sum=data.reduce((s,v)=>s+v,0);
+      answer=Math.round(sum/n); questionText=`Find the MEAN of: ${data.join(', ')}`;
+      formulaUsed=`(${data.join('+')})/7 = ${sum}/${n} = ${answer}`; steps='Mean=Sum÷n';
+    } else if(pick===1){
+      answer=data[Math.floor(n/2)]; questionText=`Find the MEDIAN of: ${data.join(', ')} (already sorted)`;
+      formulaUsed=`Middle value of ${n} numbers = position ${Math.floor(n/2)+1} = ${answer}`; steps='Median=middle value';
+    } else {
+      answer=data[n-1]-data[0]; questionText=`Find the RANGE of: ${data.join(', ')}`;
+      formulaUsed=`${data[n-1]} − ${data[0]} = ${answer}`; steps='Range=max−min';
+    }
+  } else if(topic==='probability'){
+    const total=rnd(8,15), fav=rnd(1,Math.floor(total/2));
+    const colour=['red','blue','green','yellow'][Math.floor(Math.random()*4)];
+    answer=fav; questionText=`A bag has ${fav} ${colour} balls and ${total-fav} others (${total} total). How many ${colour} balls are there? (= numerator of P(${colour}))`;
+    formulaUsed=`P(${colour}) = ${fav}/${total}  →  numerator = ${fav}`; steps='P=favourable/total';
+  } else if(topic==='compound_interest'){
+    const principals=[100,200,500,1000], rates=[0.05,0.10,0.20], years=[1,2,3];
+    const P=principals[Math.floor(Math.random()*principals.length)];
+    const r=rates[Math.floor(Math.random()*rates.length)];
+    const n=years[Math.floor(Math.random()*years.length)];
+    answer=Math.round(P*Math.pow(1+r,n));
+    const rPct=Math.round(r*100);
+    questionText=`£${P} invested at ${rPct}% compound interest for ${n} year${n>1?'s':''}. Find the total amount A.`;
+    formulaUsed=`A = ${P}×(1+${r})^${n} = ${P}×${Math.pow(1+r,n).toFixed(n===1?2:4)} = £${answer}`; steps='A=P(1+r)ⁿ';
+  } else if(topic==='speed_distance'){
+    const speeds=[20,30,40,50,60,80,100], times=[1,2,3,4,5];
+    const s=speeds[Math.floor(Math.random()*speeds.length)];
+    const t=times[Math.floor(Math.random()*times.length)];
+    const d=s*t;
+    const pick=Math.floor(Math.random()*3);
+    if(pick===0){
+      answer=d; questionText=`A car travels at ${s} km/h for ${t} hour${t>1?'s':''}. Find the distance.`;
+      formulaUsed=`D = ${s} × ${t} = ${d} km`; steps='D=S×T';
+    } else if(pick===1){
+      answer=s; questionText=`A car travels ${d} km in ${t} hour${t>1?'s':''}. Find the speed.`;
+      formulaUsed=`S = ${d} ÷ ${t} = ${s} km/h`; steps='S=D/T';
+    } else {
+      answer=t; questionText=`A car travels ${d} km at ${s} km/h. Find the time taken (hours).`;
+      formulaUsed=`T = ${d} ÷ ${s} = ${t} hour${t>1?'s':''}`; steps='T=D/S';
+    }
+  } else { // percentage_change
+    const olds=[20,25,40,50,80,100,200], pcts=[10,20,25,50,-10,-20,-25];
+    const old=olds[Math.floor(Math.random()*olds.length)];
+    const pct=pcts[Math.floor(Math.random()*pcts.length)];
+    const nw=Math.round(old*(1+pct/100));
+    answer=pct; questionText=`A price changes from £${old} to £${nw}. Find the % change.`;
+    formulaUsed=`(${nw}−${old})/${old} × 100 = ${pct}%`; steps='%change=(new−old)/old×100';
+  }
+
+  return {questionText, answer, formulaUsed, steps, topic};
+}
+
+function genFortressOpts(correct, topic){
+  const o=new Set([correct]);
+  if(topic==='slope'){
+    [-correct, correct+1, correct-1, correct+2, correct-2].forEach(v=>{if(o.size<4&&v!==correct)o.add(v);});
+  } else if(topic==='unit_circle'||topic==='sohcahtoa'){
+    [5,7,9,10,6,8,4].forEach(v=>{if(o.size<4&&v!==correct)o.add(v);});
+  } else if(topic==='percentage_change'){
+    const candidates=[correct+10,correct-10,correct+5,correct-5,correct*-1,Math.round(correct/2)];
+    candidates.forEach(v=>{if(o.size<4&&v!==correct)o.add(v);});
+  } else {
+    const deltas=[1,2,3,4,5,6,8,10,12,15,20];
+    for(const d of shuf([...deltas,...deltas.map(x=>-x)])){
+      if(o.size>=4)break;
+      const c=correct+d;
+      if(c!==correct)o.add(c);
+    }
+  }
+  let p=1;
+  while(o.size<4&&p<200){
+    if(!o.has(correct+p))o.add(correct+p);
+    if(o.size<4&&!o.has(correct-p))o.add(correct-p);
+    p++;
+  }
+  return shuf([...o].slice(0,4));
+}
+
+function renderFortressQ(){
+  const lvl=FORTRESS_LEVELS[S.fortressLevel];
+  const fq=genFortressQ(lvl);
+  S.currentShapeQ=fq;
+  S.currentHint={formulaLbl:'Formula',formula:lvl.formula,tip:lvl.tip,why:lvl.why||''};
+  document.getElementById('q-area').innerHTML=`
+    <div class="shape-card" style="padding:16px 14px;margin-bottom:11px;">
+      <div class="shape-q-label" style="font-size:11px;color:var(--t3);font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;text-align:center">${lvl.name}</div>
+      <div class="shape-q-main" style="font-size:clamp(13px,3.5vw,18px);line-height:1.5;padding:0 4px;text-align:center">${fq.questionText}</div>
+      <div class="timer-out" style="margin-top:10px"><div class="timer-in" id="timer-bar" style="width:100%"></div></div>
+    </div>`;
+  const g=document.getElementById('ansgrid');g.innerHTML='';
+  genFortressOpts(fq.answer, fq.topic).forEach(opt=>{
+    const b=document.createElement('button');b.className='abtn';b.textContent=opt;
+    b.onclick=()=>submitAnswer(opt,fq.answer,`${lvl.name}:q${S.qi}`,b,'fortress');g.appendChild(b);
+  });
+  resetHintPanel();
+  startTimer();
+}
+
+// ── Fortress level list ───────────────────────────────────
+function showFortress(){show('fortress');renderFortressList();}
+function renderFortressList(){
+  const c=document.getElementById('fortress-list');c.innerHTML='';
+  const sections=[
+    {label:'Algebra',   levels:FORTRESS_LEVELS.filter(l=>l.type==='algebra')},
+    {label:'Geometry',  levels:FORTRESS_LEVELS.filter(l=>l.type==='geometry')},
+    {label:'Trigonometry',levels:FORTRESS_LEVELS.filter(l=>l.type==='trig')},
+    {label:'Statistics',levels:FORTRESS_LEVELS.filter(l=>l.type==='stats')},
+    {label:'Applied',   levels:FORTRESS_LEVELS.filter(l=>l.type==='applied')},
+    {label:'Final Boss',levels:FORTRESS_LEVELS.filter(l=>l.type==='boss')},
+  ];
+  sections.forEach(sec=>{
+    const hdr=document.createElement('div');hdr.className='slbl';hdr.style.marginTop='12px';hdr.textContent=sec.label;
+    c.appendChild(hdr);
+    const grid=document.createElement('div');grid.className='fflevels';
+    sec.levels.forEach(lv=>{
+      const done=S.fortressCleared.has(lv.id);
+      const card=document.createElement('div');
+      const idx=FORTRESS_LEVELS.indexOf(lv);
+      card.className=`ffcard ${lv.color}${done?' done':''}`;
+      card.innerHTML=`<span class="ffic">${lv.monster}</span><div class="fft">${lv.name}</div><div class="ffs">${lv.type==='boss'?'⚔ BOSS':lv.type} · ${lv.mlvl}</div>${done?'<div style="font-size:10px;font-weight:800;color:var(--green);margin-top:2px">✓ Done</div>':''}
+        <div class="level-actions">
+          <button class="lbtn lbtn-fight" onclick="event.stopPropagation();S.fortressLevel=${idx};S.world='fortress';S.mode='story';startBattle()">⚔ Fight</button>
+          <button class="lbtn lbtn-drill" onclick="event.stopPropagation();startDrill('fortress',${idx})">🥋 Drill</button>
+        </div>`;
+      card.onclick=()=>{S.fortressLevel=FORTRESS_LEVELS.indexOf(lv);S.world='fortress';S.mode='story';startBattle();};
+      grid.appendChild(card);
+    });
+    c.appendChild(grid);
+  });
+}
+
+// ════════════════════════════════════════
 // QUESTION GENERATION — TOWER
 // ════════════════════════════════════════
 function genTowerQs(mult){
@@ -1486,25 +1804,22 @@ function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*
 // ════════════════════════════════════════
 function startBattle(){
   clearInterval(S.tid);
-  const isShrine = S.world==='shrine';
-  const isVault  = S.world==='vault';
-  const isDungeon= S.world==='dungeon';
-  const lvl = isDungeon ? DUNGEON_LEVELS[S.dungeonLevel] : isVault ? VAULT_LEVELS[S.vaultLevel] : isShrine ? SHRINE_LEVELS[S.shLevel] : FLOORS[S.floor];
+  const isShrine  = S.world==='shrine';
+  const isVault   = S.world==='vault';
+  const isDungeon = S.world==='dungeon';
+  const isFortress= S.world==='fortress';
+  const lvl = isFortress ? FORTRESS_LEVELS[S.fortressLevel] : isDungeon ? DUNGEON_LEVELS[S.dungeonLevel] : isVault ? VAULT_LEVELS[S.vaultLevel] : isShrine ? SHRINE_LEVELS[S.shLevel] : FLOORS[S.floor];
   S.plrHP=PHP; S.monHP=lvl.maxHP; S.monMaxHP=lvl.maxHP;
   S.qi=0; S.results=[]; S.xpg=0;
 
-  if (isDungeon) {
-    S.qs = Array.from({length:QC}, ()=>null);
-  } else if (isVault) {
-    S.qs = Array.from({length:QC}, ()=>null);
-  } else if (isShrine) {
+  if (isFortress || isDungeon || isVault || isShrine) {
     S.qs = Array.from({length:QC}, ()=>null);
   } else {
     S.qs = genTowerQs(lvl.mult);
   }
 
   renderDots();show('battle');
-  const worldLabel = isDungeon ? `${lvl.name} · Geometry` : isVault ? `${lvl.name} · ${lvl.type==='sa'?'Surface Area':lvl.type==='vol'?'Volume':'Mixed'}` : isShrine ? `${lvl.name} · ${lvl.type==='peri'?'Perimeter':lvl.type==='area'?'Area':'Mixed'}` : `Floor ${lvl.id} · ×${lvl.mult}`;
+  const worldLabel = isFortress ? `${lvl.name} · Fortress` : isDungeon ? `${lvl.name} · Geometry` : isVault ? `${lvl.name} · ${lvl.type==='sa'?'Surface Area':lvl.type==='vol'?'Volume':'Mixed'}` : isShrine ? `${lvl.name} · ${lvl.type==='peri'?'Perimeter':lvl.type==='area'?'Area':'Mixed'}` : `Floor ${lvl.id} · ×${lvl.mult}`;
   document.getElementById('bfl').textContent=worldLabel;
   updateMon();updatePlr();nextQ();
 }
@@ -1519,7 +1834,8 @@ function updateMon(){
   const isVault=S.world==='vault';
   const isShrine=S.world==='shrine';
   const isDungeon=S.world==='dungeon';
-  const lvl=isDungeon?DUNGEON_LEVELS[S.dungeonLevel]:isVault?VAULT_LEVELS[S.vaultLevel]:isShrine?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
+  const isFortress=S.world==='fortress';
+  const lvl=isFortress?FORTRESS_LEVELS[S.fortressLevel]:isDungeon?DUNGEON_LEVELS[S.dungeonLevel]:isVault?VAULT_LEVELS[S.vaultLevel]:isShrine?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
   document.getElementById('memoji').textContent=lvl.monster;
   document.getElementById('mname').textContent=lvl.mname;
   document.getElementById('mlvl').textContent=lvl.mlvl;
@@ -1545,6 +1861,7 @@ function nextQ(){
   if(S.world==='dungeon') renderGeomQ();
   else if(S.world==='vault') renderVaultQ();
   else if(S.world==='shrine') renderShapeQ();
+  else if(S.world==='fortress') renderFortressQ();
   else renderTowerQ();
 }
 
@@ -1715,20 +2032,20 @@ function timeOut(){
   S.answered=true;clearInterval(S.tid);
   const sab=document.getElementById('show-ans-btn');if(sab)sab.classList.add('hidden');
   const hb2=document.getElementById('hint-btn');if(hb2)hb2.classList.add('hidden');
-  const isV=S.world==='vault', isSh=S.world==='shrine', isDg=S.world==='dungeon';
-  const lvl=isDg?DUNGEON_LEVELS[S.dungeonLevel]:isV?VAULT_LEVELS[S.vaultLevel]:isSh?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
+  const isV=S.world==='vault', isSh=S.world==='shrine', isDg=S.world==='dungeon', isFt=S.world==='fortress';
+  const lvl=isFt?FORTRESS_LEVELS[S.fortressLevel]:isDg?DUNGEON_LEVELS[S.dungeonLevel]:isV?VAULT_LEVELS[S.vaultLevel]:isSh?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
   const q=S.currentShapeQ;
-  const ans=(isV||isSh||isDg)&&q?q.answer:'?';
-  const suffix=isDg?'°':isV&&lvl.type==='vol'?' cm³':isV?' cm²':isSh&&(lvl.type==='peri'||lvl.type==='boss')?' cm':' cm²';
+  const ans=(isV||isSh||isDg||isFt)&&q?q.answer:'?';
+  const suffix=isFt?'':isDg?'°':isV&&lvl.type==='vol'?' cm³':isV?' cm²':isSh&&(lvl.type==='peri'||lvl.type==='boss')?' cm':' cm²';
   S.streak=0;updateHUD();
   S.plrHP=Math.max(0,S.plrHP-lvl.dmg);updatePlr();
   dmgPop(lvl.dmg,false);animMon('hit');
   S.results.push(false);
   setDot(S.qi,false);S.qi++;
 
-  const working=(isV||isSh||isDg)&&q?q.formulaUsed:'';
-  const steps=isDg&&q&&q.steps?q.steps:'';
-  const explWhy=isDg?lvl.why:(isV||isSh)?lvl.fdesc:'';
+  const working=(isV||isSh||isDg||isFt)&&q?q.formulaUsed:'';
+  const steps=(isDg||isFt)&&q&&q.steps?q.steps:'';
+  const explWhy=isFt?lvl.fdesc:isDg?lvl.why:(isV||isSh)?lvl.fdesc:'';
   showExplanation('timeout',`⏰ Time's up!`,`Answer: ${ans}${suffix}`,working,steps,explWhy);
 }
 
@@ -1739,19 +2056,19 @@ function submitAnswer(val,correct,key,btn,world){
   const sab=document.getElementById('show-ans-btn');if(sab)sab.classList.add('hidden');
   const hb3=document.getElementById('hint-btn');if(hb3)hb3.classList.add('hidden');
   const ok=val===correct;
-  const isV=S.world==='vault', isSh=S.world==='shrine', isDg=S.world==='dungeon';
+  const isV=S.world==='vault', isSh=S.world==='shrine', isDg=S.world==='dungeon', isFt=S.world==='fortress';
   // Highlight all buttons
   document.querySelectorAll('#ansgrid .abtn').forEach(b=>{
     b.disabled=true;
     if(parseInt(b.textContent)===correct||b.textContent.replace(/[°\scm²³]/g,'').trim()==String(correct))b.classList.add('correct');
   });
   if(!ok)btn.classList.add('wrong');
-  const lvl=isDg?DUNGEON_LEVELS[S.dungeonLevel]:isV?VAULT_LEVELS[S.vaultLevel]:isSh?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
+  const lvl=isFt?FORTRESS_LEVELS[S.fortressLevel]:isDg?DUNGEON_LEVELS[S.dungeonLevel]:isV?VAULT_LEVELS[S.vaultLevel]:isSh?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
   const q=S.currentShapeQ;
-  const suffix=isDg?'°':isV&&lvl.type==='vol'?' cm³':isV?' cm²':isSh&&(lvl.type==='peri'||lvl.type==='boss')?' cm':' cm²';
-  const working=(isV||isSh||isDg)&&q?q.formulaUsed:'';
-  const steps=isDg&&q&&q.steps?q.steps:'';
-  const explWhy=isDg?lvl.why:(isV||isSh)?lvl.fdesc:'';
+  const suffix=isFt?'':isDg?'°':isV&&lvl.type==='vol'?' cm³':isV?' cm²':isSh&&(lvl.type==='peri'||lvl.type==='boss')?' cm':' cm²';
+  const working=(isV||isSh||isDg||isFt)&&q?q.formulaUsed:'';
+  const steps=(isDg||isFt)&&q&&q.steps?q.steps:'';
+  const explWhy=isFt?lvl.fdesc:isDg?lvl.why:(isV||isSh)?lvl.fdesc:'';
 
   if(ok){
     S.streak++;
@@ -1777,14 +2094,14 @@ function submitAnswer(val,correct,key,btn,world){
 function giveUp(){
   if(S.answered)return;
   S.answered=true;clearInterval(S.tid);
-  const isV=S.world==='vault', isSh=S.world==='shrine', isDg=S.world==='dungeon';
-  const lvl=isDg?DUNGEON_LEVELS[S.dungeonLevel]:isV?VAULT_LEVELS[S.vaultLevel]:isSh?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
+  const isV=S.world==='vault', isSh=S.world==='shrine', isDg=S.world==='dungeon', isFt=S.world==='fortress';
+  const lvl=isFt?FORTRESS_LEVELS[S.fortressLevel]:isDg?DUNGEON_LEVELS[S.dungeonLevel]:isV?VAULT_LEVELS[S.vaultLevel]:isSh?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
   const q=S.currentShapeQ;
-  const ans=(isV||isSh||isDg)&&q?q.answer:'?';
-  const suffix=isDg?'°':isV&&lvl.type==='vol'?' cm³':isV?' cm²':isSh&&(lvl.type==='peri'||lvl.type==='boss')?' cm':' cm²';
-  const working=(isV||isSh||isDg)&&q?q.formulaUsed:'';
-  const steps=isDg&&q&&q.steps?q.steps:'';
-  const explWhy=isDg?lvl.why:(isV||isSh)?lvl.fdesc:'';
+  const ans=(isV||isSh||isDg||isFt)&&q?q.answer:'?';
+  const suffix=isFt?'':isDg?'°':isV&&lvl.type==='vol'?' cm³':isV?' cm²':isSh&&(lvl.type==='peri'||lvl.type==='boss')?' cm':' cm²';
+  const working=(isV||isSh||isDg||isFt)&&q?q.formulaUsed:'';
+  const steps=(isDg||isFt)&&q&&q.steps?q.steps:'';
+  const explWhy=isFt?lvl.fdesc:isDg?lvl.why:(isV||isSh)?lvl.fdesc:'';
 
   // Highlight correct answer button
   document.querySelectorAll('#ansgrid .abtn').forEach(b=>{
@@ -1897,10 +2214,12 @@ function renderVic(){
   const isVault=S.world==='vault';
   const isShrine=S.world==='shrine';
   const isDungeon=S.world==='dungeon';
-  const lvl=isDungeon?DUNGEON_LEVELS[S.dungeonLevel]:isVault?VAULT_LEVELS[S.vaultLevel]:isShrine?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
+  const isFortress=S.world==='fortress';
+  const lvl=isFortress?FORTRESS_LEVELS[S.fortressLevel]:isDungeon?DUNGEON_LEVELS[S.dungeonLevel]:isVault?VAULT_LEVELS[S.vaultLevel]:isShrine?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
   const ok=S.results.filter(Boolean).length;
   const bonus=Math.floor(lvl.xpReward*(ok/QC));addXP(bonus);
-  if(isDungeon)S.dungeonCleared.add(lvl.id);
+  if(isFortress)S.fortressCleared.add(lvl.id);
+  else if(isDungeon)S.dungeonCleared.add(lvl.id);
   else if(isVault)S.vaultCleared.add(lvl.id);
   else if(isShrine)S.shrineCleared.add(lvl.id);
   else S.cleared.add(lvl.id);
@@ -1909,17 +2228,17 @@ function renderVic(){
   document.getElementById('vstats').innerHTML=stbs([{v:`${ok}/${QC}`,c:'var(--green)',l:'Correct'},{v:`+${S.xpg}`,c:'var(--amber)',l:'XP Earned'},{v:S.streak,c:'var(--coral)',l:'Best Streak'}]);
   document.getElementById('vformula').innerHTML=`<div class="fcrev"><div class="fclbl">✨ Formula Card Unlocked!</div><div class="fcbig">${lvl.formula}</div><div class="fcdesc">${lvl.fdesc}</div></div>`;
   renderWk('vweak');
-  document.getElementById('vback-btn').textContent=isDungeon?'← Dungeon':isVault?'← Vault':isShrine?'← Shrine':'← Tower';
-  document.getElementById('vback-btn').onclick=isDungeon?showDungeon:isVault?showVault:isShrine?showShrine:showTower;
+  document.getElementById('vback-btn').textContent=isFortress?'← Fortress':isDungeon?'← Dungeon':isVault?'← Vault':isShrine?'← Shrine':'← Tower';
+  document.getElementById('vback-btn').onclick=isFortress?showFortress:isDungeon?showDungeon:isVault?showVault:isShrine?showShrine:showTower;
   const nb=document.getElementById('vnext-btn');
-  const arr=isDungeon?DUNGEON_LEVELS:isVault?VAULT_LEVELS:isShrine?SHRINE_LEVELS:FLOORS;
-  const ni=isDungeon?S.dungeonLevel+1:isVault?S.vaultLevel+1:isShrine?S.shLevel+1:S.floor+1;
+  const arr=isFortress?FORTRESS_LEVELS:isDungeon?DUNGEON_LEVELS:isVault?VAULT_LEVELS:isShrine?SHRINE_LEVELS:FLOORS;
+  const ni=isFortress?S.fortressLevel+1:isDungeon?S.dungeonLevel+1:isVault?S.vaultLevel+1:isShrine?S.shLevel+1:S.floor+1;
   if(ni<arr.length){
-    const nextName=isDungeon?DUNGEON_LEVELS[ni].name:isVault?VAULT_LEVELS[ni].name:isShrine?SHRINE_LEVELS[ni].name:`Floor ${ni+1}`;
+    const nextName=arr[ni].name||(arr[ni].id?`Floor ${ni+1}`:`Floor ${ni+1}`);
     nb.textContent=`Next: ${nextName} →`;
-    nb.onclick=()=>{if(isDungeon)S.dungeonLevel=ni;else if(isVault)S.vaultLevel=ni;else if(isShrine)S.shLevel=ni;else S.floor=ni;startBattle();};
+    nb.onclick=()=>{if(isFortress)S.fortressLevel=ni;else if(isDungeon)S.dungeonLevel=ni;else if(isVault)S.vaultLevel=ni;else if(isShrine)S.shLevel=ni;else S.floor=ni;startBattle();};
   } else {
-    nb.textContent=isDungeon?'△ Dungeon Complete!':isVault?'◆ Vault Complete!':isShrine?'◻ Shrine Complete!':'🏆 Tower Complete!';
+    nb.textContent=isFortress?'∞ Fortress Complete!':isDungeon?'△ Dungeon Complete!':isVault?'◆ Vault Complete!':isShrine?'◻ Shrine Complete!':'🏆 Tower Complete!';
     nb.onclick=goHome;
   }
 }
@@ -1928,12 +2247,13 @@ function renderDef(){
   const isVault=S.world==='vault';
   const isShrine=S.world==='shrine';
   const isDungeon=S.world==='dungeon';
-  const lvl=isDungeon?DUNGEON_LEVELS[S.dungeonLevel]:isVault?VAULT_LEVELS[S.vaultLevel]:isShrine?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
+  const isFortress=S.world==='fortress';
+  const lvl=isFortress?FORTRESS_LEVELS[S.fortressLevel]:isDungeon?DUNGEON_LEVELS[S.dungeonLevel]:isVault?VAULT_LEVELS[S.vaultLevel]:isShrine?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
   const ok=S.results.filter(Boolean).length;
   document.getElementById('dsub').textContent=`${lvl.mname} was too strong. You got ${ok}/${S.results.length} right. Try again!`;
   document.getElementById('dstats').innerHTML=stbs([{v:`${ok}/${S.results.length}`,c:'var(--red)',l:'Correct'},{v:`+${S.xpg}`,c:'var(--amber)',l:'XP Earned'},{v:Math.max(0,S.monMaxHP-S.monHP),c:'var(--purple)',l:'Dmg Dealt'}]);
-  document.getElementById('dback-btn').textContent=isDungeon?'← Dungeon':isVault?'← Vault':isShrine?'← Shrine':'← Tower';
-  document.getElementById('dback-btn').onclick=isDungeon?showDungeon:isVault?showVault:isShrine?showShrine:showTower;
+  document.getElementById('dback-btn').textContent=isFortress?'← Fortress':isDungeon?'← Dungeon':isVault?'← Vault':isShrine?'← Shrine':'← Tower';
+  document.getElementById('dback-btn').onclick=isFortress?showFortress:isDungeon?showDungeon:isVault?showVault:isShrine?showShrine:showTower;
   renderWk('dweak');
 }
 function renderWk(id){
@@ -1953,7 +2273,7 @@ function startDrill(world, levelIdx){
   DS.correct=0; DS.wrong=0;
   show('drill');
   // Set back button
-  const backMap = {tower:showTower, shrine:showShrine, vault:showVault, dungeon:showDungeon};
+  const backMap = {tower:showTower, shrine:showShrine, vault:showVault, dungeon:showDungeon, fortress:showFortress};
   document.getElementById('drill-back-btn').onclick = backMap[world] || goHome;
   // Set title
   const lvl = drillGetLevel();
@@ -1962,6 +2282,7 @@ function startDrill(world, levelIdx){
     shrine:  `🥋 ${lvl.name}`,
     vault:   `🥋 ${lvl.name}`,
     dungeon: `🥋 ${lvl.name}`,
+    fortress:`🥋 ${lvl.name}`,
   };
   document.getElementById('drill-title').textContent = titleMap[world] || '🥋 Drill';
   updateDrillScore();
@@ -1969,9 +2290,10 @@ function startDrill(world, levelIdx){
 }
 
 function drillGetLevel(){
-  if(DS.world==='shrine')  return SHRINE_LEVELS[DS.levelIdx];
-  if(DS.world==='vault')   return VAULT_LEVELS[DS.levelIdx];
-  if(DS.world==='dungeon') return DUNGEON_LEVELS[DS.levelIdx];
+  if(DS.world==='shrine')   return SHRINE_LEVELS[DS.levelIdx];
+  if(DS.world==='vault')    return VAULT_LEVELS[DS.levelIdx];
+  if(DS.world==='dungeon')  return DUNGEON_LEVELS[DS.levelIdx];
+  if(DS.world==='fortress') return FORTRESS_LEVELS[DS.levelIdx];
   return FLOORS[DS.levelIdx]; // tower
 }
 
@@ -2019,6 +2341,10 @@ function renderDrillQ(){
     q=gq; qLabel='Find the missing angle';
     suffix='°';
     opts=genGeomOpts(gq.answer);
+  } else if(DS.world==='fortress'){
+    const fq=genFortressQ(lvl);
+    q=fq; qLabel=lvl.name; suffix='';
+    opts=genFortressOpts(fq.answer, fq.topic);
   }
 
   // SVG diagram
@@ -2103,9 +2429,9 @@ let studyWorld = 'tower';
 function showStudy(world){
   studyWorld = world;
   show('study');
-  const backMap = {tower:showTower, shrine:showShrine, vault:showVault, dungeon:showDungeon};
+  const backMap = {tower:showTower, shrine:showShrine, vault:showVault, dungeon:showDungeon, fortress:showFortress};
   document.getElementById('study-back-btn').onclick = backMap[world] || goHome;
-  const titles = {tower:'📖 Times Tables', shrine:'📖 Shape Formulas', vault:'📖 3D Solids', dungeon:'📖 Geometry Theorems'};
+  const titles = {tower:'📖 Times Tables', shrine:'📖 Shape Formulas', vault:'📖 3D Solids', dungeon:'📖 Geometry Theorems', fortress:'📖 Formula Fortress'};
   document.getElementById('study-title').textContent = titles[world];
   buildStudyTabs(world);
 }
@@ -2165,6 +2491,22 @@ function buildStudyTabs(world){
       tabsEl.appendChild(tab);
     });
     renderDungeonStudy(sections[0].filter);
+
+  } else if(world === 'fortress'){
+    const sections = [
+      {label:'Algebra',    filter: l => l.type==='algebra'},
+      {label:'Geometry',   filter: l => l.type==='geometry'},
+      {label:'Trig',       filter: l => l.type==='trig'},
+      {label:'Stats',      filter: l => l.type==='stats'},
+      {label:'Applied',    filter: l => l.type==='applied'||l.type==='boss'},
+      {label:'Formula Wall',filter: l => true},
+    ];
+    sections.forEach((s,i) => {
+      const fn = s.label==='Formula Wall' ? ()=>renderFortressWall() : ()=>renderFortressStudy(s.filter);
+      const tab = mkTab(s.label, i===0, fn);
+      tabsEl.appendChild(tab);
+    });
+    renderFortressStudy(sections[0].filter);
   }
 }
 
@@ -2396,6 +2738,76 @@ function renderDungeonStudy(filter){
         <div style="font-size:11px;color:#4A3800;margin-top:2px">${ex.steps ? ex.steps + ': ' : ''}${ex.formulaUsed}</div>
       </div>
       <button class="study-shape-drill" onclick="startDrill('dungeon',${idx})">🥋 Practice ${lv.name}</button>
+    `;
+    grid.appendChild(card);
+  });
+  el.appendChild(grid);
+}
+
+// ── FORTRESS study ────────────────────────────────────────
+function renderFortressStudy(filter){
+  const el = document.getElementById('study-content');
+  el.innerHTML = '';
+  const levels = FORTRESS_LEVELS.filter(filter);
+  const grid = document.createElement('div');
+  grid.className = 'study-shape-grid';
+
+  levels.forEach(lv => {
+    const ex = genFortressQ(lv);
+    const idx = FORTRESS_LEVELS.indexOf(lv);
+
+    const card = document.createElement('div');
+    card.className = 'study-shape-card';
+    card.innerHTML = `
+      <div class="study-shape-top">
+        <div class="study-shape-meta" style="flex:1">
+          <div class="study-shape-name">${lv.monster} ${lv.name}</div>
+          <div class="study-formula-row">
+            <div class="study-formula-lbl">Formula</div>
+            <div class="study-formula-val">${lv.formula}</div>
+          </div>
+          <div class="study-why">${lv.fdesc}</div>
+        </div>
+      </div>
+      <div style="background:var(--bg2);border-radius:8px;padding:6px 9px;margin-bottom:6px;font-size:11px;color:var(--t2)">
+        💡 <strong>Why it works:</strong> ${lv.why}
+      </div>
+      <div class="study-example">
+        <div class="study-ex-lbl">Worked Example</div>
+        <div class="study-ex-q">${ex.questionText}</div>
+        <div class="study-ex-ans">Answer: ${ex.answer}</div>
+        <div style="font-size:11px;color:#4A3800;margin-top:2px">${ex.steps ? ex.steps + ': ' : ''}${ex.formulaUsed}</div>
+      </div>
+      <button class="study-shape-drill" onclick="startDrill('fortress',${idx})">🥋 Practice ${lv.name}</button>
+    `;
+    grid.appendChild(card);
+  });
+  el.appendChild(grid);
+}
+
+function renderFortressWall(){
+  const el = document.getElementById('study-content');
+  el.innerHTML = '';
+  const hdr = document.createElement('div');
+  hdr.className = 'study-sec-lbl';
+  hdr.textContent = 'All Formulas — Quick Reference';
+  el.appendChild(hdr);
+  const grid = document.createElement('div');
+  grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-bottom:20px;';
+  FORTRESS_LEVELS.forEach((lv,idx) => {
+    const card = document.createElement('div');
+    card.style.cssText = `background:var(--card);border:2px solid var(--border);border-radius:14px;padding:13px 14px;cursor:pointer;transition:all .18s;`;
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="font-size:22px">${lv.monster}</span>
+        <span style="font-family:'Fredoka One',cursive;font-size:14px;color:var(--text)">${lv.name}</span>
+      </div>
+      <div style="background:var(--bg2);border-radius:8px;padding:6px 9px;margin-bottom:5px">
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:2px">Formula</div>
+        <div style="font-family:'Fredoka One',cursive;font-size:13px;color:var(--purple)">${lv.formula}</div>
+      </div>
+      <div style="font-size:11px;color:var(--t2);line-height:1.4;margin-bottom:7px">${lv.fdesc}</div>
+      <button class="study-shape-drill" onclick="event.stopPropagation();startDrill('fortress',${idx})">🥋 Practice</button>
     `;
     grid.appendChild(card);
   });
