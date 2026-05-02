@@ -415,6 +415,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
   <div class="hsp"></div>
   <div class="xpbo"><div class="xpbi" id="xpbar" style="width:0%"></div></div>
   <button class="tbtn" id="tbtn" onclick="toggleTheme()">🌙</button>
+  <button class="tbtn" id="sbtn" onclick="toggleSFX()" title="Toggle sound">🔊</button>
 </div>
 
 <!-- ═══ HOME ═══ -->
@@ -2900,6 +2901,50 @@ function renderFortressWall(){
 }
 
 // ════════════════════════════════════════
+// SOUND FX — Web Audio API synthesis (no external files)
+// ════════════════════════════════════════
+let _ac=null;
+let _sfxMuted=false;
+function _getAC(){if(!_ac){try{_ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}return _ac;}
+function toggleSFX(){
+  _sfxMuted=!_sfxMuted;
+  document.getElementById('sbtn').textContent=_sfxMuted?'🔇':'🔊';
+}
+function _tone(freq,type,vol,start,dur,endFreq){
+  const ac=_getAC();if(!ac||_sfxMuted)return;
+  const g=ac.createGain();g.connect(ac.destination);
+  const o=ac.createOscillator();o.connect(g);
+  o.type=type||'sine';o.frequency.setValueAtTime(freq,ac.currentTime+start);
+  if(endFreq!=null)o.frequency.exponentialRampToValueAtTime(endFreq,ac.currentTime+start+dur);
+  g.gain.setValueAtTime(0,ac.currentTime+start);
+  g.gain.linearRampToValueAtTime(vol,ac.currentTime+start+0.01);
+  g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+start+dur);
+  o.start(ac.currentTime+start);o.stop(ac.currentTime+start+dur+0.01);
+}
+function _noise(vol,start,dur){
+  const ac=_getAC();if(!ac||_sfxMuted)return;
+  const buf=ac.createBuffer(1,ac.sampleRate*dur,ac.sampleRate);
+  const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1);
+  const src=ac.createBufferSource();src.buffer=buf;
+  const g=ac.createGain();g.gain.setValueAtTime(vol,ac.currentTime+start);
+  g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+start+dur);
+  const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=400;
+  src.connect(f);f.connect(g);g.connect(ac.destination);
+  src.start(ac.currentTime+start);src.stop(ac.currentTime+start+dur+0.01);
+}
+const SFX={
+  correct(){_tone(520,'sine',.18,0,.08);_tone(780,'sine',.14,.09,.12);},
+  wrong(){_tone(200,'sawtooth',.2,0,.05,120);_noise(.12,.02,.18);},
+  combo3(){_tone(520,'sine',.15,0,.07);_tone(660,'sine',.15,.08,.07);_tone(780,'sine',.18,.16,.12);},
+  combo5(){_tone(440,'sine',.15,0,.06);_tone(550,'sine',.15,.07,.06);_tone(660,'sine',.15,.14,.06);_tone(880,'sine',.22,.21,.18);},
+  comboBig(){_tone(440,'sine',.12,0,.06);_tone(550,'sine',.12,.06,.06);_tone(660,'sine',.12,.12,.06);_tone(880,'sine',.20,.18,.06);_tone(1100,'sine',.18,.25,.22);},
+  monDie(){_tone(330,'sawtooth',.25,0,.06,80);_noise(.2,.04,.25);_tone(600,'sine',.15,.1,.05);_tone(900,'sine',.12,.16,.05);_tone(1200,'sine',.1,.22,.12);},
+  lrFinish(){[440,494,523,587,659,698,784].forEach((f,i)=>_tone(f,'sine',.18,i*.08,.18));},
+  lrPB(){[523,659,784,1047].forEach((f,i)=>_tone(f,'sine',.2,i*.1,.22));_tone(1047,'sine',.25,.4,.4);},
+  tick(){_tone(880,'sine',.07,0,.04);},
+};
+
+// ════════════════════════════════════════
 // VISUAL FX — confetti, combo banner, screen flash
 // ════════════════════════════════════════
 const CONFETTI_COLORS=['#4285F4','#34A853','#FBBC05','#EA4335','#FA7B17','#E91E63','#8AB4F8','#81C995'];
@@ -2963,12 +3008,16 @@ function monsterDie(){
 
 // Called from dmgPop and submitAnswer to layer in FX
 function fxOnDmg(deal, monDead){
-  if(deal && monDead) monsterDie();
+  if(deal && monDead){ monsterDie(); SFX.monDie(); }
   else if(deal) screenFlash('rgba(52,168,83,.2)');
   else screenFlash('rgba(234,67,53,.18)');
 }
 function fxOnAnswer(ok, streak){
-  if(!ok) return;
+  if(!ok){ SFX.wrong(); return; }
+  if(streak>=10) SFX.comboBig();
+  else if(streak>=5) SFX.combo5();
+  else if(streak>=3) SFX.combo3();
+  else SFX.correct();
   if(streak>=3) showComboBanner(streak);
   if(streak>=5) burstConfetti();
 }
@@ -3027,12 +3076,17 @@ function submitLR(val,correct,mult,btn,grid){
     LR.correct++;LR.streak++;
     fb.className='feedback correct';fb.textContent=`✓ ${correct}`;
     addXP(LR.streak>=5?15:LR.streak>=3?10:5);
+    if(LR.streak>=10) SFX.comboBig();
+    else if(LR.streak>=5) SFX.combo5();
+    else if(LR.streak>=3) SFX.combo3();
+    else SFX.correct();
     if(LR.streak>=3) showComboBanner(LR.streak);
     if(LR.streak>=5){burstConfetti();screenFlash('rgba(52,168,83,.2)');}
     else screenFlash('rgba(52,168,83,.15)');
   } else {
     LR.streak=0;
     fb.className='feedback wrong';fb.textContent=`❌ ${correct}`;
+    SFX.wrong();
     screenFlash('rgba(234,67,53,.18)');
   }
   document.getElementById('lr-correct').textContent=LR.correct;
@@ -3085,7 +3139,8 @@ function endLR(finished){
     {v:t+'s',c:'var(--amber)',l:'Time'},
     {v:pct+'%',c:'var(--purple)',l:'Accuracy'},
   ]);
-  if(isPB){burstConfetti();burstConfetti();}
+  if(isPB){SFX.lrPB();burstConfetti();burstConfetti();}
+  else if(finished){SFX.lrFinish();}
   renderFloorList(); // refresh PB badges in tower list
 }
 
@@ -3111,7 +3166,7 @@ function nextQBQ(){
       g.querySelectorAll('.abtn').forEach(b=>{b.disabled=true;if(Number(b.textContent)===ans)b.classList.add('correct');});
       if(opt!==ans)btn.classList.add('wrong');
       const ok=opt===ans;
-      if(ok){S.qbC++;S.qbSt++;addXP(5);toast('+5 XP');}else{S.qbW++;S.qbSt=0;}
+      if(ok){S.qbC++;S.qbSt++;addXP(5);toast('+5 XP');if(S.qbSt>=10)SFX.comboBig();else if(S.qbSt>=5)SFX.combo5();else if(S.qbSt>=3)SFX.combo3();else SFX.correct();}else{S.qbW++;S.qbSt=0;SFX.wrong();}
       document.getElementById('qbc').textContent=S.qbC;
       document.getElementById('qbw').textContent=S.qbW;
       document.getElementById('qbst').textContent=S.qbSt;
