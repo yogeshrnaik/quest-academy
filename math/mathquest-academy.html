@@ -2296,7 +2296,7 @@ function animMon(t){const el=document.getElementById('mbox');el.classList.remove
 // VICTORY / DEFEAT
 // ════════════════════════════════════════
 function renderVic(){
-  clearInterval(S.tid);
+  clearInterval(S.tid);SFX.victory();
   const isVault=S.world==='vault';
   const isShrine=S.world==='shrine';
   const isDungeon=S.world==='dungeon';
@@ -2329,7 +2329,7 @@ function renderVic(){
   }
 }
 function renderDef(){
-  clearInterval(S.tid);
+  clearInterval(S.tid);SFX.defeat();
   const isVault=S.world==='vault';
   const isShrine=S.world==='shrine';
   const isDungeon=S.world==='dungeon';
@@ -2352,11 +2352,11 @@ function stbs(arr){return arr.map(({v,c,l})=>`<div class="stbox"><div class="stv
 // ════════════════════════════════════════
 // DRILL ENGINE — no timer, no HP, hint always visible
 // ════════════════════════════════════════
-const DS = { world:'tower', levelIdx:0, correct:0, wrong:0, answered:false };
+const DS = { world:'tower', levelIdx:0, correct:0, wrong:0, answered:false, streak:0, usedBs:new Set() };
 
 function startDrill(world, levelIdx){
   DS.world=world; DS.levelIdx=levelIdx;
-  DS.correct=0; DS.wrong=0;
+  DS.correct=0; DS.wrong=0; DS.streak=0; DS.usedBs=new Set();
   show('drill');
   // Set back button
   const backMap = {tower:showTower, shrine:showShrine, vault:showVault, dungeon:showDungeon, fortress:showFortress};
@@ -2404,7 +2404,10 @@ function renderDrillQ(){
   let q, svgHtml='', qLabel='', opts=[], suffix='';
   if(DS.world==='tower'){
     const f=FLOORS[DS.levelIdx];
-    const b=rnd(1,12);
+    if(DS.usedBs.size>=12) DS.usedBs=new Set(); // full cycle done, reset
+    const pool=shuf(Array.from({length:12},(_,i)=>i+1).filter(n=>!DS.usedBs.has(n)));
+    const b=pool[0];
+    DS.usedBs.add(b);
     q={answer:f.mult*b, formulaUsed:`${f.mult} × ${b} = ${f.mult*b}`, questionText:`${f.mult} × ${b} = ?`};
     qLabel=`×${f.mult} Table`;
     opts=genTowerOpts(q.answer, f.mult);
@@ -2480,8 +2483,17 @@ function submitDrillAnswer(val, correct, formulaUsed, suffix, btn, grid){
   if(!ok)btn.classList.add('wrong');
 
   // Score
-  if(ok){ DS.correct++; addXP(5); toast('+5 XP'); }
-  else  { DS.wrong++; }
+  if(ok){
+    DS.correct++; DS.streak++; addXP(5); toast('+5 XP');
+    if(DS.streak>=10) SFX.comboBig();
+    else if(DS.streak>=5) SFX.combo5();
+    else if(DS.streak>=3) SFX.combo3();
+    else SFX.correct();
+    if(DS.streak>=3) showComboBanner(DS.streak);
+    if(DS.streak>=5) burstConfetti();
+  } else {
+    DS.wrong++; DS.streak=0; SFX.wrong();
+  }
   updateDrillScore();
 
   // Feedback
@@ -2942,6 +2954,8 @@ const SFX={
   lrFinish(){[440,494,523,587,659,698,784].forEach((f,i)=>_tone(f,'sine',.18,i*.08,.18));},
   lrPB(){[523,659,784,1047].forEach((f,i)=>_tone(f,'sine',.2,i*.1,.22));_tone(1047,'sine',.25,.4,.4);},
   tick(){_tone(880,'sine',.07,0,.04);},
+  victory(){[523,659,784,1047,1175].forEach((f,i)=>_tone(f,'sine',.2,i*.09,.22));burstConfetti();},
+  defeat(){_tone(330,'sawtooth',.2,0,.12,180);_tone(220,'sawtooth',.18,.14,.18,110);_noise(.1,.1,.25);},
 };
 
 // ════════════════════════════════════════
@@ -3026,11 +3040,11 @@ function fxOnAnswer(ok, streak){
 // LIGHTNING ROUND
 // ════════════════════════════════════════
 const LR_TOTAL=20;
-const LR={mult:0,qi:0,correct:0,streak:0,startMs:0,elapsed:0,tid:null,answered:false};
+const LR={mult:0,qi:0,correct:0,streak:0,startMs:0,elapsed:0,tid:null,answered:false,usedPairs:new Set()};
 
 function startLR(mult){
   clearInterval(LR.tid);clearInterval(S.tid);clearInterval(S.qbTid);
-  LR.mult=mult; LR.qi=0; LR.correct=0; LR.streak=0; LR.answered=false;
+  LR.mult=mult; LR.qi=0; LR.correct=0; LR.streak=0; LR.answered=false; LR.usedPairs=new Set();
   LR.startMs=performance.now();
   show('lr');
   const title=mult===0?'⚡ Lightning Round — All Tables':`⚡ ×${mult} Lightning Round`;
@@ -3051,8 +3065,18 @@ function nextLRQ(){
   document.getElementById('lr-qnum').textContent=`${LR.qi+1}/${LR_TOTAL}`;
   document.getElementById('lr-progress').style.width=(LR.qi/LR_TOTAL*100)+'%';
   document.getElementById('lr-fb').className='feedback hidden';
-  const mult = LR.mult===0 ? rnd(2,12) : LR.mult;
-  const b=rnd(1,12), ans=mult*b;
+  // Pick a pair not yet seen this session; reset pool when exhausted
+  let mult, b, pairKey;
+  let tries=0;
+  do {
+    mult = LR.mult===0 ? rnd(2,12) : LR.mult;
+    b = rnd(1,12);
+    pairKey = `${mult}x${b}`;
+    tries++;
+    if(tries>200){ LR.usedPairs=new Set(); break; }
+  } while(LR.usedPairs.has(pairKey));
+  LR.usedPairs.add(pairKey);
+  const ans=mult*b;
   document.getElementById('lr-q').textContent=`${mult} × ${b} = ?`;
   const g=document.getElementById('lr-ans');g.innerHTML='';
   genTowerOpts(ans,mult).forEach(opt=>{
@@ -3149,14 +3173,20 @@ function endLR(finished){
 // ════════════════════════════════════════
 function startQB(){
   clearInterval(S.qbTid);clearInterval(S.tid);
-  S.qbLeft=60;S.qbC=0;S.qbW=0;S.qbSt=0;
+  S.qbLeft=60;S.qbC=0;S.qbW=0;S.qbSt=0;S.qbUsed=new Set();
   show('qb');
   ['qbtimer','qbc','qbw','qbst'].forEach((id,i)=>document.getElementById(id).textContent=i===0?60:0);
   nextQBQ();
   S.qbTid=setInterval(()=>{S.qbLeft--;document.getElementById('qbtimer').textContent=S.qbLeft;if(S.qbLeft<=0){clearInterval(S.qbTid);endQB();}},1000);
 }
 function nextQBQ(){
-  const mult=Math.floor(Math.random()*29)+2,b=Math.floor(Math.random()*12)+1,ans=mult*b;
+  if(!S.qbUsed)S.qbUsed=new Set();
+  let mult,b,pk;let tries=0;
+  do{mult=Math.floor(Math.random()*29)+2;b=Math.floor(Math.random()*12)+1;pk=`${mult}x${b}`;tries++;}
+  while(S.qbUsed.has(pk)&&tries<300);
+  if(tries>=300)S.qbUsed=new Set();
+  S.qbUsed.add(pk);
+  const ans=mult*b;
   document.getElementById('qbq').textContent=`${mult} × ${b} = ?`;
   document.getElementById('qbfb').className='feedback hidden';
   const g=document.getElementById('qbans');g.innerHTML='';
