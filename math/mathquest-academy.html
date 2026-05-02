@@ -393,6 +393,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
 .lr-open-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(251,188,5,.5);}
 /* pb badge */
 .pb-badge{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#FDD663,#FBBC05);border-radius:99px;padding:3px 12px;font-family:'Fredoka One',cursive;font-size:13px;color:#594300;margin-bottom:14px;}
+/* daily streak banner */
+.day-streak-banner{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--coral),#FBBC05);border-radius:14px;padding:10px 16px;margin-bottom:14px;color:#fff;font-weight:700;font-size:15px;}
+.day-streak-banner .dsn{font-family:'Fredoka One',cursive;font-size:26px;line-height:1;}
+/* review card */
+.review-card{border-radius:16px;padding:14px 16px;background:linear-gradient(135deg,#E8F0FE,#D2E3FC);border:2px solid #8AB4F8;margin-bottom:18px;cursor:pointer;transition:all .18s;}
+[data-theme="dark"] .review-card{background:linear-gradient(135deg,#1e2a3a,#263348);border-color:#4a6fa5;}
+.review-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px var(--shadow);}
+.review-card-top{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.review-card-icon{font-size:28px;line-height:1;}
+.review-card-title{font-family:'Fredoka One',cursive;font-size:17px;color:var(--blue);}
+.review-card-sub{font-size:12px;color:var(--t2);}
+.review-card-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:800;}
 
 @media(max-width:480px){
   .wgrid{grid-template-columns:repeat(2,1fr);}
@@ -951,9 +963,9 @@ function genShapeOpts(correct) {
 const QC=10, TSEC=12, PHP=100, XPL=300;
 let S={
   xp:0,level:1,streak:0,
-  world:'tower', // 'tower' | 'shrine'
+  world:'tower',
   floor:0,
-  shLevel:0,    // shrine level index
+  shLevel:0,
   plrHP:PHP, monHP:0,monMaxHP:0,
   qs:[],qi:0,results:[],
   weak:{}, cleared:new Set(), shrineCleared:new Set(), vaultCleared:new Set(), dungeonCleared:new Set(), fortressCleared:new Set(),
@@ -962,8 +974,91 @@ let S={
   vaultLevel:0, dungeonLevel:0, fortressLevel:0,
   qbTid:null,qbLeft:60,qbC:0,qbW:0,qbSt:0,
   currentShapeQ:null,
-  lrBest:{}, // mult → best time in seconds (20 questions)
+  lrBest:{},
+  sr:{},          // spaced repetition: factKey → {n,ef,interval,due,errors}
+  dailyStreak:0,  // days in a row
+  lastPlayDate:'',// ISO date string of last session
 };
+
+// ════════════════════════════════════════
+// PERSISTENCE — localStorage save/load
+// ════════════════════════════════════════
+const SAVE_KEY='mqacademy_v1';
+function saveState(){
+  try{
+    const d={
+      xp:S.xp,level:S.level,streak:S.streak,
+      cleared:[...S.cleared],shrineCleared:[...S.shrineCleared],
+      vaultCleared:[...S.vaultCleared],dungeonCleared:[...S.dungeonCleared],
+      fortressCleared:[...S.fortressCleared],
+      weak:S.weak,lrBest:S.lrBest,sr:S.sr,
+      dailyStreak:S.dailyStreak,lastPlayDate:S.lastPlayDate,
+      theme:document.documentElement.getAttribute('data-theme')||'light',
+    };
+    localStorage.setItem(SAVE_KEY,JSON.stringify(d));
+  }catch(e){}
+}
+function loadState(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(!raw)return;
+    const d=JSON.parse(raw);
+    S.xp=d.xp||0; S.level=d.level||1; S.streak=d.streak||0;
+    S.cleared=new Set(d.cleared||[]);
+    S.shrineCleared=new Set(d.shrineCleared||[]);
+    S.vaultCleared=new Set(d.vaultCleared||[]);
+    S.dungeonCleared=new Set(d.dungeonCleared||[]);
+    S.fortressCleared=new Set(d.fortressCleared||[]);
+    S.weak=d.weak||{}; S.lrBest=d.lrBest||{}; S.sr=d.sr||{};
+    S.dailyStreak=d.dailyStreak||0; S.lastPlayDate=d.lastPlayDate||'';
+    if(d.theme){document.documentElement.setAttribute('data-theme',d.theme);document.getElementById('tbtn').textContent=d.theme==='dark'?'☀️':'🌙';}
+  }catch(e){S.sr={};}
+  // Update daily streak
+  const today=new Date().toISOString().slice(0,10);
+  if(S.lastPlayDate){
+    const diff=(new Date(today)-new Date(S.lastPlayDate))/(1000*60*60*24);
+    if(diff>=2) S.dailyStreak=1; // missed a day — reset
+    else if(diff>=1) S.dailyStreak=(S.dailyStreak||0)+1; // new day — increment
+    // same day: no change
+  } else { S.dailyStreak=1; }
+  S.lastPlayDate=today;
+  saveState();
+}
+
+// ════════════════════════════════════════
+// SPACED REPETITION (SM-2 inspired)
+// ════════════════════════════════════════
+// Each fact: {n: repetitions, ef: ease factor, interval: days, due: ISO date, errors: total}
+function srGetFact(key){
+  if(!S.sr[key]) S.sr[key]={n:0,ef:2.5,interval:1,due:null,errors:0};
+  return S.sr[key];
+}
+function srUpdate(key, correct){
+  const f=srGetFact(key);
+  const today=new Date().toISOString().slice(0,10);
+  if(correct){
+    f.n++;
+    if(f.n===1) f.interval=1;
+    else if(f.n===2) f.interval=3;
+    else f.interval=Math.round(f.interval*f.ef);
+    f.ef=Math.max(1.3, f.ef+0.1);
+  } else {
+    f.errors++; f.n=0; f.interval=1;
+    f.ef=Math.max(1.3, f.ef-0.2);
+  }
+  const due=new Date(); due.setDate(due.getDate()+f.interval);
+  f.due=due.toISOString().slice(0,10);
+  S.sr[key]=f;
+  saveState();
+}
+function srDueKeys(){
+  const today=new Date().toISOString().slice(0,10);
+  return Object.entries(S.sr)
+    .filter(([,f])=>f.due&&f.due<=today&&f.errors>0)
+    .sort(([,a],[,b])=>a.due.localeCompare(b.due))
+    .map(([k])=>k);
+}
+function srDueCount(){return srDueKeys().length;}
 
 // ════════════════════════════════════════
 // THEME
@@ -994,7 +1089,7 @@ function updateHUD(){
   document.getElementById('snlvl').textContent=S.level;
   document.getElementById('snbar').style.width=pct+'%';
 }
-function addXP(n){S.xp+=n;S.xpg+=n;const nl=Math.floor(S.xp/XPL)+1;if(nl>S.level){S.level=nl;toast('LEVEL UP! Level '+S.level+' ⚡');}updateHUD();}
+function addXP(n){S.xp+=n;S.xpg+=n;const nl=Math.floor(S.xp/XPL)+1;if(nl>S.level){S.level=nl;toast('LEVEL UP! Level '+S.level+' ⚡');}updateHUD();saveState();}
 function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1500);}
 
 // ════════════════════════════════════════
@@ -2161,6 +2256,7 @@ function submitAnswer(val,correct,key,btn,world){
     const bonus=S.streak>=3?S.streak:1, tb=Math.floor(S.tleft/TSEC*20), xp=10*bonus+tb;
     addXP(xp);
     if(S.weak[key]>0)S.weak[key]--;
+    srUpdate(key,true);
     const dmg=Math.floor(20+S.streak*3+tb);
     S.monHP=Math.max(0,S.monHP-dmg);updateMon();
     dmgPop(dmg,true);animMon('shake');S.results.push(true);
@@ -2169,6 +2265,7 @@ function submitAnswer(val,correct,key,btn,world){
     showExplanation('correct',streakMsg,`Answer: ${correct}${suffix}`,working,steps,explWhy);
   } else {
     S.weak[key]=(S.weak[key]||0)+1;S.streak=0;updateHUD();
+    srUpdate(key,false);
     S.plrHP=Math.max(0,S.plrHP-lvl.dmg);updatePlr();
     dmgPop(lvl.dmg,false);animMon('hit');S.results.push(false);
     showExplanation('wrong','❌ Wrong answer',`Correct answer: ${correct}${suffix}`,working,steps,explWhy);
@@ -2309,7 +2406,7 @@ function renderVic(){
   else if(isVault)S.vaultCleared.add(lvl.id);
   else if(isShrine)S.shrineCleared.add(lvl.id);
   else S.cleared.add(lvl.id);
-  updateHUD();
+  updateHUD();saveState();
   document.getElementById('vsub').textContent=`You defeated ${lvl.mname} with ${ok}/${QC} correct! +${bonus} bonus XP`;
   document.getElementById('vstats').innerHTML=stbs([{v:`${ok}/${QC}`,c:'var(--green)',l:'Correct'},{v:`+${S.xpg}`,c:'var(--amber)',l:'XP Earned'},{v:S.streak,c:'var(--coral)',l:'Best Streak'}]);
   document.getElementById('vformula').innerHTML=`<div class="fcrev"><div class="fclbl">✨ Formula Card Unlocked!</div><div class="fcbig">${lvl.formula}</div><div class="fcdesc">${lvl.fdesc}</div></div>`;
@@ -2482,9 +2579,11 @@ function submitDrillAnswer(val, correct, formulaUsed, suffix, btn, grid){
   });
   if(!ok)btn.classList.add('wrong');
 
-  // Score
+  // Score + SR
+  const drillKey=DS.world==='tower'?`${drillGetLevel().mult}×${correct/drillGetLevel().mult}`:`${DS.world}:${correct}`;
   if(ok){
     DS.correct++; DS.streak++; addXP(5); toast('+5 XP');
+    srUpdate(drillKey,true);
     if(DS.streak>=10) SFX.comboBig();
     else if(DS.streak>=5) SFX.combo5();
     else if(DS.streak>=3) SFX.combo3();
@@ -2493,6 +2592,7 @@ function submitDrillAnswer(val, correct, formulaUsed, suffix, btn, grid){
     if(DS.streak>=5) burstConfetti();
   } else {
     DS.wrong++; DS.streak=0; SFX.wrong();
+    srUpdate(drillKey,false);
   }
   updateDrillScore();
 
@@ -3163,7 +3263,7 @@ function endLR(finished){
     {v:t+'s',c:'var(--amber)',l:'Time'},
     {v:pct+'%',c:'var(--purple)',l:'Accuracy'},
   ]);
-  if(isPB){SFX.lrPB();burstConfetti();burstConfetti();}
+  if(isPB){SFX.lrPB();burstConfetti();burstConfetti();saveState();}
   else if(finished){SFX.lrFinish();}
   renderFloorList(); // refresh PB badges in tower list
 }
@@ -3216,9 +3316,134 @@ function endQB(){
 }
 
 // ════════════════════════════════════════
+// HOME EXTRAS — daily streak + review card
+// ════════════════════════════════════════
+function renderHomeExtras(){
+  const hw=document.querySelector('#screen-home .hw');
+  // Remove any previously rendered extras
+  ['home-streak-banner','home-review-card'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
+
+  // Daily streak banner (only if streak >= 1)
+  if(S.dailyStreak>=1){
+    const banner=document.createElement('div');
+    banner.id='home-streak-banner';
+    banner.className='day-streak-banner';
+    const flame=S.dailyStreak>=7?'🌟':S.dailyStreak>=3?'🔥':'✨';
+    const msg=S.dailyStreak===1?'Welcome back! Keep it up every day!'
+      :S.dailyStreak>=30?`${S.dailyStreak} days strong — legendary!`
+      :S.dailyStreak>=7?`${S.dailyStreak} days in a row — amazing!`
+      :`${S.dailyStreak} days in a row — keep going!`;
+    banner.innerHTML=`<div class="dsn">${flame}</div><div><div>${msg}</div><div style="font-size:11px;opacity:.85">Daily streak</div></div>`;
+    // Insert after the ssnap progress block
+    const ssnap=hw.querySelector('.ssnap');
+    ssnap?ssnap.after(banner):hw.prepend(banner);
+  }
+
+  // Review due card
+  const due=srDueCount();
+  if(due>0){
+    const card=document.createElement('div');
+    card.id='home-review-card';
+    card.className='review-card';
+    card.innerHTML=`
+      <div class="review-card-top">
+        <div class="review-card-icon">🧠</div>
+        <div>
+          <div class="review-card-title">Review Time!</div>
+          <div class="review-card-sub">Spaced repetition — your brain is ready to practise these again</div>
+        </div>
+        <div class="review-card-badge">${due} due</div>
+      </div>
+      <div style="font-size:12px;color:var(--t2)">Tap to drill the facts your brain is most likely to forget today</div>`;
+    card.onclick=startReviewSession;
+    const wgrid=hw.querySelector('.wgrid');
+    wgrid?wgrid.before(card):hw.appendChild(card);
+  }
+}
+
+// ── Review session: drill overdue SR facts ────────────────
+const RS={keys:[],qi:0,correct:0,wrong:0,answered:false,streak:0};
+function startReviewSession(){
+  RS.keys=srDueKeys().slice(0,20); // cap at 20 per session
+  if(!RS.keys.length){toast('Nothing due right now!');return;}
+  RS.qi=0;RS.correct=0;RS.wrong=0;RS.answered=false;RS.streak=0;
+  show('drill');
+  document.getElementById('drill-back-btn').onclick=()=>{show('home');renderHomeExtras();};
+  document.getElementById('drill-title').textContent='🧠 Review Session';
+  updateDrillScore();
+  renderReviewQ();
+}
+function renderReviewQ(){
+  RS.answered=false;
+  if(RS.qi>=RS.keys.length){
+    // Session complete
+    const pct=Math.round(RS.correct/RS.keys.length*100);
+    SFX.lrFinish();
+    toast(`Review done! ${RS.correct}/${RS.keys.length} correct (${pct}%)`);
+    setTimeout(()=>{show('home');renderHomeExtras();},1800);
+    return;
+  }
+  const key=RS.keys[RS.qi];
+  // Parse key: tower facts look like "7×3", others like "world:answer"
+  const hint=document.getElementById('drill-hint-always');
+  const svgWrap=document.getElementById('drill-svg-wrap');
+  svgWrap.style.display='none';svgWrap.innerHTML='';
+  let questionText='',opts=[],correctVal,suffix='',formulaLine='';
+  const towerMatch=key.match(/^(\d+)×(\d+)$/);
+  if(towerMatch){
+    const a=parseInt(towerMatch[1]),b=parseInt(towerMatch[2]);
+    correctVal=a*b;
+    questionText=`${a} × ${b} = ?`;
+    opts=genTowerOpts(correctVal,a);
+    formulaLine=`${a} × ${b} = ${correctVal}`;
+    hint.innerHTML=`<div class="drill-hint-formula-lbl">Times Tables</div><div class="drill-hint-formula">${a} × ${b}</div><div class="drill-hint-tip">Try counting in ${a}s up to ${b} groups</div>`;
+  } else {
+    // For non-tower SR keys fall back to a simple text display
+    questionText=`Fact: ${key}`;
+    correctVal=0;opts=[0,1,2,3];
+    hint.innerHTML=`<div class="drill-hint-formula-lbl">Review</div><div class="drill-hint-formula">${key}</div>`;
+  }
+  document.getElementById('drill-q-label').textContent=`Q ${RS.qi+1} of ${RS.keys.length}`;
+  document.getElementById('drill-q-text').textContent=questionText;
+  const fb=document.getElementById('drill-fb');
+  const wk=document.getElementById('drill-working');
+  const nb=document.getElementById('drill-next-btn');
+  fb.className='drill-fb';fb.textContent='';fb.style.display='none';
+  wk.style.display='none';nb.style.display='none';
+  const g=document.getElementById('drill-ansgrid');g.innerHTML='';
+  opts.forEach(opt=>{
+    const btn=document.createElement('button');btn.className='abtn';
+    btn.textContent=opt+suffix;
+    btn.onclick=()=>{
+      if(RS.answered)return;
+      RS.answered=true;
+      const ok=opt===correctVal;
+      g.querySelectorAll('.abtn').forEach(b=>{b.disabled=true;if(Number(b.textContent.replace(suffix,''))===correctVal)b.classList.add('correct');});
+      if(!ok)btn.classList.add('wrong');
+      srUpdate(key,ok);
+      if(ok){RS.correct++;RS.streak++;addXP(8);toast('+8 XP');
+        if(RS.streak>=5)SFX.combo5();else if(RS.streak>=3)SFX.combo3();else SFX.correct();
+        if(RS.streak>=3)showComboBanner(RS.streak);
+      } else {RS.wrong++;RS.streak=0;SFX.wrong();}
+      document.getElementById('drill-correct').textContent=RS.correct;
+      document.getElementById('drill-wrong').textContent=RS.wrong;
+      fb.className=`drill-fb ${ok?'correct':'wrong'}`;
+      fb.textContent=ok?`✓ ${correctVal}${suffix}`:`❌ Answer = ${correctVal}${suffix}`;
+      fb.style.display='flex';
+      if(formulaLine){wk.textContent=formulaLine;wk.style.display='block';}
+      nb.style.display='block';nb.textContent=RS.qi+1<RS.keys.length?'Next →':'Finish Review';
+      nb.onclick=()=>{RS.qi++;renderReviewQ();};
+    };
+    g.appendChild(btn);
+  });
+}
+
+// ════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════
+loadState();
 updateHUD();
+renderHomeExtras();
 show('home');
 </script>
 </body>
