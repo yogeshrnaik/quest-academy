@@ -2195,28 +2195,27 @@ function renderTableStudy(range){
   const tbl = document.createElement('table');
   tbl.style.cssText = 'border-collapse:collapse;width:100%;min-width:' + (tables.length * 56 + 56) + 'px;';
 
-  // Header row
+  // Header row — "×" corner, then one column per table number
   let headerHtml = '<tr><th style="' + thStyle(true) + '">×</th>';
-  for(let n=1;n<=12;n++){
-    headerHtml += `<th style="${thStyle(false)}">${n}</th>`;
-  }
+  tables.forEach(mult => {
+    headerHtml += `<th style="${thStyle(false)}">×${mult}</th>`;
+  });
   headerHtml += '</tr>';
 
-  // Data rows — one per table
+  // Data rows — one per multiplier 1–12, each column is a table
   let rowsHtml = '';
-  tables.forEach(mult => {
-    const fl = FLOORS.find(f => f.mult===mult);
+  for(let n=1;n<=12;n++){
     rowsHtml += `<tr>`;
-    rowsHtml += `<td style="${tdStyle(true)}">${mult}</td>`;
-    for(let n=1;n<=12;n++){
+    rowsHtml += `<td style="${tdStyle(true)}">${n}</td>`;
+    tables.forEach(mult => {
       const val = mult*n;
       // Highlight "famous" facts in amber
       const famous = (mult===7&&n===8)||(mult===8&&n===7)||(mult===6&&n===9)||(mult===9&&n===6);
       const bg = famous ? 'background:rgba(251,188,5,.15);font-weight:800;color:var(--amber);' : '';
       rowsHtml += `<td style="${tdStyle(false)}${bg}">${val}</td>`;
-    }
+    });
     rowsHtml += `</tr>`;
-  });
+  }
 
   tbl.innerHTML = headerHtml + rowsHtml;
   wrap.appendChild(tbl);
