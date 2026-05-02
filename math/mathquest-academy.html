@@ -1,0 +1,2454 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MathQuest Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{
+  --bg:#f0ecff;--bg2:#e8e2ff;--bg3:#ddd5ff;--card:#fff;--border:#c4b5fd;
+  --purple:#7c3aed;--pl:#a78bfa;--blue:#2563eb;--green:#059669;
+  --amber:#d97706;--red:#dc2626;--coral:#ea580c;--pink:#db2777;
+  --text:#1e1b4b;--t2:#4c3f91;--t3:#7c6fc4;--shadow:rgba(124,58,237,.12);
+  --hbg:rgba(240,236,255,.96);--xpc:#d97706;--dot:#7c3aed;
+}
+[data-theme="dark"]{
+  --bg:#0f0c1a;--bg2:#1a1530;--bg3:#251e40;--card:#1e1836;--border:#332b55;
+  --purple:#a78bfa;--pl:#c4b5fd;--blue:#60a5fa;--green:#34d399;
+  --amber:#fbbf24;--red:#f87171;--coral:#fb923c;--pink:#f472b6;
+  --text:#f1eeff;--t2:#9d8ec4;--t3:#6b5e8a;--shadow:rgba(0,0,0,.3);
+  --hbg:rgba(15,12,26,.96);--xpc:#fbbf24;--dot:#fff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;overflow-x:hidden;transition:background .3s,color .3s;}
+.bg-dots{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.bg-dot{position:absolute;border-radius:50%;background:var(--dot);animation:twinkle var(--d,3s) ease-in-out infinite var(--dl,0s);opacity:0;}
+@keyframes twinkle{0%,100%{opacity:0}50%{opacity:var(--op,.18)}}
+.screen{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:16px 16px 40px;}
+
+/* ── HUD ── */
+.hud{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--hbg);backdrop-filter:blur(10px);border-bottom:1.5px solid var(--border);}
+.hud-logo{font-family:'Fredoka One',cursive;font-size:17px;color:var(--purple);cursor:pointer;white-space:nowrap;}
+.hpill{display:flex;align-items:center;gap:5px;background:var(--bg2);border:1.5px solid var(--border);border-radius:99px;padding:3px 11px 3px 8px;}
+.hpill span:last-child{font-size:13px;font-weight:800;}
+.hsp{flex:1;}
+.xpbo{flex:1;max-width:90px;height:6px;background:var(--bg3);border-radius:99px;overflow:hidden;}
+.xpbi{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--purple),var(--pl));transition:width .5s;}
+.tbtn{background:var(--bg2);border:1.5px solid var(--border);border-radius:99px;padding:4px 10px;font-size:16px;cursor:pointer;transition:all .2s;line-height:1;}
+.tbtn:hover{border-color:var(--purple);transform:scale(1.1);}
+
+/* ── HOME ── */
+.hw{width:100%;max-width:720px;margin-top:68px;padding-top:8px;}
+.htitle{font-family:'Fredoka One',cursive;font-size:clamp(26px,7vw,50px);color:var(--purple);line-height:1.1;margin-bottom:4px;text-align:center;}
+.hsub{font-size:14px;color:var(--t2);text-align:center;margin-bottom:20px;}
+.slbl{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:9px;}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:9px;margin-bottom:26px;}
+.wcard{border-radius:16px;padding:14px 12px;cursor:pointer;border:2px solid transparent;transition:all .18s;}
+.wcard:hover:not(.cs){transform:translateY(-3px);box-shadow:0 8px 22px var(--shadow);}
+.wcard.cs{opacity:.55;cursor:default;}
+.w1{background:#e0f2fe;border-color:#bae6fd;}.w2{background:#dcfce7;border-color:#bbf7d0;}
+.w3{background:#fef9c3;border-color:#fde68a;}.w4{background:#ede9fe;border-color:#ddd6fe;}.w5{background:#fce7f3;border-color:#fbcfe8;}
+[data-theme="dark"] .w1{background:#0c4a6e;border-color:#0369a1;}[data-theme="dark"] .w2{background:#14532d;border-color:#166534;}
+[data-theme="dark"] .w3{background:#713f12;border-color:#854d0e;}[data-theme="dark"] .w4{background:#2e1065;border-color:#4c1d95;}[data-theme="dark"] .w5{background:#831843;border-color:#9d174d;}
+.wi{font-size:24px;margin-bottom:7px;display:block;}.wt{font-size:13px;font-weight:800;color:var(--text);margin-bottom:2px;}.ws{font-size:11px;color:var(--t2);line-height:1.4;}
+.soon{font-size:10px;font-weight:700;color:var(--t3);margin-top:4px;display:block;}
+.ssnap{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px;margin-bottom:8px;}
+.sb{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:13px 12px;}
+.sv{font-family:'Fredoka One',cursive;font-size:23px;color:var(--text);}.sl{font-size:10px;color:var(--t2);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+.xpsn{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-top:5px;}
+.xpsnf{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--purple),var(--pl));transition:width .5s;}
+
+/* ── LIST / FLOOR / TOWER ── */
+.ww{width:100%;max-width:500px;margin-top:68px;padding-top:8px;}
+.wtitle{font-family:'Fredoka One',cursive;font-size:clamp(20px,5vw,32px);color:var(--purple);text-align:center;margin-bottom:4px;}
+.wsub{font-size:13px;color:var(--t2);text-align:center;margin-bottom:18px;}
+.bbtn{display:inline-flex;align-items:center;gap:5px;background:var(--bg2);border:1.5px solid var(--border);border-radius:99px;padding:5px 13px;font-size:13px;font-weight:700;color:var(--t2);cursor:pointer;margin-bottom:12px;transition:all .18s;}
+.bbtn:hover{border-color:var(--purple);color:var(--purple);}
+.flist{display:flex;flex-direction:column;gap:9px;}
+.fbtn{display:flex;align-items:center;gap:12px;background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:12px 15px;cursor:pointer;transition:all .18s;}
+.fbtn:hover{border-color:var(--purple);transform:translateY(-2px);box-shadow:0 5px 16px var(--shadow);}
+.fic{width:40px;height:40px;border-radius:11px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;}
+.finf{flex:1;}.fnm{font-size:14px;font-weight:800;color:var(--text);}.fds{font-size:11px;color:var(--t2);margin-top:1px;}
+.fbg{font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;}
+.fbd{background:#dcfce7;color:#166534;}.fbf{background:#ede9fe;color:#5b21b6;}
+[data-theme="dark"] .fbd{background:#14532d;color:#6ee7b7;}[data-theme="dark"] .fbf{background:#2e1065;color:#c4b5fd;}
+
+/* ── BATTLE ── */
+.bwrap{width:100%;max-width:540px;margin-top:68px;padding-top:6px;}
+.bhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;}
+.bfl{font-size:11px;color:var(--t3);font-weight:800;text-transform:uppercase;letter-spacing:.06em;}
+.qctr{font-size:12px;color:var(--t2);font-weight:700;}
+.qdots{display:flex;gap:5px;justify-content:center;margin-bottom:11px;flex-wrap:wrap;}
+.qdot{width:9px;height:9px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--border);transition:all .3s;}
+.qdot.r{background:var(--green);border-color:var(--green);}
+.qdot.w{background:var(--red);border-color:var(--red);}
+.qdot.c{background:var(--purple);border-color:var(--purple);box-shadow:0 0 6px var(--purple);}
+.marena{margin-bottom:12px;}
+.mhplbl{font-size:11px;color:var(--t3);text-align:center;margin-bottom:4px;}
+.mhpw{background:var(--bg3);border-radius:99px;height:10px;overflow:hidden;border:1.5px solid var(--border);margin-bottom:9px;}
+.mhpb{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--red),#f87171);transition:width .5s;}
+.mbox{background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:14px;text-align:center;position:relative;min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
+.memoji{font-size:clamp(44px,11vw,64px);line-height:1;margin-bottom:4px;display:block;}
+.mname{font-family:'Fredoka One',cursive;font-size:18px;color:var(--text);}
+.mlvl{font-size:11px;color:var(--t3);margin-top:1px;}
+.mshake{animation:msh .4s ease;}.mhit{animation:mht .35s ease;}
+@keyframes msh{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes mht{0%,100%{transform:scale(1)}50%{transform:scale(1.11)}}
+.dpop{position:absolute;top:7px;right:14px;font-family:'Fredoka One',cursive;font-size:20px;pointer-events:none;animation:pf 1s ease forwards;}
+.dpop.d{color:var(--red);}.dpop.h{color:var(--green);}
+@keyframes pf{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-32px) scale(1.3)}}
+.plrrow{display:flex;align-items:center;gap:9px;margin:9px 0 11px;}
+.plrav{width:33px;height:33px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.plrhw{flex:1;background:var(--bg3);border-radius:99px;height:8px;overflow:hidden;border:1.5px solid var(--border);}
+.plrhb{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .4s;}
+.plrhl{font-size:11px;color:var(--t2);white-space:nowrap;font-weight:700;}
+
+/* ── SHAPE VISUAL CARD ── */
+.shape-card{background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:14px;margin-bottom:11px;box-shadow:0 3px 10px var(--shadow);}
+.shape-top{display:flex;gap:14px;align-items:flex-start;margin-bottom:10px;}
+.shape-svg-wrap{flex-shrink:0;width:120px;height:100px;display:flex;align-items:center;justify-content:center;}
+.shape-meta{flex:1;}
+.shape-name-big{font-family:'Fredoka One',cursive;font-size:20px;color:var(--text);margin-bottom:4px;}
+.shape-formula-wrap{background:var(--bg2);border-radius:10px;padding:8px 10px;margin-bottom:4px;}
+.shape-formula-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:2px;}
+.shape-formula-text{font-family:'Fredoka One',cursive;font-size:15px;color:var(--purple);}
+.shape-tip{font-size:11px;color:var(--t2);line-height:1.4;}
+.why-box{background:linear-gradient(135deg,#fef9c3,#fef3c7);border:1.5px solid #fde68a;border-radius:10px;padding:7px 10px;margin-top:6px;}
+.why-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#92400e;margin-bottom:2px;}
+.why-txt{font-size:11px;color:#78350f;line-height:1.45;}
+[data-theme="dark"] .why-box{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.25);}
+[data-theme="dark"] .why-lbl{color:var(--amber);}
+[data-theme="dark"] .why-txt{color:var(--xpc);}
+.shape-q-label{font-size:12px;color:var(--t3);font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;text-align:center;}
+.shape-q-main{font-family:'Fredoka One',cursive;font-size:clamp(20px,5vw,28px);color:var(--text);text-align:center;margin-bottom:4px;}
+.shape-dims{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:4px;}
+.dim-pill{background:var(--bg2);border:1.5px solid var(--border);border-radius:99px;padding:3px 12px;font-size:13px;font-weight:700;color:var(--text);}
+.timer-out{height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-top:8px;}
+.timer-in{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--amber),var(--coral));transition:width .1s linear;}
+
+/* ── ANSWER GRID ── */
+.ansgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px;}
+.abtn{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px 8px;font-family:'Fredoka One',cursive;font-size:clamp(17px,4.5vw,24px);color:var(--text);cursor:pointer;transition:all .15s;box-shadow:0 2px 6px var(--shadow);}
+.abtn:hover:not(:disabled){border-color:var(--purple);background:var(--bg2);transform:translateY(-2px);}
+.abtn.correct{background:#dcfce7;border-color:var(--green);color:var(--green);transform:scale(1.04);}
+.abtn.wrong{background:#fee2e2;border-color:var(--red);color:var(--red);animation:bsh .3s ease;}
+.abtn:disabled{cursor:not-allowed;}
+[data-theme="dark"] .abtn.correct{background:rgba(52,211,153,.15);}
+[data-theme="dark"] .abtn.wrong{background:rgba(248,113,113,.15);}
+@keyframes bsh{0%,100%{transform:translateX(0)}30%{transform:translateX(-6px)}70%{transform:translateX(6px)}}
+.feedback{padding:10px 13px;border-radius:10px;font-size:13px;font-weight:800;text-align:center;min-height:40px;display:flex;align-items:center;justify-content:center;margin-bottom:7px;}
+.feedback.correct{background:#dcfce7;color:#166534;border:1.5px solid #bbf7d0;}
+.feedback.wrong{background:#fee2e2;color:#991b1b;border:1.5px solid #fecaca;}
+.feedback.timeout{background:#fef3c7;color:#92400e;border:1.5px solid #fde68a;}
+.feedback.hidden{opacity:0;}
+[data-theme="dark"] .feedback.timeout{background:rgba(251,191,36,.1);color:var(--amber);border-color:rgba(251,191,36,.3);}
+
+/* ── Explanation panel ── */
+.expl-panel{border-radius:14px;padding:12px 14px;margin-bottom:8px;animation:fadein .25s ease;}
+.expl-panel.correct{background:#dcfce7;border:1.5px solid #bbf7d0;}
+.expl-panel.wrong{background:#fee2e2;border:1.5px solid #fecaca;}
+.expl-panel.timeout{background:#fef9c3;border:1.5px solid #fde68a;}
+[data-theme="dark"] .expl-panel.correct{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);}
+[data-theme="dark"] .expl-panel.wrong{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.3);}
+[data-theme="dark"] .expl-panel.timeout{background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.25);}
+.expl-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.expl-icon{font-size:18px;flex-shrink:0;}
+.expl-verdict{font-family:'Fredoka One',cursive;font-size:16px;}
+.expl-verdict.c{color:var(--green);}.expl-verdict.w{color:var(--red);}.expl-verdict.t{color:var(--amber);}
+.expl-ans{font-size:13px;font-weight:800;color:var(--text);margin-bottom:5px;}
+.expl-working{font-family:'Fredoka One',cursive;font-size:15px;color:var(--purple);background:var(--bg2);border-radius:8px;padding:5px 10px;margin-bottom:5px;text-align:center;}
+.expl-why{font-size:12px;color:var(--t2);line-height:1.5;}
+.next-q-btn{width:100%;font-family:'Fredoka One',cursive;font-size:17px;background:linear-gradient(135deg,var(--purple),var(--pl));color:#fff;border:none;border-radius:12px;padding:13px;cursor:pointer;box-shadow:0 4px 12px var(--shadow);transition:all .2s;letter-spacing:.3px;}
+.next-q-btn:hover{transform:translateY(-2px);box-shadow:0 7px 20px var(--shadow);}
+.next-q-btn:active{transform:translateY(0);}
+.show-ans-btn{width:100%;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;background:transparent;color:var(--t3);border:1.5px dashed var(--border);border-radius:10px;padding:8px;cursor:pointer;transition:all .2s;margin-bottom:7px;letter-spacing:.2px;}
+.show-ans-btn:hover{border-color:var(--amber);color:var(--amber);background:rgba(217,119,6,.06);}
+.show-ans-btn.hidden{display:none;}
+.action-row{display:flex;gap:8px;margin-bottom:7px;}
+.action-row .show-ans-btn{margin-bottom:0;}
+.hint-btn{flex:1;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;background:transparent;color:var(--t3);border:1.5px dashed var(--border);border-radius:10px;padding:8px;cursor:pointer;transition:all .2s;letter-spacing:.2px;}
+.hint-btn:hover{border-color:var(--purple);color:var(--purple);background:rgba(124,58,237,.06);}
+.hint-btn.active{border-style:solid;border-color:var(--purple);color:var(--purple);background:rgba(124,58,237,.07);}
+.hint-btn.hidden{display:none;}
+.hint-panel{background:var(--bg2);border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;animation:fadein .22s ease;}
+.hint-panel-formula-lbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:2px;}
+.hint-panel-formula{font-family:'Fredoka One',cursive;font-size:16px;color:var(--purple);margin-bottom:6px;}
+.hint-panel-tip{font-size:12px;color:var(--t2);line-height:1.5;margin-bottom:0;}
+.hint-panel-why{margin-top:7px;padding-top:7px;border-top:1px solid var(--border);}
+.hint-panel-why-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#92400e;margin-bottom:2px;}
+.hint-panel-why-txt{font-size:11px;color:#78350f;line-height:1.45;}
+[data-theme="dark"] .hint-panel-why-lbl{color:var(--amber);}
+[data-theme="dark"] .hint-panel-why-txt{color:var(--xpc);}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* ── TOAST ── */
+.toast{position:fixed;top:66px;left:50%;transform:translateX(-50%);background:var(--card);border:2px solid var(--amber);border-radius:99px;padding:7px 18px;font-family:'Fredoka One',cursive;font-size:16px;color:var(--amber);z-index:300;animation:tpop 1.4s ease forwards;pointer-events:none;white-space:nowrap;box-shadow:0 4px 14px var(--shadow);}
+@keyframes tpop{0%{opacity:0;transform:translateX(-50%) scale(.8)}15%{opacity:1;transform:translateX(-50%) scale(1.05)}80%{opacity:1;transform:translateX(-50%) scale(1)}100%{opacity:0;transform:translateX(-50%) scale(.95) translateY(-10px)}}
+
+/* ── RESULTS ── */
+.rwrap{text-align:center;max-width:440px;width:100%;margin-top:76px;}
+.remoji{font-size:66px;display:block;margin-bottom:11px;animation:bin .5s ease;}
+@keyframes bin{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.rtitle{font-family:'Fredoka One',cursive;font-size:clamp(24px,7vw,40px);margin-bottom:5px;}
+.rsub{font-size:14px;color:var(--t2);margin-bottom:18px;line-height:1.6;}
+.rstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.stbox{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:11px 8px;}
+.stval{font-family:'Fredoka One',cursive;font-size:23px;}.stlbl{font-size:10px;color:var(--t2);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+.fcrev{background:var(--bg2);border:2px solid var(--pl);border-radius:16px;padding:16px;margin-bottom:14px;animation:crev .4s ease;}
+@keyframes crev{from{transform:scale(.8) rotateY(90deg);opacity:0}to{transform:scale(1) rotateY(0);opacity:1}}
+.fclbl{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--purple);margin-bottom:5px;}
+.fcbig{font-family:'Fredoka One',cursive;font-size:22px;color:var(--text);margin-bottom:3px;}.fcdesc{font-size:12px;color:var(--t2);}
+.wklbl{font-size:12px;color:var(--amber);font-weight:800;margin-bottom:6px;}
+.wkpills{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-bottom:14px;}
+.wkpill{background:#fef3c7;border:1.5px solid #fde68a;border-radius:99px;padding:3px 12px;font-size:11px;font-weight:700;color:#92400e;}
+[data-theme="dark"] .wkpill{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.3);color:var(--amber);}
+.btnrow{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;}
+.bsec{font-family:'Fredoka One',cursive;font-size:14px;background:var(--bg2);color:var(--t2);border:1.5px solid var(--border);border-radius:11px;padding:10px 20px;cursor:pointer;transition:all .18s;}
+.bsec:hover{border-color:var(--purple);color:var(--purple);}
+.bpri{font-family:'Fredoka One',cursive;font-size:14px;background:linear-gradient(135deg,var(--purple),var(--pl));color:#fff;border:none;border-radius:11px;padding:10px 24px;cursor:pointer;box-shadow:0 4px 12px var(--shadow);transition:all .2s;}
+.bpri:hover{transform:translateY(-2px);box-shadow:0 7px 20px var(--shadow);}
+
+/* ── GEOMETRY DUNGEON LEVELS ── */
+.gdlevels{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:9px;margin-bottom:18px;}
+.gdcard{border-radius:14px;padding:12px 10px;cursor:pointer;border:2px solid transparent;transition:all .18s;text-align:center;}
+.gdcard:hover{transform:translateY(-2px);box-shadow:0 6px 18px var(--shadow);}
+.gdcard.done{border-color:var(--green)!important;}
+.gdic{font-size:26px;margin-bottom:5px;display:block;}.gdt{font-size:12px;font-weight:800;color:var(--text);}.gds{font-size:10px;color:var(--t2);margin-top:2px;}
+.gd-ang{background:#ede9fe;border-color:#ddd6fe;}.gd-tri{background:#fef9c3;border-color:#fde68a;}
+.gd-circ{background:#fce7f3;border-color:#fbcfe8;}.gd-boss{background:#fee2e2;border-color:#fecaca;}
+[data-theme="dark"] .gd-ang{background:#2e1065;border-color:#4c1d95;}[data-theme="dark"] .gd-tri{background:#713f12;border-color:#854d0e;}
+[data-theme="dark"] .gd-circ{background:#831843;border-color:#9d174d;}[data-theme="dark"] .gd-boss{background:#450a0a;border-color:#7f1d1d;}
+
+/* ── Level card fight/drill button pair ── */
+.level-actions{display:flex;gap:6px;margin-top:7px;}
+.lbtn{flex:1;font-family:'Fredoka One',cursive;font-size:12px;border-radius:8px;padding:6px 4px;cursor:pointer;border:1.5px solid transparent;transition:all .15s;text-align:center;}
+.lbtn-fight{background:linear-gradient(135deg,var(--purple),var(--pl));color:#fff;box-shadow:0 2px 8px var(--shadow);}
+.lbtn-fight:hover{transform:translateY(-1px);box-shadow:0 4px 12px var(--shadow);}
+.lbtn-drill{background:var(--bg2);color:var(--t2);border-color:var(--border);}
+.lbtn-drill:hover{border-color:var(--green);color:var(--green);background:rgba(5,150,105,.07);}
+
+/* ── Drill screen ── */
+.drill-wrap{width:100%;max-width:520px;margin-top:68px;padding-top:8px;}
+.drill-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.drill-title{font-family:'Fredoka One',cursive;font-size:20px;color:var(--green);}
+.drill-score{display:flex;gap:8px;}
+.drill-sbox{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:7px 12px;text-align:center;}
+.drill-sval{font-family:'Fredoka One',cursive;font-size:20px;color:var(--purple);}
+.drill-slbl{font-size:9px;color:var(--t2);font-weight:700;text-transform:uppercase;}
+.drill-hint-always{background:var(--bg2);border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:10px;}
+.drill-hint-formula-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--t3);margin-bottom:2px;}
+.drill-hint-formula{font-family:'Fredoka One',cursive;font-size:15px;color:var(--purple);margin-bottom:4px;}
+.drill-hint-tip{font-size:11px;color:var(--t2);line-height:1.4;margin-bottom:0;}
+.drill-hint-why{margin-top:6px;padding-top:6px;border-top:1px solid var(--border);}
+.drill-hint-why-lbl{font-size:9px;font-weight:800;text-transform:uppercase;color:#92400e;margin-bottom:2px;}
+.drill-hint-why-txt{font-size:11px;color:#78350f;line-height:1.45;}
+[data-theme="dark"] .drill-hint-why-lbl{color:var(--amber);}
+[data-theme="dark"] .drill-hint-why-txt{color:var(--xpc);}
+.drill-q-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px 14px;margin-bottom:10px;box-shadow:0 3px 10px var(--shadow);text-align:center;}
+.drill-q-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);margin-bottom:6px;}
+.drill-q-text{font-family:'Fredoka One',cursive;font-size:clamp(18px,5vw,26px);color:var(--text);line-height:1.4;}
+.drill-fb{padding:10px 13px;border-radius:10px;font-size:13px;font-weight:800;text-align:center;margin-bottom:8px;display:none;}
+.drill-fb.correct{background:#dcfce7;color:#166534;border:1.5px solid #bbf7d0;display:flex;align-items:center;justify-content:center;}
+.drill-fb.wrong{background:#fee2e2;color:#991b1b;border:1.5px solid #fecaca;display:flex;align-items:center;justify-content:center;}
+[data-theme="dark"] .drill-fb.correct{background:rgba(52,211,153,.1);color:var(--green);border-color:rgba(52,211,153,.3);}
+[data-theme="dark"] .drill-fb.wrong{background:rgba(248,113,113,.1);color:var(--red);border-color:rgba(248,113,113,.3);}
+.drill-working{font-family:'Fredoka One',cursive;font-size:13px;color:var(--purple);background:var(--bg2);border-radius:8px;padding:5px 10px;text-align:center;margin-bottom:8px;display:none;}
+.drill-next-btn{width:100%;font-family:'Fredoka One',cursive;font-size:16px;background:linear-gradient(135deg,var(--green),#34d399);color:#fff;border:none;border-radius:12px;padding:12px;cursor:pointer;box-shadow:0 3px 10px rgba(5,150,105,.3);transition:all .2s;display:none;}
+.drill-next-btn:hover{transform:translateY(-2px);}
+.vvlevels{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:9px;margin-bottom:18px;}
+.vvcard{border-radius:14px;padding:12px 10px;cursor:pointer;border:2px solid transparent;transition:all .18s;text-align:center;}
+.vvcard:hover{transform:translateY(-2px);box-shadow:0 6px 18px var(--shadow);}
+.vvcard.done{border-color:var(--green)!important;}
+.vvic{font-size:26px;margin-bottom:5px;display:block;}.vvt{font-size:12px;font-weight:800;color:var(--text);}.vvs{font-size:10px;color:var(--t2);margin-top:2px;}
+.vv-vol{background:#fef9c3;border-color:#fde68a;}.vv-sa{background:#dbeafe;border-color:#bfdbfe;}.vv-boss{background:#fce7f3;border-color:#fbcfe8;}
+[data-theme="dark"] .vv-vol{background:#713f12;border-color:#854d0e;}[data-theme="dark"] .vv-sa{background:#1e3a5f;border-color:#1d4ed8;}[data-theme="dark"] .vv-boss{background:#831843;border-color:#9d174d;}
+
+/* ── STUDY MODE ── */
+.study-open-btn{width:100%;font-family:'Fredoka One',cursive;font-size:15px;background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#fff;border:none;border-radius:12px;padding:12px;cursor:pointer;box-shadow:0 3px 12px rgba(245,158,11,.3);transition:all .2s;margin-bottom:14px;letter-spacing:.3px;}
+.study-open-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(245,158,11,.4);}
+.study-wrap{width:100%;max-width:720px;margin-top:68px;padding-top:8px;}
+.study-topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.study-title{font-family:'Fredoka One',cursive;font-size:20px;color:var(--amber);}
+.study-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.study-tab{font-family:'Fredoka One',cursive;font-size:13px;padding:6px 16px;border-radius:99px;border:1.5px solid var(--border);background:var(--card);color:var(--t2);cursor:pointer;transition:all .18s;white-space:nowrap;}
+.study-tab:hover{border-color:var(--amber);color:var(--amber);}
+.study-tab.active{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(245,158,11,.3);}
+/* Table study card */
+.study-table-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:20px;}
+.study-table-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:14px;transition:all .18s;}
+.study-table-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.study-table-title{font-family:'Fredoka One',cursive;font-size:18px;color:var(--purple);}
+.study-table-trick{font-size:11px;color:var(--t2);background:var(--bg2);border-radius:8px;padding:4px 8px;line-height:1.4;}
+.study-table-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;}
+.study-table-fact{background:var(--bg2);border-radius:7px;padding:5px 3px;text-align:center;font-size:12px;font-weight:700;color:var(--text);transition:background .15s;}
+.study-table-fact:hover{background:var(--bg3);}
+.study-table-drill{width:100%;margin-top:10px;font-family:'Fredoka One',cursive;font-size:13px;background:var(--bg2);color:var(--t2);border:1.5px solid var(--border);border-radius:8px;padding:6px;cursor:pointer;transition:all .18s;}
+.study-table-drill:hover{border-color:var(--green);color:var(--green);}
+/* Shape / solid study card */
+.study-shape-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:20px;}
+.study-shape-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;transition:all .18s;}
+.study-shape-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;}
+.study-shape-svg{flex-shrink:0;width:100px;height:82px;display:flex;align-items:center;justify-content:center;}
+.study-shape-meta{flex:1;}
+.study-shape-name{font-family:'Fredoka One',cursive;font-size:17px;color:var(--text);margin-bottom:6px;}
+.study-formula-row{background:var(--bg2);border-radius:8px;padding:5px 8px;margin-bottom:4px;}
+.study-formula-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);}
+.study-formula-val{font-family:'Fredoka One',cursive;font-size:13px;color:var(--purple);}
+.study-why{font-size:11px;color:var(--t2);line-height:1.45;margin-top:6px;}
+.study-example{background:linear-gradient(135deg,#fef9c3,#fef3c7);border:1.5px solid #fde68a;border-radius:10px;padding:9px 11px;margin-top:8px;}
+[data-theme="dark"] .study-example{background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.2);}
+.study-ex-lbl{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#92400e;margin-bottom:3px;}
+[data-theme="dark"] .study-ex-lbl{color:var(--amber);}
+.study-ex-q{font-size:12px;color:#78350f;line-height:1.5;}
+[data-theme="dark"] .study-ex-q{color:var(--xpc);}
+.study-ex-ans{font-family:'Fredoka One',cursive;font-size:14px;color:#92400e;margin-top:3px;}
+[data-theme="dark"] .study-ex-ans{color:var(--amber);}
+.study-shape-drill{width:100%;margin-top:10px;font-family:'Fredoka One',cursive;font-size:13px;background:var(--bg2);color:var(--t2);border:1.5px solid var(--border);border-radius:8px;padding:7px;cursor:pointer;transition:all .18s;}
+.study-shape-drill:hover{border-color:var(--green);color:var(--green);}
+/* Section header inside study */
+.study-sec-lbl{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin:16px 0 8px;}
+.study-sec-lbl:first-child{margin-top:0;}
+
+/* ── QUICK BATTLE ── */
+.qbwrap{width:100%;max-width:520px;margin-top:68px;padding-top:8px;}
+.qbhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.qbtitle{font-family:'Fredoka One',cursive;font-size:21px;color:var(--purple);}
+.qbtimer{font-family:'Fredoka One',cursive;font-size:36px;color:var(--coral);min-width:55px;text-align:right;}
+.qbscore{display:flex;gap:10px;margin-bottom:14px;}
+.qbsb{flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:9px;text-align:center;}
+.qbsv{font-family:'Fredoka One',cursive;font-size:26px;color:var(--purple);}.qbsl{font-size:10px;color:var(--t2);font-weight:700;text-transform:uppercase;}
+
+/* ── SHAPE SHRINE LEVELS ── */
+.sslevels{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:9px;margin-bottom:18px;}
+.sslcard{border-radius:14px;padding:12px 10px;cursor:pointer;border:2px solid transparent;transition:all .18s;text-align:center;}
+.sslcard:hover{transform:translateY(-2px);box-shadow:0 6px 18px var(--shadow);}
+.sslcard.done{border-color:var(--green)!important;}
+.sslic{font-size:28px;margin-bottom:6px;display:block;}
+.sslt{font-size:12px;font-weight:800;color:var(--text);}
+.ssls{font-size:10px;color:var(--t2);margin-top:2px;}
+/* Level colour bands */
+.ssl-area{background:#dcfce7;border-color:#bbf7d0;}
+.ssl-peri{background:#dbeafe;border-color:#bfdbfe;}
+.ssl-circle{background:#fce7f3;border-color:#fbcfe8;}
+.ssl-tri{background:#fef9c3;border-color:#fde68a;}
+.ssl-mixed{background:#ede9fe;border-color:#ddd6fe;}
+[data-theme="dark"] .ssl-area{background:#14532d;border-color:#166534;}
+[data-theme="dark"] .ssl-peri{background:#1e3a5f;border-color:#1d4ed8;}
+[data-theme="dark"] .ssl-circle{background:#831843;border-color:#9d174d;}
+[data-theme="dark"] .ssl-tri{background:#713f12;border-color:#854d0e;}
+[data-theme="dark"] .ssl-mixed{background:#2e1065;border-color:#4c1d95;}
+
+@media(max-width:480px){
+  .wgrid{grid-template-columns:repeat(2,1fr);}
+  .hpill.hides{display:none;}
+  .rstats{grid-template-columns:1fr 1fr;}
+  .shape-top{flex-direction:column;align-items:center;}
+  .shape-svg-wrap{width:100px;height:80px;}
+}
+</style>
+</head>
+<body>
+<div class="bg-dots" id="bgdots"></div>
+
+<!-- HUD -->
+<div class="hud">
+  <div class="hud-logo" onclick="goHome()">★ MathQuest</div>
+  <div class="hpill"><span>⚡</span><span id="hxp" style="color:var(--xpc)">0</span></div>
+  <div class="hpill hides"><span style="font-size:11px;color:var(--t2)">LVL</span><span id="hlvl" style="color:var(--purple)">1</span></div>
+  <div class="hpill"><span>🔥</span><span id="hstr" style="color:var(--coral)">0</span></div>
+  <div class="hsp"></div>
+  <div class="xpbo"><div class="xpbi" id="xpbar" style="width:0%"></div></div>
+  <button class="tbtn" id="tbtn" onclick="toggleTheme()">🌙</button>
+</div>
+
+<!-- ═══ HOME ═══ -->
+<div class="screen" id="screen-home">
+<div class="hw">
+  <div class="htitle">MathQuest Academy</div>
+  <div class="hsub">Level up your brain · Ages 11–16</div>
+  <div class="slbl">Your progress</div>
+  <div class="ssnap" style="margin-bottom:22px">
+    <div class="sb"><div class="sv" id="snxp">0</div><div class="sl">Total XP</div><div class="xpsn"><div class="xpsnf" id="snbar" style="width:0%"></div></div></div>
+    <div class="sb"><div class="sv" id="snstr" style="color:var(--coral)">0</div><div class="sl">🔥 Streak</div></div>
+    <div class="sb"><div class="sv" id="snclr" style="color:var(--green)">0</div><div class="sl">Levels Done</div></div>
+    <div class="sb"><div class="sv" id="snlvl" style="color:var(--purple)">1</div><div class="sl">Level</div></div>
+  </div>
+  <div class="slbl">5 quest worlds</div>
+  <div class="wgrid">
+    <div class="wcard w1" onclick="showTower()"><span class="wi">✕</span><div class="wt">Times Table Tower</div><div class="ws">×2 – ×30 mastery</div></div>
+    <div class="wcard w2" onclick="showShrine()"><span class="wi">◻</span><div class="wt">Shape Shrine</div><div class="ws">Area & perimeter</div></div>
+    <div class="wcard w3" onclick="showVault()"><span class="wi">◆</span><div class="wt">Volume Vault</div><div class="ws">3D solids & formulas</div></div>
+    <div class="wcard w4" onclick="showDungeon()"><span class="wi">△</span><div class="wt">Geometry Dungeon</div><div class="ws">Angles & theorems</div></div>
+    <div class="wcard w5 cs"><span class="wi">∞</span><div class="wt">Formula Fortress</div><div class="ws">Mixed boss challenges</div><span class="soon">Coming soon</span></div>
+  </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ TOWER SELECT ═══ -->
+<div class="screen" id="screen-tower" style="display:none">
+<div class="ww">
+  <div class="bbtn" onclick="goHome()">← Home</div>
+  <div class="wtitle">⚔ Times Table Tower</div>
+  <div class="wsub">Tap any floor to battle · All 29 floors unlocked</div>
+  <button class="study-open-btn" onclick="showStudy('tower')">📖 Study All Tables First</button>
+  <div class="flist" id="floor-list"></div>
+</div>
+</div>
+
+<!-- ═══ SHRINE SELECT ═══ -->
+<div class="screen" id="screen-shrine" style="display:none">
+<div class="ww">
+  <div class="bbtn" onclick="goHome()">← Home</div>
+  <div class="wtitle">◻ Shape Shrine</div>
+  <div class="wsub">Master area & perimeter of every shape · Tap a level to enter</div>
+  <button class="study-open-btn" onclick="showStudy('shrine')">📖 Study All Shapes First</button>
+  <div class="flist" id="shrine-list"></div>
+</div>
+</div>
+
+<!-- ═══ VAULT SELECT ═══ -->
+<div class="screen" id="screen-vault" style="display:none">
+<div class="ww">
+  <div class="bbtn" onclick="goHome()">← Home</div>
+  <div class="wtitle">◆ Volume Vault</div>
+  <div class="wsub">Master volume & surface area of 3D solids · Tap a level to enter</div>
+  <button class="study-open-btn" onclick="showStudy('vault')">📖 Study All 3D Solids First</button>
+  <div id="vault-list"></div>
+</div>
+</div>
+
+<!-- ═══ DUNGEON SELECT ═══ -->
+<div class="screen" id="screen-dungeon" style="display:none">
+<div class="ww">
+  <div class="bbtn" onclick="goHome()">← Home</div>
+  <div class="wtitle">△ Geometry Dungeon</div>
+  <div class="wsub">Angles · Triangles · Circles · Theorems · Tap a chamber to enter</div>
+  <button class="study-open-btn" onclick="showStudy('dungeon')">📖 Study All Theorems First</button>
+  <div id="dungeon-list"></div>
+</div>
+</div>
+
+<!-- ═══ STUDY ═══ -->
+<div class="screen" id="screen-study" style="display:none">
+<div class="study-wrap">
+  <div class="study-topbar">
+    <div class="bbtn" style="margin:0" id="study-back-btn">← Back</div>
+    <div class="study-title" id="study-title">📖 Study</div>
+    <div style="flex:1"></div>
+  </div>
+  <div class="study-tabs" id="study-tabs"></div>
+  <div id="study-content"></div>
+</div>
+</div>
+
+<!-- ═══ DRILL ═══ -->
+<div class="screen" id="screen-drill" style="display:none">
+<div class="drill-wrap">
+  <div class="drill-header">
+    <div style="display:flex;align-items:center;gap:7px">
+      <div class="bbtn" style="margin:0" id="drill-back-btn">← Back</div>
+      <div class="drill-title" id="drill-title">🥋 Drill</div>
+    </div>
+    <div class="drill-score">
+      <div class="drill-sbox"><div class="drill-sval" id="drill-correct" style="color:var(--green)">0</div><div class="drill-slbl">Correct</div></div>
+      <div class="drill-sbox"><div class="drill-sval" id="drill-wrong" style="color:var(--red)">0</div><div class="drill-slbl">Wrong</div></div>
+    </div>
+  </div>
+  <div class="drill-hint-always" id="drill-hint-always"></div>
+  <div id="drill-svg-wrap" style="display:none;margin-bottom:10px"></div>
+  <div class="drill-q-card">
+    <div class="drill-q-label" id="drill-q-label">Question</div>
+    <div class="drill-q-text" id="drill-q-text">Loading...</div>
+  </div>
+  <div class="ansgrid" id="drill-ansgrid"></div>
+  <div class="drill-fb" id="drill-fb"></div>
+  <div class="drill-working" id="drill-working"></div>
+  <button class="drill-next-btn" id="drill-next-btn" onclick="drillNext()">Next Question →</button>
+</div>
+</div>
+
+<!-- ═══ BATTLE ═══ -->
+<div class="screen" id="screen-battle" style="display:none">
+<div class="bwrap">
+  <div class="bhdr">
+    <div style="display:flex;align-items:center;gap:7px">
+      <div class="bbtn" style="margin:0" onclick="confirmQuit()">✕ Quit</div>
+      <div class="bfl" id="bfl">Floor 1</div>
+    </div>
+    <div class="qctr" id="qctr">Q 1/10</div>
+  </div>
+  <div class="qdots" id="qdots"></div>
+  <div class="marena">
+    <div class="mhplbl" id="mhplbl">Monster HP</div>
+    <div class="mhpw"><div class="mhpb" id="mhpb" style="width:100%"></div></div>
+    <div class="mbox" id="mbox">
+      <span class="memoji" id="memoji">🟢</span>
+      <div class="mname" id="mname">Slime</div>
+      <div class="mlvl" id="mlvl">Beginner</div>
+    </div>
+  </div>
+  <div class="plrrow">
+    <div class="plrav">🧙</div>
+    <div class="plrhw"><div class="plrhb" id="plrhb" style="width:100%"></div></div>
+    <div class="plrhl" id="plrhl">HP 100/100</div>
+  </div>
+  <!-- Question area: tower uses q-card, shrine uses shape-card -->
+  <div id="q-area"></div>
+  <div class="ansgrid" id="ansgrid"></div>
+  <div id="hint-panel-wrap"></div>
+  <div class="action-row" id="action-row">
+    <button class="hint-btn" id="hint-btn" onclick="toggleHint()">💡 Hint</button>
+    <button class="show-ans-btn" id="show-ans-btn" onclick="giveUp()">🤔 Show Answer</button>
+  </div>
+  <div class="feedback hidden" id="feedback"></div>
+</div>
+</div>
+
+<!-- ═══ VICTORY ═══ -->
+<div class="screen" id="screen-victory" style="display:none">
+<div class="rwrap">
+  <span class="remoji">🏆</span>
+  <div class="rtitle" style="color:var(--amber)">Victory!</div>
+  <div class="rsub" id="vsub"></div>
+  <div id="vformula"></div>
+  <div class="rstats" id="vstats"></div>
+  <div id="vweak"></div>
+  <div class="btnrow">
+    <button class="bsec" id="vback-btn">← Map</button>
+    <button class="bpri" id="vnext-btn">Next →</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══ DEFEAT ═══ -->
+<div class="screen" id="screen-defeat" style="display:none">
+<div class="rwrap">
+  <span class="remoji">💀</span>
+  <div class="rtitle" style="color:var(--red)">Defeated!</div>
+  <div class="rsub" id="dsub"></div>
+  <div class="rstats" id="dstats"></div>
+  <div id="dweak"></div>
+  <div class="btnrow">
+    <button class="bsec" id="dback-btn">← Map</button>
+    <button class="bpri" onclick="startBattle()">Try Again!</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══ QUICK BATTLE ═══ -->
+<div class="screen" id="screen-qb" style="display:none">
+<div class="qbwrap">
+  <div class="qbhdr">
+    <div style="display:flex;align-items:center;gap:7px">
+      <div class="bbtn" style="margin:0" onclick="endQB()">✕</div>
+      <div class="qbtitle">⚡ Quick Battle</div>
+    </div>
+    <div class="qbtimer" id="qbtimer">60</div>
+  </div>
+  <div class="qbscore">
+    <div class="qbsb"><div class="qbsv" id="qbc">0</div><div class="qbsl">Correct</div></div>
+    <div class="qbsb"><div class="qbsv" id="qbw" style="color:var(--red)">0</div><div class="qbsl">Wrong</div></div>
+    <div class="qbsb"><div class="qbsv" id="qbst" style="color:var(--coral)">0</div><div class="qbsl">Streak</div></div>
+  </div>
+  <div class="shape-card" style="padding:16px">
+    <div class="shape-q-main" id="qbq">? × ? = ?</div>
+    <div class="shape-tip" style="text-align:center">Answer as fast as you can!</div>
+  </div>
+  <div class="ansgrid" id="qbans"></div>
+  <div class="feedback hidden" id="qbfb"></div>
+</div>
+</div>
+
+<!-- ═══ QB RESULT ═══ -->
+<div class="screen" id="screen-qbr" style="display:none">
+<div class="rwrap">
+  <span class="remoji" id="qbremoji">⚡</span>
+  <div class="rtitle" style="color:var(--purple)" id="qbrtitle">Time's Up!</div>
+  <div class="rsub" id="qbrsub"></div>
+  <div class="rstats" id="qbrstats"></div>
+  <div class="btnrow">
+    <button class="bsec" onclick="goHome()">Home</button>
+    <button class="bpri" onclick="startQB()">Play Again!</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// DATA: TIMES TABLE TOWER
+// ════════════════════════════════════════
+const FLOORS=[
+  {id:1,mult:2,monster:'🟢',mname:'Slime Beast',mlvl:'Beginner',maxHP:60,dmg:6,xpReward:60,formula:'2×n = n+n',fdesc:'Multiplying by 2 is just adding the number to itself!'},
+  {id:2,mult:3,monster:'👺',mname:'Goblin Mage',mlvl:'Beginner',maxHP:70,dmg:8,xpReward:70,formula:'3×n = 2n+n',fdesc:'Double it first, then add one more group.'},
+  {id:3,mult:4,monster:'👹',mname:'Stone Troll',mlvl:'Beginner',maxHP:80,dmg:9,xpReward:80,formula:'4×n = 2×(2×n)',fdesc:'×4 = double twice! 4×7→14→28.'},
+  {id:4,mult:5,monster:'🦅',mname:'Phoenix Guard',mlvl:'Easy',maxHP:80,dmg:10,xpReward:85,formula:'5×n ends in 0 or 5',fdesc:'Every ×5 answer ends in 0 or 5!'},
+  {id:5,mult:6,monster:'🦇',mname:'Shadow Vampire',mlvl:'Easy',maxHP:90,dmg:11,xpReward:90,formula:'6×n = 5n+n',fdesc:'Multiply by 5, then add the number once more.'},
+  {id:6,mult:7,monster:'🐲',mname:'Ancient Dragon',mlvl:'Easy',maxHP:95,dmg:12,xpReward:100,formula:'7×8 = 56 ★',fdesc:'5-6-7-8: 56=7×8. The sneakiest fact!'},
+  {id:7,mult:8,monster:'❄️',mname:'Frost Titan',mlvl:'Medium',maxHP:100,dmg:13,xpReward:110,formula:'8×n = double 3×',fdesc:'×8 = ×2 ×2 ×2. 8×6: 6→12→24→48.'},
+  {id:8,mult:9,monster:'🧙',mname:'Dark Wizard',mlvl:'Medium',maxHP:105,dmg:14,xpReward:120,formula:'9×n: digits sum=9',fdesc:'9×7=63, 6+3=9. Always!'},
+  {id:9,mult:10,monster:'☁️',mname:'Cloud Emperor',mlvl:'Medium',maxHP:90,dmg:10,xpReward:100,formula:'10×n = n+zero',fdesc:'Just add a zero! 10×13=130.'},
+  {id:10,mult:11,monster:'🌀',mname:'Vortex Spirit',mlvl:'Medium',maxHP:110,dmg:14,xpReward:130,formula:'11×n (1-9): repeat digit',fdesc:'11×7=77, 11×4=44.'},
+  {id:11,mult:12,monster:'👑',mname:'Math Overlord',mlvl:'Medium',maxHP:120,dmg:15,xpReward:140,formula:'12×n = 10n+2n',fdesc:'×12: ×10 then add double the number.'},
+  {id:12,mult:13,monster:'🐍',mname:'Serpent King',mlvl:'Hard',maxHP:125,dmg:16,xpReward:155,formula:'13×n = 10n+3n',fdesc:'×13: ×10 then add ×3.'},
+  {id:13,mult:14,monster:'🦁',mname:'Golden Lion',mlvl:'Hard',maxHP:130,dmg:17,xpReward:165,formula:'14×n = 10n+4n',fdesc:'×14: ×10 then ×4 (double twice).'},
+  {id:14,mult:15,monster:'🌋',mname:'Lava Golem',mlvl:'Hard',maxHP:130,dmg:17,xpReward:170,formula:'15×n = 10n+5n',fdesc:'×15: ×10 then ×5.'},
+  {id:15,mult:16,monster:'🦊',mname:'Trickster Fox',mlvl:'Hard',maxHP:135,dmg:18,xpReward:180,formula:'16×n = 2×(8×n)',fdesc:'×16 = double the ×8 answer.'},
+  {id:16,mult:17,monster:'🦈',mname:'Deep Sea Shark',mlvl:'Hard',maxHP:138,dmg:18,xpReward:190,formula:'17×n = 10n+7n',fdesc:'×17: ×10 then add ×7.'},
+  {id:17,mult:18,monster:'🐺',mname:'Alpha Werewolf',mlvl:'Hard',maxHP:140,dmg:19,xpReward:200,formula:'18×n = 20n−2n',fdesc:'×18: ×20 then subtract ×2.'},
+  {id:18,mult:19,monster:'🏔️',mname:'Mountain Titan',mlvl:'Expert',maxHP:145,dmg:20,xpReward:215,formula:'19×n = 20n−n',fdesc:'×19: ×20 then subtract once.'},
+  {id:19,mult:20,monster:'🌊',mname:'Tsunami Serpent',mlvl:'Expert',maxHP:130,dmg:16,xpReward:180,formula:'20×n = 2×10×n',fdesc:'×20: ×10 then double.'},
+  {id:20,mult:21,monster:'🕷️',mname:'Shadow Spider',mlvl:'Expert',maxHP:148,dmg:21,xpReward:225,formula:'21×n = 20n+n',fdesc:'×21: ×20 then add once more.'},
+  {id:21,mult:22,monster:'🐉',mname:'Storm Dragon',mlvl:'Expert',maxHP:150,dmg:21,xpReward:235,formula:'22×n = 20n+2n',fdesc:'×22: ×20 then add ×2.'},
+  {id:22,mult:23,monster:'🌩️',mname:'Thunder Demon',mlvl:'Expert',maxHP:153,dmg:22,xpReward:245,formula:'23×n = 20n+3n',fdesc:'×23: ×20 then ×3.'},
+  {id:23,mult:24,monster:'🔥',mname:'Inferno Wraith',mlvl:'Expert',maxHP:155,dmg:22,xpReward:255,formula:'24×n = 25n−n',fdesc:'×24: ×25 then subtract once.'},
+  {id:24,mult:25,monster:'💎',mname:'Crystal Golem',mlvl:'Expert',maxHP:140,dmg:18,xpReward:220,formula:'25×n = 100n÷4',fdesc:'×25 = ÷4 then ×100.'},
+  {id:25,mult:26,monster:'🌑',mname:'Eclipse Phantom',mlvl:'Master',maxHP:160,dmg:23,xpReward:270,formula:'26×n = 25n+n',fdesc:'×26: ×25 then add once more.'},
+  {id:26,mult:27,monster:'⚡',mname:'Lightning Hydra',mlvl:'Master',maxHP:163,dmg:24,xpReward:285,formula:'27×n = 30n−3n',fdesc:'×27: ×30 then subtract ×3.'},
+  {id:27,mult:28,monster:'🌪️',mname:'Chaos Cyclone',mlvl:'Master',maxHP:165,dmg:24,xpReward:295,formula:'28×n = 30n−2n',fdesc:'×28: ×30 then subtract ×2.'},
+  {id:28,mult:29,monster:'🌙',mname:'Moon Sorcerer',mlvl:'Master',maxHP:168,dmg:25,xpReward:310,formula:'29×n = 30n−n',fdesc:'×29: ×30 then subtract once.'},
+  {id:29,mult:30,monster:'🏆',mname:'THE MATH TITAN',mlvl:'FINAL BOSS',maxHP:250,dmg:30,xpReward:500,formula:'30×n = 3×10×n',fdesc:'×30: ×10 then ×3. You are a legend!'},
+];
+
+// ════════════════════════════════════════
+// DATA: SHAPE SHRINE
+// Each level = a shape + question type
+// Questions generated dynamically with SVG diagrams
+// ════════════════════════════════════════
+const SHRINE_LEVELS = [
+  {id:'s1', name:'Square Garden',    type:'area',  shape:'square',   monster:'🌱',mname:'Garden Gnome',  mlvl:'Beginner', maxHP:60, dmg:6, xpReward:70,
+   formula:'Area = s²',             fdesc:'Side × Side. A square with side 5 has area 25!',  color:'ssl-area',
+   tip:'For a square, just multiply the side by itself.',
+   why:'Imagine tiling the square with 1cm × 1cm unit squares. You get s rows of s tiles — that is s × s = s² tiles in total.'},
+  {id:'s2', name:'Rectangle Room',   type:'area',  shape:'rect',     monster:'🧱',mname:'Brick Golem',   mlvl:'Beginner', maxHP:70, dmg:8, xpReward:80,
+   formula:'Area = l × w',          fdesc:'Length × Width. Count the rows of unit squares!', color:'ssl-area',
+   tip:'Count how many rows of unit squares fit inside.',
+   why:'Fill the rectangle with unit squares: there are w rows and l tiles in each row. Total tiles = l × w — that is the area.'},
+  {id:'s3', name:'Triangle Peak',    type:'area',  shape:'triangle', monster:'⛰️',mname:'Rock Sprite',   mlvl:'Easy',     maxHP:80, dmg:10,xpReward:95,
+   formula:'Area = ½ × b × h',      fdesc:'Half of base × height. Triangles are half a rectangle!', color:'ssl-tri',
+   tip:'A triangle is always half of the rectangle around it!',
+   why:'Any triangle fits exactly inside a rectangle of the same base and height. The diagonal of that rectangle cuts it into two equal triangles — so a triangle is always exactly half the rectangle.'},
+  {id:'s4', name:'Circle Pond',      type:'area',  shape:'circle',   monster:'🌊',mname:'Water Nymph',   mlvl:'Easy',     maxHP:85, dmg:11,xpReward:100,
+   formula:'Area = π × r²',         fdesc:'Pi × radius². Use π ≈ 3.14 or 22/7.', color:'ssl-circle',
+   tip:'Remember π ≈ 3.14. Square the radius first, then multiply!',
+   why:'Slice a circle into many thin sectors and rearrange them into a near-rectangle. The width becomes r, the length becomes πr (half the circumference). Area = length × width = πr × r = πr².'},
+  {id:'s5', name:'Parallelogram Plains',type:'area',shape:'parallelogram',monster:'🏜️',mname:'Sand Warrior',mlvl:'Medium',maxHP:90,dmg:12,xpReward:110,
+   formula:'Area = b × h',          fdesc:'Base × perpendicular height. Same as a rectangle!', color:'ssl-area',
+   tip:'Shear the parallelogram into a rectangle — same base, same height.',
+   why:'Cut the triangle off one end of the parallelogram and slide it to the other end. It transforms perfectly into a rectangle with the same base and the same height.'},
+  {id:'s6', name:'Trapezium Tower',  type:'area',  shape:'trapezium',monster:'🏰',mname:'Tower Knight',  mlvl:'Medium',   maxHP:95, dmg:13,xpReward:120,
+   formula:'Area = ½(a+b)×h',       fdesc:'Average the two parallel sides, then multiply by height!', color:'ssl-area',
+   tip:'Add both parallel sides, halve it, then × height.',
+   why:'Duplicate the trapezium and flip it. The two together form a parallelogram with base (a+b) and height h. That parallelogram\'s area is (a+b)×h, so one trapezium is half of that.'},
+  {id:'s7', name:'Square Fence',     type:'peri',  shape:'square',   monster:'🦔',mname:'Hedge Hog',     mlvl:'Beginner', maxHP:65, dmg:7, xpReward:75,
+   formula:'Perimeter = 4s',         fdesc:'4 × side. All four sides are equal!', color:'ssl-peri',
+   tip:'A square has 4 equal sides — just multiply by 4!',
+   why:'Perimeter means "walk around the outside". A square has 4 identical sides, so the total distance is 4 copies of the side length.'},
+  {id:'s8', name:'Rectangle Track',  type:'peri',  shape:'rect',     monster:'🐇',mname:'Racing Rabbit',  mlvl:'Easy',     maxHP:75, dmg:9, xpReward:90,
+   formula:'Perimeter = 2(l+w)',     fdesc:'2 × (length + width). Go around the whole shape!', color:'ssl-peri',
+   tip:'Add length + width, then double it — two of each side.',
+   why:'A rectangle has 2 long sides and 2 short sides. Walk one long + one short = l+w. Then walk the same thing again on the other two sides. Total = 2(l+w).'},
+  {id:'s9', name:'Triangle Trail',   type:'peri',  shape:'triangle', monster:'🦎',mname:'Gecko Guard',    mlvl:'Easy',     maxHP:80, dmg:10,xpReward:95,
+   formula:'Perimeter = a+b+c',      fdesc:'Add ALL three sides together.', color:'ssl-peri',
+   tip:'Just walk around: add all 3 sides!',
+   why:'Perimeter is the total boundary length. A triangle has 3 sides. Walk along each one and add them up — there is no shortcut formula because the sides can all be different lengths.'},
+  {id:'s10',name:'Circle Ring',      type:'peri',  shape:'circle',   monster:'🐍',mname:'Circle Serpent', mlvl:'Medium',   maxHP:90, dmg:12,xpReward:110,
+   formula:'Circumference = 2πr',    fdesc:'2 × π × radius. Pi is the magic ratio of any circle!', color:'ssl-circle',
+   tip:'Diameter × π. Or 2 × radius × π. Both work!',
+   why:'π (pi) is defined as the ratio of circumference to diameter for ANY circle. So C = π × d = π × 2r = 2πr. This ratio is always ≈ 3.14159... no matter how big the circle.'},
+  {id:'s11',name:'Compound Courtyard',type:'mixed',shape:'compound', monster:'🗿',mname:'Stone Guardian',mlvl:'Hard',     maxHP:110,dmg:15,xpReward:140,
+   formula:'Split into simpler shapes',fdesc:'Break compound shapes into rectangles or triangles, calculate each and add!', color:'ssl-mixed',
+   tip:'Spot the rectangle + the extra bit. Calculate each area separately, then add.',
+   why:'Area is additive — the total area of a composite shape is just the sum of its parts. Break it at obvious seams into rectangles or triangles, calculate each, then combine.'},
+  {id:'s12',name:'Rhombus Realm',    type:'area',  shape:'rhombus',  monster:'💠',mname:'Diamond Demon',  mlvl:'Hard',     maxHP:115,dmg:16,xpReward:150,
+   formula:'Area = ½ × d1 × d2',    fdesc:'Half of (diagonal1 × diagonal2). Diagonals bisect at right angles!', color:'ssl-mixed',
+   tip:'Multiply both diagonals together, then halve the result.',
+   why:'The diagonals cut the rhombus into 4 right triangles. The bounding rectangle has sides d1 and d2. The rhombus fills exactly half of that rectangle, so Area = ½ × d1 × d2.'},
+  {id:'s13',name:'Sector Shrine',    type:'area',  shape:'sector',   monster:'🌙',mname:'Moon Witch',     mlvl:'Expert',   maxHP:125,dmg:18,xpReward:165,
+   formula:'Area = (θ/360)×πr²',    fdesc:'Fraction of full circle × πr². A semicircle is θ=180!', color:'ssl-circle',
+   tip:'What fraction of a full circle is your sector? Multiply that by πr².',
+   why:'A full circle (360°) has area πr². A sector is just a fraction θ/360 of that full circle. So its area is that same fraction of πr².'},
+  {id:'s14',name:'Boss: Mixed Shapes',type:'boss', shape:'mixed',    monster:'🏛️',mname:'GEOMETRY TITAN', mlvl:'BOSS',     maxHP:200,dmg:22,xpReward:350,
+   formula:'All formulas!',          fdesc:'Area & perimeter of any shape. You know them all — prove it!', color:'ssl-mixed',
+   tip:'Stay calm. Read what the question asks. Choose the right formula!',
+   why:'Every area formula ultimately counts how many unit squares fit inside a shape. Every perimeter formula counts the total boundary length. Both ideas come from the same root: measuring space.'},
+];
+
+// SVG shape drawing — returns an SVG string for given shape + dimensions
+function shapesvg(shape, dims, qtype) {
+  const W=110, H=90;
+  const stroke = 'var(--purple)';
+  const fill = 'rgba(124,58,237,0.1)';
+  const tfill = 'rgba(124,58,237,0.08)';
+  const lc = 'var(--t2)'; // label color
+  const ls = '11px';
+  function label(x,y,txt,anchor='middle'){return `<text x="${x}" y="${y}" fill="${lc}" font-size="${ls}" font-family="Nunito,sans-serif" text-anchor="${anchor}" dominant-baseline="middle">${txt}</text>`;}
+  function dim(x1,y1,x2,y2,txt){
+    const mx=(x1+x2)/2, my=(y1+y2)/2;
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${lc}" stroke-width="1" stroke-dasharray="3,2"/>${label(mx+3,my-6,txt)}`;
+  }
+  let inner = '';
+  if (shape==='square') {
+    const s=dims.s, sc=60/Math.max(s,1);
+    const px=25, py=15, pw=60, ph=60;
+    inner=`<rect x="${px}" y="${py}" width="${pw}" height="${ph}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+    ${label(px+pw/2,py+ph/2,qtype==='area'?`s=${s}`:`s=${s}`)}
+    ${dim(px,py-8,px+pw,py-8,`${s}`)}
+    ${dim(px-8,py,px-8,py+ph,`${s}`)}`;
+  } else if (shape==='rect') {
+    const l=dims.l, w=dims.w;
+    const px=10, py=20, pw=90, ph=52;
+    inner=`<rect x="${px}" y="${py}" width="${pw}" height="${ph}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+    ${dim(px,py-8,px+pw,py-8,`${l}`)}
+    ${dim(px+pw+5,py,px+pw+5,py+ph,`${w}`)}`;
+  } else if (shape==='triangle') {
+    const b=dims.b, h=dims.h;
+    const bx=10, by=78, tx=55, ty=8;
+    inner=`<polygon points="${bx},${by} ${bx+90},${by} ${tx},${ty}" fill="${tfill}" stroke="${stroke}" stroke-width="2"/>
+    ${dim(bx,by+8,bx+90,by+8,`b=${b}`)}
+    <line x1="${tx}" y1="${ty}" x2="${tx}" y2="${by}" stroke="${lc}" stroke-width="1" stroke-dasharray="3,2"/>
+    ${label(tx+10,(ty+by)/2,`h=${h}`,'start')}`;
+  } else if (shape==='circle') {
+    const r=dims.r;
+    inner=`<circle cx="55" cy="46" r="36" fill="${tfill}" stroke="${stroke}" stroke-width="2"/>
+    <line x1="55" y1="46" x2="91" y2="46" stroke="${lc}" stroke-width="1.5" stroke-dasharray="3,2"/>
+    ${label(73,38,`r=${r}`)}`;
+  } else if (shape==='parallelogram') {
+    const b=dims.b, h=dims.h;
+    inner=`<polygon points="25,75 85,75 95,15 35,15" fill="${tfill}" stroke="${stroke}" stroke-width="2"/>
+    ${dim(25,83,85,83,`b=${b}`)}
+    <line x1="85" y1="15" x2="85" y2="75" stroke="${lc}" stroke-width="1" stroke-dasharray="3,2"/>
+    ${label(97,45,`h=${h}`,'start')}`;
+  } else if (shape==='trapezium') {
+    const a=dims.a, b=dims.b, h=dims.h;
+    inner=`<polygon points="20,72 90,72 78,18 32,18" fill="${tfill}" stroke="${stroke}" stroke-width="2"/>
+    ${dim(20,80,90,80,`b=${b}`)}
+    ${dim(32,10,78,10,`a=${a}`)}
+    <line x1="85" y1="18" x2="85" y2="72" stroke="${lc}" stroke-width="1" stroke-dasharray="3,2"/>
+    ${label(97,45,`h=${h}`,'start')}`;
+  } else if (shape==='rhombus') {
+    const d1=dims.d1, d2=dims.d2;
+    inner=`<polygon points="55,10 100,46 55,82 10,46" fill="${tfill}" stroke="${stroke}" stroke-width="2"/>
+    <line x1="10" y1="46" x2="100" y2="46" stroke="${lc}" stroke-width="1" stroke-dasharray="3,2"/>
+    <line x1="55" y1="10" x2="55" y2="82" stroke="${lc}" stroke-width="1" stroke-dasharray="3,2"/>
+    ${label(55,54,`d1=${d1}`)}
+    ${label(80,40,`d2=${d2}`,'start')}`;
+  } else if (shape==='sector') {
+    const r=dims.r, deg=dims.deg;
+    const rad=deg*Math.PI/180;
+    const x2=55+38*Math.cos(-Math.PI/2), y2=50+38*Math.sin(-Math.PI/2);
+    const x3=55+38*Math.cos(-Math.PI/2+rad), y3=50+38*Math.sin(-Math.PI/2+rad);
+    const lg=deg>180?1:0;
+    inner=`<path d="M55,50 L${x2.toFixed(1)},${y2.toFixed(1)} A38,38 0 ${lg},1 ${x3.toFixed(1)},${y3.toFixed(1)} Z" fill="${tfill}" stroke="${stroke}" stroke-width="2"/>
+    <line x1="55" y1="50" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${lc}" stroke-width="1" stroke-dasharray="3,2"/>
+    ${label(68,38,`r=${r}`)}
+    ${label(55,70,`${deg}°`)}`;
+  } else if (shape==='compound') {
+    inner=`<rect x="10" y="30" width="60" height="50" fill="${tfill}" stroke="${stroke}" stroke-width="2"/>
+    <rect x="70" y="30" width="30" height="30" fill="rgba(219,39,119,0.08)" stroke="var(--pink)" stroke-width="1.5"/>
+    ${label(40,55,'Rect A')}${label(85,45,'B')}`;
+  } else if (shape==='mixed') {
+    inner=`<rect x="5" y="40" width="45" height="40" fill="${tfill}" stroke="${stroke}" stroke-width="2"/>
+    <circle cx="80" cy="55" r="22" fill="rgba(219,39,119,0.08)" stroke="var(--pink)" stroke-width="2"/>
+    ${label(27,60,'?')}${label(80,55,'?')}`;
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">${inner}</svg>`;
+}
+
+// Generate a shape question
+function genShapeQ(level) {
+  const s = level.shape;
+  const t = level.type;
+  // pick random dimensions
+  let dims={}, questionText='', answer=0, unit='cm', formulaUsed='';
+
+  if (s==='square') {
+    const side = rnd(2,15);
+    dims={s:side};
+    if (t==='area') { answer=side*side; questionText=`Find the AREA of a square with side ${side}${unit}`; formulaUsed=`${side}² = ${answer}`; }
+    else            { answer=4*side;   questionText=`Find the PERIMETER of a square with side ${side}${unit}`; formulaUsed=`4×${side} = ${answer}`; }
+  } else if (s==='rect') {
+    const l=rnd(3,18), w=rnd(2,12);
+    dims={l,w};
+    if (t==='area') { answer=l*w; questionText=`Find the AREA of a rectangle ${l}×${w}${unit}`; formulaUsed=`${l}×${w} = ${answer}`; }
+    else            { answer=2*(l+w); questionText=`Find the PERIMETER of a rectangle ${l}×${w}${unit}`; formulaUsed=`2×(${l}+${w}) = ${answer}`; }
+  } else if (s==='triangle') {
+    const b=rnd(4,16), h=rnd(3,12);
+    dims={b,h};
+    answer=Math.round(0.5*b*h);
+    questionText=`Find the AREA of a triangle with base ${b}${unit}, height ${h}${unit}`;
+    formulaUsed=`½×${b}×${h} = ${answer}`;
+  } else if (s==='circle') {
+    const r=rnd(2,10);
+    dims={r};
+    if (t==='area') { answer=Math.round(3.14*r*r); questionText=`Find the AREA of a circle with radius ${r}${unit} (use π=3.14)`; formulaUsed=`3.14×${r}² = ${answer}`; }
+    else            { answer=Math.round(2*3.14*r); questionText=`Find the CIRCUMFERENCE of a circle with radius ${r}${unit} (use π=3.14)`; formulaUsed=`2×3.14×${r} = ${answer}`; }
+  } else if (s==='parallelogram') {
+    const b=rnd(4,16), h=rnd(3,10);
+    dims={b,h};
+    answer=b*h; questionText=`Find the AREA of a parallelogram with base ${b}${unit}, height ${h}${unit}`; formulaUsed=`${b}×${h} = ${answer}`;
+  } else if (s==='trapezium') {
+    const a=rnd(3,10), b=rnd(6,16), h=rnd(3,10);
+    dims={a,b,h};
+    answer=Math.round(0.5*(a+b)*h); questionText=`Find the AREA of a trapezium: parallel sides ${a}${unit} & ${b}${unit}, height ${h}${unit}`; formulaUsed=`½×(${a}+${b})×${h} = ${answer}`;
+  } else if (s==='rhombus') {
+    const d1=rnd(4,16)*2, d2=rnd(3,10)*2; // even numbers
+    dims={d1,d2};
+    answer=Math.round(0.5*d1*d2); questionText=`Find the AREA of a rhombus with diagonals ${d1}${unit} and ${d2}${unit}`; formulaUsed=`½×${d1}×${d2} = ${answer}`;
+  } else if (s==='sector') {
+    const r=rnd(3,10), degs=[30,45,60,90,120,180][Math.floor(Math.random()*6)];
+    dims={r,deg:degs};
+    answer=Math.round((degs/360)*3.14*r*r); questionText=`Find the AREA of a sector: radius ${r}${unit}, angle ${degs}° (use π=3.14)`; formulaUsed=`(${degs}/360)×3.14×${r}² = ${answer}`;
+  } else if (s==='compound') {
+    const l1=rnd(4,10), w1=rnd(4,8), l2=rnd(2,6), w2=rnd(2,5);
+    dims={};
+    answer=l1*w1+l2*w2; questionText=`Rectangle A is ${l1}×${w1}${unit}. Rectangle B is ${l2}×${w2}${unit}. Find the TOTAL area.`; formulaUsed=`${l1*w1}+${l2*w2} = ${answer}`;
+  } else if (s==='mixed') {
+    // pick a random shape from earlier types
+    const pick=['square','rect','triangle','circle'][Math.floor(Math.random()*4)];
+    return genShapeQ({...level, shape:pick, type:Math.random()<.5?'area':'peri'});
+  }
+  return {dims, questionText, answer, formulaUsed, shapeType:s};
+}
+
+function rnd(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+
+// Generate answer options for shape questions (numeric, similar values)
+function genShapeOpts(correct) {
+  const o = new Set([correct]);
+  const deltas = shuf([1,2,3,4,5,6,8,10,-1,-2,-3,-4,-5,-6,-8,-10]);
+  for (const d of deltas) {
+    if (o.size>=4) break;
+    const c = correct + d;
+    if (c > 0 && c !== correct) o.add(c);
+  }
+  // Also try percentage-based variants
+  for (const pct of [0.1,0.2,0.25,0.5,-0.1,-0.2,-0.25]) {
+    if (o.size>=4) break;
+    const c = Math.round(correct*(1+pct));
+    if (c>0 && c!==correct) o.add(c);
+  }
+  let p=1;
+  while(o.size<4&&p<200){if(!o.has(correct+p)&&correct+p>0)o.add(correct+p);if(o.size<4&&!o.has(correct-p)&&correct-p>0)o.add(correct-p);p++;}
+  return shuf([...o].slice(0,4));
+}
+
+// ════════════════════════════════════════
+// GAME STATE
+// ════════════════════════════════════════
+const QC=10, TSEC=12, PHP=100, XPL=300;
+let S={
+  xp:0,level:1,streak:0,
+  world:'tower', // 'tower' | 'shrine'
+  floor:0,
+  shLevel:0,    // shrine level index
+  plrHP:PHP, monHP:0,monMaxHP:0,
+  qs:[],qi:0,results:[],
+  weak:{}, cleared:new Set(), shrineCleared:new Set(), vaultCleared:new Set(), dungeonCleared:new Set(),
+  tid:null,tleft:TSEC,answered:false,xpg:0,
+  mode:'story',
+  vaultLevel:0, dungeonLevel:0,
+  qbTid:null,qbLeft:60,qbC:0,qbW:0,qbSt:0,
+  currentShapeQ:null, // holds the current shrine question object
+};
+
+// ════════════════════════════════════════
+// THEME
+// ════════════════════════════════════════
+function toggleTheme(){
+  const h=document.documentElement,dk=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',dk?'light':'dark');
+  document.getElementById('tbtn').textContent=dk?'🌙':'☀️';
+}
+
+// ════════════════════════════════════════
+// DOTS
+// ════════════════════════════════════════
+(()=>{const c=document.getElementById('bgdots');for(let i=0;i<55;i++){const d=document.createElement('div');d.className='bg-dot';const sz=Math.random()*3+1;d.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${(Math.random()*3+2).toFixed(1)}s;--dl:${(Math.random()*5).toFixed(1)}s;--op:${(Math.random()*.2+.05).toFixed(2)}`;c.appendChild(d);}})();
+
+// ════════════════════════════════════════
+// HUD
+// ════════════════════════════════════════
+function updateHUD(){
+  const xl=S.xp-(S.level-1)*XPL,pct=Math.min(100,xl/XPL*100);
+  document.getElementById('hxp').textContent=S.xp;
+  document.getElementById('hlvl').textContent=S.level;
+  document.getElementById('hstr').textContent=S.streak;
+  document.getElementById('xpbar').style.width=pct+'%';
+  document.getElementById('snxp').textContent=S.xp;
+  document.getElementById('snstr').textContent=S.streak;
+  document.getElementById('snclr').textContent=S.cleared.size+S.shrineCleared.size+S.vaultCleared.size+S.dungeonCleared.size;
+  document.getElementById('snlvl').textContent=S.level;
+  document.getElementById('snbar').style.width=pct+'%';
+}
+function addXP(n){S.xp+=n;S.xpg+=n;const nl=Math.floor(S.xp/XPL)+1;if(nl>S.level){S.level=nl;toast('LEVEL UP! Level '+S.level+' ⚡');}updateHUD();}
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1500);}
+
+// ════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════
+const SCRS=['home','tower','shrine','vault','dungeon','study','drill','battle','victory','defeat','qb','qbr'];
+function show(n){SCRS.forEach(s=>{const e=document.getElementById('screen-'+s);if(e)e.style.display=s===n?'flex':'none';});}
+function goHome(){clearInterval(S.tid);clearInterval(S.qbTid);show('home');updateHUD();}
+function confirmQuit(){clearInterval(S.tid);if(S.world==='shrine')showShrine();else if(S.world==='vault')showVault();else if(S.world==='dungeon')showDungeon();else showTower();}
+
+// ════════════════════════════════════════
+// TOWER SELECT
+// ════════════════════════════════════════
+function showTower(){show('tower');renderFloorList();}
+function renderFloorList(){
+  const c=document.getElementById('floor-list');c.innerHTML='';
+  FLOORS.forEach((f,i)=>{
+    const done=S.cleared.has(f.id);
+    const b=document.createElement('div');b.className='fbtn';
+    b.innerHTML=`
+      <div class="fic">${f.monster}</div>
+      <div class="finf">
+        <div class="fnm">Floor ${f.id}: ×${f.mult} Table</div>
+        <div class="fds">${f.mname} · ${f.mlvl}${done?' · <span style="color:var(--green)">✓ Done</span>':''}</div>
+        <div class="level-actions">
+          <button class="lbtn lbtn-fight" onclick="event.stopPropagation();S.floor=${i};S.world='tower';S.mode='story';startBattle()">⚔ Fight</button>
+          <button class="lbtn lbtn-drill" onclick="event.stopPropagation();startDrill('tower',${i})">🥋 Drill</button>
+        </div>
+      </div>`;
+    c.appendChild(b);
+  });
+}
+
+// ════════════════════════════════════════
+// SHAPE SHRINE SELECT
+// ════════════════════════════════════════
+function showShrine(){show('shrine');renderShrineList();}
+function renderShrineList(){
+  const c=document.getElementById('shrine-list');c.innerHTML='';
+  // Section headers
+  const sections=[
+    {label:'Area',      levels:SHRINE_LEVELS.filter(l=>l.type==='area')},
+    {label:'Perimeter', levels:SHRINE_LEVELS.filter(l=>l.type==='peri')},
+    {label:'Mixed & Advanced', levels:SHRINE_LEVELS.filter(l=>l.type==='mixed'||l.type==='boss')},
+  ];
+  sections.forEach(sec=>{
+    const hdr=document.createElement('div');hdr.className='slbl';hdr.style.marginTop='12px';hdr.textContent=sec.label;
+    c.appendChild(hdr);
+    const grid=document.createElement('div');grid.className='sslevels';
+    sec.levels.forEach(lv=>{
+      const done=S.shrineCleared.has(lv.id);
+      const card=document.createElement('div');
+      card.className=`sslcard ${lv.color}${done?' done':''}`;
+      const idx=SHRINE_LEVELS.indexOf(lv);
+      card.innerHTML=`<span class="sslic">${lv.monster}</span><div class="sslt">${lv.name}</div><div class="ssls">${lv.type==='area'?'Area':lv.type==='peri'?'Perimeter':lv.type==='boss'?'⚔ BOSS':'Mixed'} · ${lv.mlvl}</div>${done?'<div style="font-size:10px;font-weight:800;color:var(--green);margin-top:2px">✓ Done</div>':''}
+        <div class="level-actions">
+          <button class="lbtn lbtn-fight" onclick="event.stopPropagation();S.shLevel=${idx};S.world='shrine';S.mode='story';startBattle()">⚔ Fight</button>
+          <button class="lbtn lbtn-drill" onclick="event.stopPropagation();startDrill('shrine',${idx})">🥋 Drill</button>
+        </div>`;
+      grid.appendChild(card);
+    });
+    c.appendChild(grid);
+  });
+}
+
+// ════════════════════════════════════════
+// DATA + LOGIC: VOLUME VAULT
+// ════════════════════════════════════════
+const VAULT_LEVELS = [
+  {id:'v1', name:'Cuboid Cave',      type:'vol', shape:'cuboid',    monster:'📦',mname:'Box Brute',       mlvl:'Beginner',maxHP:65, dmg:7, xpReward:80,
+   formula:'V = l × w × h',          fdesc:'Length × Width × Height — count the unit cubes stacked in layers!', color:'vv-vol',
+   tip:'Think of it as stacking layers of rectangles on top of each other.',
+   why:'Imagine filling the cuboid with 1cm³ unit cubes. Each layer holds l×w cubes. There are h layers. Total = l×w×h.'},
+  {id:'v2', name:'Cube Kingdom',     type:'vol', shape:'cube',      monster:'🎲',mname:'Cube Warrior',    mlvl:'Beginner',maxHP:65, dmg:7, xpReward:80,
+   formula:'V = s³',                  fdesc:'Side cubed — multiply the side by itself three times!', color:'vv-vol',
+   tip:'A cube is a special cuboid where all sides are equal — just cube the side!',
+   why:'A cube is a cuboid with l=w=h=s. So V=l×w×h=s×s×s=s³. "Cubing" a number gets its name from this exact fact.'},
+  {id:'v3', name:'Prism Pass',       type:'vol', shape:'triprism',  monster:'🏕️',mname:'Prism Phantom',   mlvl:'Easy',    maxHP:80, dmg:10,xpReward:95,
+   formula:'V = ½bh × l',            fdesc:'Area of triangular face × length. Slice the prism into triangular layers!', color:'vv-vol',
+   tip:'Find the triangle area first (½×b×h), then multiply by the prism length.',
+   why:'Any prism\'s volume = cross-sectional area × length. The cross-section here is a triangle with area ½bh. Multiply by the prism length to get total volume.'},
+  {id:'v4', name:'Cylinder Springs', type:'vol', shape:'cylinder',  monster:'🥫',mname:'Tin Can Titan',   mlvl:'Easy',    maxHP:85, dmg:11,xpReward:100,
+   formula:'V = π × r² × h',         fdesc:'Circle area × height. Stack circular discs to fill the cylinder!', color:'vv-vol',
+   tip:'Find the circle area (πr²) first, then multiply by the height.',
+   why:'A cylinder is like a prism with a circular cross-section. Stack infinitely thin circular discs of area πr². Piling h units of them gives total volume = πr²×h.'},
+  {id:'v5', name:'Pyramid Peak',     type:'vol', shape:'pyramid',   monster:'🔺',mname:'Pyramid Pharaoh', mlvl:'Medium',  maxHP:95, dmg:12,xpReward:115,
+   formula:'V = ⅓ × l × w × h',      fdesc:'One third of a cuboid. Three pyramids fit inside one cuboid!', color:'vv-vol',
+   tip:'Calculate l×w×h first, then divide by 3. Pyramids are ⅓ of a box!',
+   why:'You can dissect any cuboid into exactly 3 pyramids of equal volume. So each pyramid is exactly one third of the cuboid that surrounds it.'},
+  {id:'v6', name:'Cone Cavern',      type:'vol', shape:'cone',      monster:'🍦',mname:'Ice Cream Demon', mlvl:'Medium',  maxHP:100,dmg:13,xpReward:120,
+   formula:'V = ⅓ × π × r² × h',    fdesc:'One third of a cylinder. Pour a cone into a cylinder — fills ⅓!', color:'vv-vol',
+   tip:'Find the cylinder volume (πr²h) first, then divide by 3.',
+   why:'Cavalieri\'s principle and calculus both confirm: a cone is exactly ⅓ of the cylinder with the same base and height. Fill a cone with water and pour it into its matching cylinder — it takes exactly 3 cones to fill it.'},
+  {id:'v7', name:'Sphere Summit',    type:'vol', shape:'sphere',    monster:'🌍',mname:'Globe Guardian',  mlvl:'Hard',    maxHP:110,dmg:15,xpReward:135,
+   formula:'V = 4/3 × π × r³',       fdesc:'Four thirds of π × radius cubed. Archimedes discovered this!', color:'vv-vol',
+   tip:'Cube the radius first, then multiply by π, then by 4, then divide by 3.',
+   why:'Archimedes proved: a sphere fits inside a cylinder of radius r and height 2r. The sphere\'s volume is exactly ⅔ of that cylinder\'s volume. Cylinder V = πr²×2r = 2πr³. ⅔ of that = 4/3πr³.'},
+  {id:'v8', name:'Cuboid Wrap',      type:'sa',  shape:'cuboid',    monster:'🎁',mname:'Wrap Wraith',     mlvl:'Easy',    maxHP:80, dmg:10,xpReward:95,
+   formula:'SA = 2(lw+lh+wh)',       fdesc:'6 rectangular faces in 3 pairs — add each pair and double!', color:'vv-sa',
+   tip:'There are 3 pairs of faces. Find each pair\'s area, add them, then double.',
+   why:'A cuboid has 6 faces: top+bottom (each l×w), front+back (each l×h), left+right (each w×h). Each pair appears twice, so SA = 2(lw+lh+wh).'},
+  {id:'v9', name:'Cube Coat',        type:'sa',  shape:'cube',      monster:'🧊',mname:'Frost Cube',      mlvl:'Easy',    maxHP:80, dmg:10,xpReward:90,
+   formula:'SA = 6s²',               fdesc:'6 identical square faces — find one face area and multiply by 6!', color:'vv-sa',
+   tip:'All 6 faces are the same. Just find s² and multiply by 6!',
+   why:'A cube is a cuboid with l=w=h=s. The general formula SA=2(lw+lh+wh) becomes 2(s²+s²+s²)=2×3s²=6s².'},
+  {id:'v10',name:'Cylinder Shell',   type:'sa',  shape:'cylinder',  monster:'🥁',mname:'Drum Demon',      mlvl:'Medium',  maxHP:95, dmg:12,xpReward:110,
+   formula:'SA = 2πr² + 2πrh',      fdesc:'Two circle ends + one rolled rectangle for the curved side!', color:'vv-sa',
+   tip:'Unroll the curved surface — it\'s a rectangle with width 2πr and height h!',
+   why:'Imagine unrolling the curved surface: it becomes a flat rectangle. Its height is h and its width is the circumference 2πr. Add the two circular end-caps (each πr²) to get total SA = 2πr²+2πrh.'},
+  {id:'v11',name:'Cone Cloak',       type:'sa',  shape:'cone',      monster:'🌋',mname:'Volcano Imp',     mlvl:'Hard',    maxHP:110,dmg:14,xpReward:130,
+   formula:'SA = πr² + πrl',         fdesc:'Circle base + curved surface. l is the slant height!', color:'vv-sa',
+   tip:'The curved surface unrolls to a sector. Always use slant height l, not h!',
+   why:'Unroll the cone\'s curved surface — it becomes a sector of a circle with radius l (slant height) and arc length 2πr. That sector\'s area = πrl. Add the base circle πr² to get total SA.'},
+  {id:'v12',name:'Sphere Skin',      type:'sa',  shape:'sphere',    monster:'🪐',mname:'Planet Phantom',  mlvl:'Hard',    maxHP:115,dmg:15,xpReward:140,
+   formula:'SA = 4 × π × r²',        fdesc:'4 times the area of a great circle — Archimedes proved this too!', color:'vv-sa',
+   tip:'It\'s exactly 4 times the circle area. Just find πr² and multiply by 4!',
+   why:'Archimedes proved the sphere\'s surface equals the curved surface of its enclosing cylinder (radius r, height 2r). That curved surface = 2πr×2r = 4πr². A beautiful result!'},
+  {id:'v13',name:'Composite Vault',  type:'mixed',shape:'composite', monster:'🏗️',mname:'Constructor King',mlvl:'Expert',  maxHP:140,dmg:18,xpReward:180,
+   formula:'Combine V and SA',        fdesc:'Add or subtract volumes of basic solids to find composite solid volumes!', color:'vv-boss',
+   tip:'Break the shape apart. Calculate each piece separately. Then add or subtract!',
+   why:'Volume is additive: you can glue solids together or carve one out of another. The total volume is the sum (or difference) of the parts. The same logic applies to surface area, but be careful — shared faces must not be counted.'},
+  {id:'v14',name:'BOSS: Vault Lord', type:'boss', shape:'mixed3d',  monster:'🌌',mname:'THE VAULT LORD',  mlvl:'FINAL BOSS',maxHP:220,dmg:25,xpReward:400,
+   formula:'All 3D formulas!',        fdesc:'Volume & surface area of any solid. You\'ve mastered the vault — prove it!', color:'vv-boss',
+   tip:'Stay calm. Identify the solid first. Pick the right formula. You\'ve got this!',
+   why:'All volume formulas share one root: V = base area × height (with a fraction for tapered shapes). All surface area formulas sum the areas of individual faces or curved surfaces. Recognise the shape, apply the pattern.'},
+];
+
+// ── Isometric 3D SVG shapes ────────────────────────────────
+function solidSVG(shape, dims) {
+  const lc='var(--t2)', ls='10px';
+  function lbl(x,y,t,a='middle'){return `<text x="${x}" y="${y}" fill="${lc}" font-size="${ls}" font-family="Nunito,sans-serif" text-anchor="${a}" dominant-baseline="middle">${t}</text>`;}
+  const stroke='var(--purple)', fill='rgba(124,58,237,0.13)', fill2='rgba(124,58,237,0.07)', fill3='rgba(124,58,237,0.2)';
+  const amber='rgba(217,119,6,0.15)';
+  let inner='';
+
+  if(shape==='cuboid'||shape==='cube'){
+    // isometric cuboid
+    const {l,w,h}=dims;
+    // fixed pixel box — dims shown as labels
+    inner=`
+      <polygon points="55,20 90,36 90,72 55,56" fill="${fill3}" stroke="${stroke}" stroke-width="1.8"/>
+      <polygon points="20,36 55,20 55,56 20,72" fill="${fill}" stroke="${stroke}" stroke-width="1.8"/>
+      <polygon points="20,36 55,20 90,36 55,52" fill="${fill2}" stroke="${stroke}" stroke-width="1.8"/>
+      <polygon points="20,36 55,52 55,72 20,72" fill="${fill}" stroke="${stroke}" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <line x1="55" y1="52" x2="55" y2="72" stroke="${stroke}" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <line x1="55" y1="52" x2="90" y2="36" stroke="${stroke}" stroke-width="1.5" stroke-dasharray="3,2"/>
+      ${lbl(72,28,`l=${l}`)} ${lbl(97,54,`h=${h}`,'start')} ${lbl(33,74,`w=${w}`)}`;
+  } else if(shape==='triprism'){
+    const {b,h,l}=dims;
+    inner=`
+      <polygon points="30,70 60,35 90,70" fill="${fill}" stroke="${stroke}" stroke-width="1.8"/>
+      <polygon points="10,80 40,45 70,80" fill="${fill2}" stroke="${stroke}" stroke-width="1.8"/>
+      <line x1="30" y1="70" x2="10" y2="80" stroke="${stroke}" stroke-width="1.5"/>
+      <line x1="60" y1="35" x2="40" y2="45" stroke="${stroke}" stroke-width="1.5"/>
+      <line x1="90" y1="70" x2="70" y2="80" stroke="${stroke}" stroke-width="1.5"/>
+      ${lbl(60,52,`b=${b}`)} ${lbl(97,52,`h=${h}`,'start')} ${lbl(20,60,`l=${l}`,'end')}`;
+  } else if(shape==='cylinder'){
+    const {r,h}=dims;
+    inner=`
+      <ellipse cx="55" cy="22" rx="32" ry="12" fill="${fill2}" stroke="${stroke}" stroke-width="1.8"/>
+      <rect x="23" y="22" width="64" height="52" fill="${fill}" stroke="none"/>
+      <line x1="23" y1="22" x2="23" y2="74" stroke="${stroke}" stroke-width="1.8"/>
+      <line x1="87" y1="22" x2="87" y2="74" stroke="${stroke}" stroke-width="1.8"/>
+      <ellipse cx="55" cy="74" rx="32" ry="12" fill="${fill3}" stroke="${stroke}" stroke-width="1.8"/>
+      <line x1="55" y1="22" x2="87" y2="22" stroke="${lc}" stroke-width="1.2" stroke-dasharray="3,2"/>
+      ${lbl(71,17,`r=${r}`)} ${lbl(97,48,`h=${h}`,'start')}`;
+  } else if(shape==='pyramid'){
+    const {l,w,h}=dims;
+    inner=`
+      <polygon points="55,12 90,55 55,75 20,55" fill="${fill}" stroke="${stroke}" stroke-width="1.8"/>
+      <polygon points="55,12 90,55 55,75" fill="${fill3}" stroke="${stroke}" stroke-width="1.5"/>
+      <line x1="55" y1="12" x2="55" y2="62" stroke="${lc}" stroke-width="1.2" stroke-dasharray="3,2"/>
+      ${lbl(60,37,`h=${h}`,'start')} ${lbl(72,67,`l=${l}`)} ${lbl(35,67,`w=${w}`)}`;
+  } else if(shape==='cone'){
+    const {r,h}=dims;
+    inner=`
+      <line x1="55" y1="15" x2="23" y2="72" stroke="${stroke}" stroke-width="1.8"/>
+      <line x1="55" y1="15" x2="87" y2="72" stroke="${stroke}" stroke-width="1.8"/>
+      <ellipse cx="55" cy="72" rx="32" ry="10" fill="${fill3}" stroke="${stroke}" stroke-width="1.8"/>
+      <path d="M23,72 Q55,62 87,72" fill="${fill}" stroke="none"/>
+      <line x1="55" y1="15" x2="55" y2="72" stroke="${lc}" stroke-width="1.2" stroke-dasharray="3,2"/>
+      <line x1="55" y1="72" x2="87" y2="72" stroke="${lc}" stroke-width="1.2" stroke-dasharray="3,2"/>
+      ${lbl(60,43,`h=${h}`,'start')} ${lbl(71,66,`r=${r}`)}`;
+  } else if(shape==='sphere'){
+    const {r}=dims;
+    inner=`
+      <circle cx="55" cy="46" r="36" fill="${fill}" stroke="${stroke}" stroke-width="1.8"/>
+      <ellipse cx="55" cy="46" rx="36" ry="13" fill="none" stroke="${lc}" stroke-width="1" stroke-dasharray="4,3"/>
+      <line x1="55" y1="46" x2="91" y2="46" stroke="${lc}" stroke-width="1.2" stroke-dasharray="3,2"/>
+      ${lbl(73,40,`r=${r}`)}`;
+  } else if(shape==='composite'){
+    inner=`
+      <polygon points="55,18 82,32 82,60 55,74 28,60 28,32" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
+      <polygon points="55,2 75,18 55,34 35,18" fill="${fill3}" stroke="${stroke}" stroke-width="1.5"/>
+      <line x1="55" y1="2" x2="55" y2="34" stroke="${stroke}" stroke-width="1.2" stroke-dasharray="3,2"/>
+      ${lbl(55,46,'Composite')} ${lbl(55,58,'solid')}`;
+  } else if(shape==='mixed3d'){
+    inner=`
+      <rect x="8" y="40" width="40" height="38" rx="2" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
+      <ellipse cx="80" cy="55" rx="22" ry="22" fill="${fill3}" stroke="var(--coral)" stroke-width="1.5"/>
+      <line x1="80" y1="55" x2="102" y2="55" stroke="${lc}" stroke-width="1.2" stroke-dasharray="3,2"/>
+      ${lbl(28,59,'?')} ${lbl(80,55,'?')}`;
+  }
+  return `<svg viewBox="0 0 110 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">${inner}</svg>`;
+}
+
+// ── Generate Volume Vault question ────────────────────────
+function genVaultQ(level) {
+  const s=level.shape, t=level.type;
+  const PI=3.14;
+  let dims={}, questionText='', answer=0, formulaUsed='', unit='cm';
+
+  if(s==='cuboid'){
+    const l=rnd(2,10),w=rnd(2,8),h=rnd(2,8); dims={l,w,h};
+    if(t==='vol'){answer=l*w*h; questionText=`Find the VOLUME of a cuboid: length ${l}${unit}, width ${w}${unit}, height ${h}${unit}`; formulaUsed=`${l}×${w}×${h} = ${answer}`;}
+    else{const lw=l*w,lh=l*h,wh=w*h; answer=2*(lw+lh+wh); questionText=`Find the SURFACE AREA of a cuboid: l=${l}, w=${w}, h=${h}${unit}`; formulaUsed=`2(${lw}+${lh}+${wh}) = ${answer}`;}
+  } else if(s==='cube'){
+    const s2=rnd(2,9); dims={l:s2,w:s2,h:s2};
+    if(t==='vol'){answer=s2*s2*s2; questionText=`Find the VOLUME of a cube with side ${s2}${unit}`; formulaUsed=`${s2}³ = ${answer}`;}
+    else{answer=6*s2*s2; questionText=`Find the SURFACE AREA of a cube with side ${s2}${unit}`; formulaUsed=`6×${s2}² = ${answer}`;}
+  } else if(s==='triprism'){
+    const b=rnd(3,10),h=rnd(3,8),l=rnd(4,12);
+    const triArea=Math.round(0.5*b*h); dims={b,h,l};
+    answer=triArea*l; questionText=`Find the VOLUME of a triangular prism: base ${b}${unit}, height ${h}${unit}, length ${l}${unit}`; formulaUsed=`½×${b}×${h}×${l} = ${triArea}×${l} = ${answer}`;
+  } else if(s==='cylinder'){
+    const r=rnd(2,7),h=rnd(3,10); dims={r,h};
+    if(t==='vol'){answer=Math.round(PI*r*r*h); questionText=`Find the VOLUME of a cylinder: radius ${r}${unit}, height ${h}${unit} (π=3.14)`; formulaUsed=`3.14×${r}²×${h} = ${answer}`;}
+    else{const ends=Math.round(2*PI*r*r),side=Math.round(2*PI*r*h); answer=ends+side; questionText=`Find the SURFACE AREA of a cylinder: r=${r}${unit}, h=${h}${unit} (π=3.14)`; formulaUsed=`2×3.14×${r}²+2×3.14×${r}×${h} = ${answer}`;}
+  } else if(s==='pyramid'){
+    const l=rnd(3,8),w=rnd(3,8),h=rnd(3,10); dims={l,w,h};
+    answer=Math.round((l*w*h)/3); questionText=`Find the VOLUME of a square pyramid: base ${l}×${w}${unit}, height ${h}${unit}`; formulaUsed=`⅓×${l}×${w}×${h} = ${answer}`;
+  } else if(s==='cone'){
+    const r=rnd(2,7),h=rnd(3,10); dims={r,h};
+    if(t==='vol'){answer=Math.round((1/3)*PI*r*r*h); questionText=`Find the VOLUME of a cone: radius ${r}${unit}, height ${h}${unit} (π=3.14)`; formulaUsed=`⅓×3.14×${r}²×${h} = ${answer}`;}
+    else{const sl=Math.round(Math.sqrt(r*r+h*h)*10)/10; answer=Math.round(PI*r*r+PI*r*sl); questionText=`Find the SURFACE AREA of a cone: r=${r}${unit}, slant l≈${sl}${unit} (π=3.14)`; formulaUsed=`3.14×${r}²+3.14×${r}×${sl} = ${answer}`;}
+  } else if(s==='sphere'){
+    const r=rnd(2,8); dims={r};
+    if(t==='vol'){answer=Math.round((4/3)*PI*r*r*r); questionText=`Find the VOLUME of a sphere with radius ${r}${unit} (π=3.14)`; formulaUsed=`4/3×3.14×${r}³ = ${answer}`;}
+    else{answer=Math.round(4*PI*r*r); questionText=`Find the SURFACE AREA of a sphere with radius ${r}${unit} (π=3.14)`; formulaUsed=`4×3.14×${r}² = ${answer}`;}
+  } else if(s==='composite'){
+    const l1=rnd(3,8),w1=rnd(3,6),h1=rnd(3,6),l2=rnd(2,4),w2=rnd(2,4),h2=rnd(1,4);
+    dims={}; answer=l1*w1*h1+l2*w2*h2;
+    questionText=`A composite solid = Cuboid A (${l1}×${w1}×${h1}cm) + Cuboid B (${l2}×${w2}×${h2}cm). Find total VOLUME.`;
+    formulaUsed=`${l1*w1*h1}+${l2*w2*h2} = ${answer}`;
+  } else {
+    // mixed boss: pick a random solid and type
+    const pick=['cuboid','cylinder','cone','sphere','pyramid'][Math.floor(Math.random()*5)];
+    const tpick=Math.random()<0.5?'vol':'sa';
+    return genVaultQ({...level, shape:pick, type:tpick});
+  }
+  return {dims, questionText, answer, formulaUsed, solidType:s};
+}
+
+// ── Vault level list ──────────────────────────────────────
+function showVault(){show('vault');renderVaultList();}
+function renderVaultList(){
+  const c=document.getElementById('vault-list');c.innerHTML='';
+  const sections=[
+    {label:'Volume',         levels:VAULT_LEVELS.filter(l=>l.type==='vol')},
+    {label:'Surface Area',   levels:VAULT_LEVELS.filter(l=>l.type==='sa')},
+    {label:'Mixed & Boss',   levels:VAULT_LEVELS.filter(l=>l.type==='mixed'||l.type==='boss')},
+  ];
+  sections.forEach(sec=>{
+    const hdr=document.createElement('div');hdr.className='slbl';hdr.style.marginTop='12px';hdr.textContent=sec.label;
+    c.appendChild(hdr);
+    const grid=document.createElement('div');grid.className='vvlevels';
+    sec.levels.forEach(lv=>{
+      const done=S.vaultCleared.has(lv.id);
+      const card=document.createElement('div');
+      const idx=VAULT_LEVELS.indexOf(lv);
+      card.className=`vvcard ${lv.color}${done?' done':''}`;
+      card.innerHTML=`<span class="vvic">${lv.monster}</span><div class="vvt">${lv.name}</div><div class="vvs">${lv.type==='vol'?'Volume':lv.type==='sa'?'Surface Area':lv.type==='boss'?'⚔ BOSS':'Mixed'} · ${lv.mlvl}</div>${done?'<div style="font-size:10px;font-weight:800;color:var(--green);margin-top:2px">✓ Done</div>':''}
+        <div class="level-actions">
+          <button class="lbtn lbtn-fight" onclick="event.stopPropagation();S.vaultLevel=${idx};S.world='vault';S.mode='story';startBattle()">⚔ Fight</button>
+          <button class="lbtn lbtn-drill" onclick="event.stopPropagation();startDrill('vault',${idx})">🥋 Drill</button>
+        </div>`;
+      grid.appendChild(card);
+    });
+    c.appendChild(grid);
+  });
+}
+
+// ════════════════════════════════════════
+// DATA + LOGIC: GEOMETRY DUNGEON
+// ════════════════════════════════════════
+const DUNGEON_LEVELS = [
+  // ── Angles section ──
+  {id:'g1',  name:'Angles on a Line',      type:'angles',  topic:'supplementary', monster:'📐',mname:'Line Spirit',    mlvl:'Beginner',maxHP:60, dmg:6, xpReward:75,
+   formula:'a + b = 180°',      fdesc:'Angles on a straight line always add to 180°. The line is flat — half a full turn!',
+   why:'A full rotation is 360°. A straight line is exactly half of that, so any angles sitting on one side of it must share 180° between them.',
+   tip:'Add your known angles. Subtract from 180°.',  color:'gd-ang'},
+  {id:'g2',  name:'Angles at a Point',     type:'angles',  topic:'full_turn',     monster:'🌀',mname:'Vortex Guard',   mlvl:'Beginner',maxHP:65, dmg:7, xpReward:80,
+   formula:'All angles = 360°', fdesc:'Angles around a point always sum to 360°. One full revolution!',
+   why:'Going all the way around a point brings you back to where you started — that is one complete revolution, which is always 360°.',
+   tip:'Add all the known angles. Subtract the total from 360°.',  color:'gd-ang'},
+  {id:'g3',  name:'Vertically Opposite',   type:'angles',  topic:'vert_opp',      monster:'✖️',mname:'Cross Demon',    mlvl:'Beginner',maxHP:65, dmg:7, xpReward:80,
+   formula:'Vert. opp. angles are equal', fdesc:'When two lines cross, the angles across from each other are always equal!',
+   why:'The two lines form two pairs of angles. Each pair must share 180° (straight line). So the leftover angles in each pair must be identical.',
+   tip:'Vertically opposite = same size. Just copy the value across.',  color:'gd-ang'},
+  {id:'g4',  name:'Parallel Lines',        type:'angles',  topic:'parallel',      monster:'🚃',mname:'Rail Wraith',    mlvl:'Easy',    maxHP:80, dmg:9, xpReward:95,
+   formula:'Alt. angles equal · Co-int. = 180°', fdesc:'Alternate angles (Z-shape) are equal. Co-interior angles (C-shape) add to 180°!',
+   why:'Parallel lines never meet — they are exact copies of each other. A crossing line cuts both at exactly the same angle, creating equal alternate angles and supplementary co-interior angles.',
+   tip:'Z = equal (alternate). C or U = adds to 180° (co-interior). F = equal (corresponding).',  color:'gd-ang'},
+  {id:'g5',  name:'Triangle Angles',       type:'tri',     topic:'tri_sum',       monster:'🔺',mname:'Triangle Troll', mlvl:'Easy',    maxHP:80, dmg:9, xpReward:95,
+   formula:'a + b + c = 180°',  fdesc:'The three angles of any triangle always add to 180°!',
+   why:'Draw any triangle. Extend one base. The alternate angle trick proves both non-base angles fit alongside the apex angle — filling a straight line of 180°.',
+   tip:'Add the two known angles. Subtract from 180° to find the third.',  color:'gd-tri'},
+  {id:'g6',  name:'Isosceles Triangle',    type:'tri',     topic:'isosceles',     monster:'🏔️',mname:'Twin Peak Beast',mlvl:'Easy',    maxHP:82, dmg:10,xpReward:98,
+   formula:'Base angles equal',  fdesc:'In an isosceles triangle, the two base angles are always equal!',
+   why:'An isosceles triangle has two equal sides. The fold line through the apex is a line of symmetry — so the angles it makes at the base must mirror each other.',
+   tip:'If you know one base angle, the other base angle is the same. Then use 180° to find the apex.',  color:'gd-tri'},
+  {id:'g7',  name:'Exterior Angle',        type:'tri',     topic:'exterior',      monster:'🦎',mname:'Exterior Lizard',mlvl:'Medium',  maxHP:90, dmg:11,xpReward:110,
+   formula:'Ext. angle = sum of 2 opp. int. angles', fdesc:'An exterior angle of a triangle equals the sum of the two non-adjacent interior angles!',
+   why:'The three interior angles sum to 180°. The exterior angle and its adjacent interior angle also sum to 180°. Cancel the shared angle — the exterior angle must equal the other two interior angles combined.',
+   tip:'Add the two interior angles that are NOT next to the exterior angle.',  color:'gd-tri'},
+  {id:'g8',  name:'Pythagoras',            type:'tri',     topic:'pythagoras',    monster:'🐍',mname:'Hypotenuse Hydra',mlvl:'Medium', maxHP:100,dmg:13,xpReward:125,
+   formula:'a² + b² = c²',      fdesc:'In a right-angled triangle, the square of the hypotenuse equals the sum of the squares of the other two sides!',
+   why:'Arrange four copies of the right triangle around a tilted square. The outer shape\'s area minus the four triangles equals the tilted square\'s area — proving a²+b²=c².',
+   tip:'c is always the hypotenuse — the longest side, opposite the right angle.',  color:'gd-tri'},
+  // ── Circle theorems ──
+  {id:'g9',  name:'Radius & Tangent',      type:'circle',  topic:'rad_tang',      monster:'🔵',mname:'Circle Wraith',  mlvl:'Medium',  maxHP:95, dmg:12,xpReward:115,
+   formula:'Radius ⊥ Tangent = 90°', fdesc:'A tangent to a circle is always perpendicular to the radius at the point of contact!',
+   why:'A tangent just touches the circle at one point. Any line at that point that is not perpendicular to the radius would be closer to the centre elsewhere — contradicting that it only touches once.',
+   tip:'The angle between a radius and the tangent at that point is always exactly 90°.',  color:'gd-circ'},
+  {id:'g10', name:'Angle at Centre',       type:'circle',  topic:'centre_angle',  monster:'🌑',mname:'Centre Phantom', mlvl:'Hard',    maxHP:110,dmg:14,xpReward:130,
+   formula:'Central angle = 2 × Inscribed', fdesc:'The angle at the centre is twice the angle at the circumference when both look at the same arc!',
+   why:'Draw a radius to the vertex of the inscribed angle. Each triangle formed is isosceles. The exterior angle theorem applied twice gives the central angle as exactly double the inscribed angle.',
+   tip:'Inscribed angle = central angle ÷ 2. Central angle = inscribed angle × 2.',  color:'gd-circ'},
+  {id:'g11', name:'Angles in Same Segment',type:'circle',  topic:'same_segment',  monster:'🦠',mname:'Segment Slime',  mlvl:'Hard',    maxHP:112,dmg:15,xpReward:135,
+   formula:'Inscribed angles = equal (same arc)', fdesc:'Angles in the same segment, looking at the same chord, are always equal!',
+   why:'Both angles are half of the same central angle (by the centre-angle theorem). Half of the same thing must be equal.',
+   tip:'If two angles sit on the same side of a chord, they are equal — no matter where on that arc the vertices are.',  color:'gd-circ'},
+  {id:'g12', name:'Angle in Semicircle',   type:'circle',  topic:'semicircle',    monster:'🌓',mname:'Half Moon Demon',mlvl:'Hard',    maxHP:110,dmg:14,xpReward:130,
+   formula:'Angle in semicircle = 90°', fdesc:'Any angle inscribed in a semicircle is always a right angle!',
+   why:'The diameter creates a central angle of 180°. By the centre-angle theorem the inscribed angle is half of that — exactly 90°.',
+   tip:'If the triangle\'s hypotenuse is the diameter, the angle at the circumference is always 90°.',  color:'gd-circ'},
+  {id:'g13', name:'Cyclic Quadrilateral',  type:'circle',  topic:'cyclic_quad',   monster:'🔷',mname:'Quad Sorcerer',  mlvl:'Expert',  maxHP:125,dmg:17,xpReward:155,
+   formula:'Opposite angles sum to 180°', fdesc:'In a cyclic quadrilateral (all 4 vertices on a circle), opposite angles add up to 180°!',
+   why:'Each pair of opposite angles together subtend all the arcs of the circle — a complete 360°. Applying the centre-angle rule, each pair contributes half of 360° = 180°.',
+   tip:'Opposite angles in a cyclic quad are supplementary. Find one, subtract from 180° for its opposite.',  color:'gd-circ'},
+  // ── Boss ──
+  {id:'g14', name:'BOSS: Dungeon Lord',    type:'boss',    topic:'mixed',         monster:'🏰',mname:'DUNGEON LORD',   mlvl:'FINAL BOSS',maxHP:220,dmg:24,xpReward:420,
+   formula:'All theorems!',     fdesc:'Angles, triangles, Pythagoras, and circle theorems. You know them all — prove it!',
+   why:'Every theorem in this dungeon connects through the same root idea: angles are conserved transformations. From supplementary lines to Pythagoras to circle arcs — they are all consequences of flat and circular geometry.',
+   tip:'Read carefully. Identify the theorem. Apply the rule. You\'ve defeated every monster — now defeat the Lord!',  color:'gd-boss'},
+];
+
+// ── Geometry Dungeon SVG diagrams ─────────────────────────
+// NOTE: diagrams use generic labels (a°, b°, ?, x°) — never real values — so they never reveal the answer
+function geomSVG(topic, dims) {
+  const stroke='var(--purple)', lc='var(--t2)', ls='10px', fill='rgba(124,58,237,0.1)';
+  const amber='rgba(217,119,6,0.8)';
+  function t(x,y,txt,a='middle',col){return `<text x="${x}" y="${y}" fill="${col||lc}" font-size="${ls}" font-family="Nunito,sans-serif" text-anchor="${a}" dominant-baseline="middle">${txt}</text>`;}
+  function arc(cx,cy,r,a1,a2,col){
+    const x1=cx+r*Math.cos(a1*Math.PI/180), y1=cy+r*Math.sin(a1*Math.PI/180);
+    const x2=cx+r*Math.cos(a2*Math.PI/180), y2=cy+r*Math.sin(a2*Math.PI/180);
+    const lg=Math.abs(a2-a1)>180?1:0;
+    return `<path d="M${cx},${cy} L${x1.toFixed(1)},${y1.toFixed(1)} A${r},${r} 0 ${lg},1 ${x2.toFixed(1)},${y2.toFixed(1)} Z" fill="${col||fill}" stroke="${col?col:stroke}" stroke-width="1.2"/>`;
+  }
+  let inner='';
+  if(topic==='supplementary'){
+    inner=`<line x1="10" y1="55" x2="100" y2="55" stroke="${stroke}" stroke-width="2"/>
+    <line x1="55" y1="55" x2="72" y2="20" stroke="${stroke}" stroke-width="1.8"/>
+    ${arc(55,55,22,-90,-135,amber)}
+    ${arc(55,55,18,-45,-90,fill)}
+    ${t(38,45,'a°','middle',amber)} ${t(72,42,'?')}`;
+  } else if(topic==='full_turn'){
+    // Show 4 generic sectors
+    const cols=['rgba(124,58,237,0.2)','rgba(5,150,105,0.2)','rgba(217,119,6,0.2)','rgba(220,38,38,0.15)'];
+    const slices=[80,90,70,120], labels=['a°','b°','c°','?'];
+    let cumDeg=0;
+    slices.forEach((a,i)=>{
+      inner+=arc(55,50,32,cumDeg-90,cumDeg+a-90,cols[i%cols.length]);
+      const mid=(cumDeg+a/2)-90;
+      inner+=t(55+22*Math.cos(mid*Math.PI/180),50+22*Math.sin(mid*Math.PI/180),labels[i]);
+      cumDeg+=a;
+    });
+    inner=`<circle cx="55" cy="50" r="32" fill="none" stroke="${stroke}" stroke-width="1.5"/>`+inner;
+  } else if(topic==='vert_opp'){
+    inner=`<line x1="15" y1="15" x2="95" y2="80" stroke="${stroke}" stroke-width="2"/>
+    <line x1="95" y1="15" x2="15" y2="80" stroke="${stroke}" stroke-width="2"/>
+    ${arc(55,47,20,-40,0,'rgba(124,58,237,0.2)')}
+    ${arc(55,47,20,140,180,'rgba(124,58,237,0.2)')}
+    ${arc(55,47,16,0,140,'rgba(5,150,105,0.15)')}
+    ${arc(55,47,16,180,320,'rgba(5,150,105,0.15)')}
+    ${t(75,35,'a°','middle','rgba(124,58,237,0.9)')} ${t(35,60,'?','middle','rgba(124,58,237,0.9)')}
+    ${t(43,33,'b°','middle','rgba(5,150,105,0.9)')} ${t(67,62,'b°','middle','rgba(5,150,105,0.9)')}`;
+  } else if(topic==='parallel'){
+    inner=`<line x1="5" y1="30" x2="105" y2="30" stroke="${stroke}" stroke-width="1.8"/>
+    <line x1="5" y1="65" x2="105" y2="65" stroke="${stroke}" stroke-width="1.8"/>
+    <line x1="30" y1="10" x2="75" y2="85" stroke="var(--coral)" stroke-width="1.8"/>
+    ${arc(46,30,16,-63,0,fill)} ${arc(56,65,16,117,180,fill)}
+    ${t(62,25,'a°')} ${t(48,72,'?')}
+    ${t(8,28,'p','start')} ${t(8,63,'q','start')}
+    <text x="52" y="8" fill="var(--coral)" font-size="9px" font-family="Nunito,sans-serif" text-anchor="middle">transversal</text>`;
+  } else if(topic==='tri_sum'){
+    inner=`<polygon points="55,12 95,78 15,78" fill="${fill}" stroke="${stroke}" stroke-width="1.8"/>
+    ${arc(55,12,14,90,130,'rgba(217,119,6,0.2)')} ${arc(15,78,14,-30,0,fill)} ${arc(95,78,14,150,180,'rgba(5,150,105,0.15)')}
+    ${t(55,28,'a°','middle',amber)} ${t(28,68,'b°')} ${t(82,68,'?')}`;
+  } else if(topic==='isosceles'){
+    inner=`<polygon points="55,12 88,78 22,78" fill="${fill}" stroke="${stroke}" stroke-width="1.8"/>
+    <line x1="55" y1="12" x2="88" y2="78" stroke="var(--green)" stroke-width="2.5"/>
+    <line x1="55" y1="12" x2="22" y2="78" stroke="var(--green)" stroke-width="2.5"/>
+    ${arc(55,12,16,70,110,'rgba(217,119,6,0.2)')}
+    ${arc(22,78,14,0,35,fill)} ${arc(88,78,14,145,180,fill)}
+    ${t(55,28,'?','middle',amber)} ${t(32,68,'b°')} ${t(78,68,'b°')}`;
+  } else if(topic==='exterior'){
+    inner=`<polygon points="20,72 70,72 45,20" fill="${fill}" stroke="${stroke}" stroke-width="1.8"/>
+    <line x1="70" y1="72" x2="100" y2="72" stroke="${stroke}" stroke-width="1.8" stroke-dasharray="4,3"/>
+    ${arc(70,72,20,180,230,'rgba(220,38,38,0.2)')}
+    ${arc(20,72,14,0,38,fill)} ${arc(45,20,14,57,122,'rgba(217,119,6,0.2)')}
+    ${t(83,64,'?','middle','var(--red)')} ${t(30,62,'a°')} ${t(45,34,'b°','middle',amber)}
+    <text x="86" y="82" fill="var(--red)" font-size="9px" font-family="Nunito,sans-serif" text-anchor="middle">ext</text>`;
+  } else if(topic==='pythagoras'){
+    const a=dims.a||3, b=dims.b||4, c=dims.c||5;
+    inner=`<polygon points="20,75 20,22 78,75" fill="${fill}" stroke="${stroke}" stroke-width="1.8"/>
+    <rect x="20" y="65" width="10" height="10" fill="none" stroke="${lc}" stroke-width="1.2"/>
+    ${t(20,10,`c=?`,'middle',amber)} ${t(5,48,`b=${b}`,'start')} ${t(50,83,`a=${a}`)}
+    ${t(90,55,`a²+b²=c²`,'start',lc)}`;
+  } else if(topic==='rad_tang'){
+    inner=`<circle cx="55" cy="50" r="30" fill="${fill}" stroke="${stroke}" stroke-width="1.8"/>
+    <line x1="55" y1="50" x2="85" y2="50" stroke="${lc}" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <line x1="85" y1="20" x2="85" y2="80" stroke="var(--coral)" stroke-width="2"/>
+    <rect x="75" y="44" width="10" height="10" fill="none" stroke="${lc}" stroke-width="1.2"/>
+    ${t(70,40,'r')} ${t(95,50,'tangent','start','var(--coral)')} ${t(55,50,'90°')}`;
+  } else if(topic==='centre_angle'){
+    inner=`<circle cx="55" cy="50" r="36" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
+    <line x1="55" y1="50" x2="26" y2="22" stroke="${lc}" stroke-width="1.5"/>
+    <line x1="55" y1="50" x2="84" y2="22" stroke="${lc}" stroke-width="1.5"/>
+    <line x1="55" y1="84" x2="26" y2="22" stroke="var(--coral)" stroke-width="1.5"/>
+    <line x1="55" y1="84" x2="84" y2="22" stroke="var(--coral)" stroke-width="1.5"/>
+    ${arc(55,50,14,-90,-50,'rgba(217,119,6,0.2)')}
+    ${arc(55,84,12,-90,-70,fill)}
+    ${t(55,40,'2x°','middle',amber)} ${t(55,70,'x°','middle','var(--coral)')}
+    ${t(55,90,'inscribed','middle','var(--coral)')} ${t(55,22,'central','middle',amber)}`;
+  } else if(topic==='same_segment'){
+    inner=`<circle cx="55" cy="48" r="34" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
+    <line x1="27" y1="68" x2="83" y2="68" stroke="${stroke}" stroke-width="1.8"/>
+    <line x1="27" y1="68" x2="42" y2="18" stroke="var(--coral)" stroke-width="1.5"/>
+    <line x1="83" y1="68" x2="42" y2="18" stroke="var(--coral)" stroke-width="1.5"/>
+    <line x1="27" y1="68" x2="68" y2="18" stroke="var(--green)" stroke-width="1.5"/>
+    <line x1="83" y1="68" x2="68" y2="18" stroke="var(--green)" stroke-width="1.5"/>
+    ${t(42,30,'a°','middle','var(--coral)')} ${t(68,30,'?','middle','var(--green)')}`;
+  } else if(topic==='semicircle'){
+    inner=`<circle cx="55" cy="60" r="36" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
+    <line x1="19" y1="60" x2="91" y2="60" stroke="${stroke}" stroke-width="1.8"/>
+    <line x1="19" y1="60" x2="55" y2="24" stroke="var(--coral)" stroke-width="1.5"/>
+    <line x1="91" y1="60" x2="55" y2="24" stroke="var(--coral)" stroke-width="1.5"/>
+    <rect x="49" y="18" width="10" height="10" fill="none" stroke="${lc}" stroke-width="1.2"/>
+    ${t(55,35,'90°','middle',amber)}
+    ${t(55,76,'diameter')}`;
+  } else if(topic==='cyclic_quad'){
+    inner=`<circle cx="55" cy="48" r="34" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
+    <polygon points="21,60 45,16 89,40 62,82" fill="rgba(124,58,237,0.06)" stroke="var(--coral)" stroke-width="1.8"/>
+    ${arc(21,60,13,0,60,fill)} ${arc(89,40,13,180,240,fill)}
+    ${arc(45,16,12,90,150,'rgba(217,119,6,0.2)')} ${arc(62,82,12,270,330,'rgba(217,119,6,0.2)')}
+    ${t(35,58,'a°')} ${t(76,48,'?')}
+    ${t(52,28,'c°','middle',amber)} ${t(58,72,'?','middle',amber)}`;
+  } else {
+    inner=`<polygon points="55,12 88,75 22,75" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
+    <circle cx="55" cy="48" r="14" fill="none" stroke="var(--coral)" stroke-width="1.5"/>
+    ${t(55,48,'?','middle',amber)} ${t(55,82,'?')}`;
+  }
+  return `<svg viewBox="0 0 110 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">${inner}</svg>`;
+}
+
+// ── Generate a Geometry Dungeon question ──────────────────
+function genGeomQ(level) {
+  const topic = level.type==='boss'
+    ? ['supplementary','full_turn','vert_opp','parallel','tri_sum','isosceles','exterior','pythagoras','rad_tang','centre_angle','same_segment','semicircle','cyclic_quad'][Math.floor(Math.random()*13)]
+    : level.topic;
+
+  let dims={}, questionText='', answer=0, formulaUsed='', steps='';
+
+  if(topic==='supplementary'){
+    const a=rnd(20,155); const b=180-a; dims={a,b};
+    answer=b; questionText=`Angles on a straight line. One angle is ${a}°. Find the missing angle.`;
+    formulaUsed=`180° − ${a}° = ${b}°`; steps=`Angles on a line add to 180°`;
+  } else if(topic==='full_turn'){
+    const known=[rnd(40,100),rnd(40,100),rnd(30,80)]; const sum=known.reduce((s,v)=>s+v,0); const miss=360-sum;
+    if(miss<=0||miss>=360){return genGeomQ(level);}
+    dims={angles:[...known,miss]};
+    answer=miss; questionText=`Angles around a point: ${known.join('°, ')}° and ?. Find the missing angle.`;
+    formulaUsed=`360° − (${known.join('+')}°) = ${miss}°`; steps=`Angles at a point = 360°`;
+  } else if(topic==='vert_opp'){
+    const a=rnd(25,155); dims={a};
+    answer=a; questionText=`Two lines cross making angles ${a}°, ?, ${a}°, ?. Find a missing angle.`;
+    formulaUsed=`Vertically opposite = ${a}°`; steps=`Vert. opp. angles are equal`;
+  } else if(topic==='parallel'){
+    const a=rnd(35,145); dims={a};
+    answer=a; questionText=`Parallel lines cut by a transversal. One alternate angle is ${a}°. Find the alternate angle on the other parallel line.`;
+    formulaUsed=`Alternate angles = ${a}°`; steps=`Alternate angles (Z-shape) are equal`;
+  } else if(topic==='tri_sum'){
+    const a=rnd(30,100), b=rnd(20,Math.min(80,179-a)); const c=180-a-b;
+    if(c<=0){return genGeomQ(level);}
+    dims={a,b,c};
+    answer=c; questionText=`A triangle has angles ${a}° and ${b}°. Find the third angle.`;
+    formulaUsed=`180° − ${a}° − ${b}° = ${c}°`; steps=`Triangle angles sum to 180°`;
+  } else if(topic==='isosceles'){
+    const base=rnd(20,70); const apex=180-2*base;
+    if(apex<=0){return genGeomQ(level);}
+    dims={apex,base};
+    answer=apex; questionText=`An isosceles triangle has base angles of ${base}° each. Find the apex angle.`;
+    formulaUsed=`180° − 2×${base}° = ${apex}°`; steps=`Base angles equal; sum = 180°`;
+  } else if(topic==='exterior'){
+    const a=rnd(30,80), b=rnd(30,Math.min(80,149-a)); const ext=a+b;
+    dims={ext,a,b};
+    answer=ext; questionText=`A triangle has two interior angles of ${a}° and ${b}°. Find the exterior angle at the third vertex.`;
+    formulaUsed=`${a}° + ${b}° = ${ext}°`; steps=`Exterior angle = sum of two non-adjacent interior angles`;
+  } else if(topic==='pythagoras'){
+    // Pythagorean triples for clean integer answers
+    const triples=[[3,4,5],[5,12,13],[6,8,10],[8,15,17],[9,12,15],[7,24,25]];
+    const [a,b,c]=triples[Math.floor(Math.random()*triples.length)];
+    const k=rnd(1,3);
+    const pick=Math.floor(Math.random()*3);
+    if(pick===0){dims={a:a*k,b:'?',c:c*k}; answer=b*k; questionText=`Right-angled triangle: a=${a*k}cm, c (hypotenuse)=${c*k}cm. Find side b.`; formulaUsed=`√(${c*k}²−${a*k}²) = √${(c*k)*(c*k)-(a*k)*(a*k)} = ${b*k}`;}
+    else if(pick===1){dims={a:'?',b:b*k,c:c*k}; answer=a*k; questionText=`Right-angled triangle: b=${b*k}cm, c (hypotenuse)=${c*k}cm. Find side a.`; formulaUsed=`√(${c*k}²−${b*k}²) = ${a*k}`;}
+    else{dims={a:a*k,b:b*k,c:'?'}; answer=c*k; questionText=`Right-angled triangle: a=${a*k}cm, b=${b*k}cm. Find the hypotenuse c.`; formulaUsed=`√(${a*k}²+${b*k}²) = ${c*k}`;}
+    steps=`a²+b²=c² (Pythagoras)`;
+  } else if(topic==='rad_tang'){
+    const known=rnd(25,65); const miss=90-known;
+    dims={}; answer=miss;
+    questionText=`A tangent meets a radius. Another angle in the triangle is ${known}°. Find the missing angle.`;
+    formulaUsed=`90° − ${known}° = ${miss}°`; steps=`Radius ⊥ tangent = 90°; triangle = 180°`;
+  } else if(topic==='centre_angle'){
+    const ins=rnd(20,80); const cen=ins*2; dims={ins,cen};
+    answer=cen; questionText=`An inscribed angle subtending an arc is ${ins}°. Find the central angle subtending the same arc.`;
+    formulaUsed=`2 × ${ins}° = ${cen}°`; steps=`Central angle = 2 × inscribed angle`;
+  } else if(topic==='same_segment'){
+    const a=rnd(25,75); dims={a};
+    answer=a; questionText=`Two inscribed angles in the same segment both subtend the same chord. One is ${a}°. What is the other?`;
+    formulaUsed=`Same segment → both = ${a}°`; steps=`Angles in same segment are equal`;
+  } else if(topic==='semicircle'){
+    const a=rnd(25,65); const b=90-a; dims={};
+    answer=b; questionText=`A triangle is inscribed in a semicircle (diameter as base). One angle is ${a}°, the right angle is 90°. Find the third angle.`;
+    formulaUsed=`180° − 90° − ${a}° = ${b}°`; steps=`Angle in semicircle = 90°; triangle = 180°`;
+  } else if(topic==='cyclic_quad'){
+    const a=rnd(60,120); const c=rnd(50,110); dims={a,c};
+    answer=180-a; questionText=`Cyclic quadrilateral: one pair of opposite angles is ${a}° and ?. Find the missing angle.`;
+    formulaUsed=`180° − ${a}° = ${180-a}°`; steps=`Opposite angles in cyclic quad = 180°`;
+  }
+
+  return {dims, questionText, answer, formulaUsed, steps, topic};
+}
+
+// ── Dungeon level list ────────────────────────────────────
+function showDungeon(){show('dungeon');renderDungeonList();}
+function renderDungeonList(){
+  const c=document.getElementById('dungeon-list');c.innerHTML='';
+  const sections=[
+    {label:'Angles',              levels:DUNGEON_LEVELS.filter(l=>l.type==='angles')},
+    {label:'Triangles',           levels:DUNGEON_LEVELS.filter(l=>l.type==='tri')},
+    {label:'Circle Theorems',     levels:DUNGEON_LEVELS.filter(l=>l.type==='circle')},
+    {label:'Final Boss',          levels:DUNGEON_LEVELS.filter(l=>l.type==='boss')},
+  ];
+  sections.forEach(sec=>{
+    const hdr=document.createElement('div');hdr.className='slbl';hdr.style.marginTop='12px';hdr.textContent=sec.label;
+    c.appendChild(hdr);
+    const grid=document.createElement('div');grid.className='gdlevels';
+    sec.levels.forEach(lv=>{
+      const done=S.dungeonCleared.has(lv.id);
+      const card=document.createElement('div');
+      const idx=DUNGEON_LEVELS.indexOf(lv);
+      card.className=`gdcard ${lv.color}${done?' done':''}`;
+      card.innerHTML=`<span class="gdic">${lv.monster}</span><div class="gdt">${lv.name}</div><div class="gds">${lv.type==='boss'?'⚔ BOSS':lv.type==='angles'?'Angles':lv.type==='tri'?'Triangles':'Circles'} · ${lv.mlvl}</div>${done?'<div style="font-size:10px;font-weight:800;color:var(--green);margin-top:2px">✓ Done</div>':''}
+        <div class="level-actions">
+          <button class="lbtn lbtn-fight" onclick="event.stopPropagation();S.dungeonLevel=${idx};S.world='dungeon';S.mode='story';startBattle()">⚔ Fight</button>
+          <button class="lbtn lbtn-drill" onclick="event.stopPropagation();startDrill('dungeon',${idx})">🥋 Drill</button>
+        </div>`;
+      card.onclick=()=>{S.dungeonLevel=DUNGEON_LEVELS.indexOf(lv);S.world='dungeon';S.mode='story';startBattle();};
+      grid.appendChild(card);
+    });
+    c.appendChild(grid);
+  });
+}
+
+// ════════════════════════════════════════
+// QUESTION GENERATION — TOWER
+// ════════════════════════════════════════
+function genTowerQs(mult){
+  const qs=[],used=new Set();
+  Object.keys(S.weak).filter(k=>S.weak[k]>0).sort((a,b)=>S.weak[b]-S.weak[a]).slice(0,3).forEach(key=>{
+    if(qs.length>=QC)return;
+    const p=key.split('×').map(Number);if(p.length<2)return;
+    const n=p[0]===mult?p[1]:p[1]===mult?p[0]:null;
+    if(n&&!used.has(n)&&n>=1&&n<=12){qs.push({a:mult,b:n,ans:mult*n,weak:true});used.add(n);}
+  });
+  const pool=shuf(Array.from({length:12},(_,i)=>i+1).filter(n=>!used.has(n)));
+  let pi=0;while(qs.length<QC){const n=pool[pi%pool.length];pi++;qs.push({a:mult,b:n,ans:mult*n});}
+  return qs;
+}
+function genTowerOpts(correct,mult){
+  const o=new Set([correct]);
+  for(const d of shuf([-3,-2,-1,1,2,3,-4,4,-5,5])){if(o.size>=4)break;const c=correct+d*mult;if(c>0)o.add(c);}
+  let p=1;while(o.size<4&&p<200){if(!o.has(correct+p)&&correct+p>0)o.add(correct+p);if(o.size<4&&!o.has(correct-p)&&correct-p>0)o.add(correct-p);p++;}
+  return shuf([...o].slice(0,4));
+}
+function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+// ════════════════════════════════════════
+// BATTLE ENGINE — unified for both worlds
+// ════════════════════════════════════════
+function startBattle(){
+  clearInterval(S.tid);
+  const isShrine = S.world==='shrine';
+  const isVault  = S.world==='vault';
+  const isDungeon= S.world==='dungeon';
+  const lvl = isDungeon ? DUNGEON_LEVELS[S.dungeonLevel] : isVault ? VAULT_LEVELS[S.vaultLevel] : isShrine ? SHRINE_LEVELS[S.shLevel] : FLOORS[S.floor];
+  S.plrHP=PHP; S.monHP=lvl.maxHP; S.monMaxHP=lvl.maxHP;
+  S.qi=0; S.results=[]; S.xpg=0;
+
+  if (isDungeon) {
+    S.qs = Array.from({length:QC}, ()=>null);
+  } else if (isVault) {
+    S.qs = Array.from({length:QC}, ()=>null);
+  } else if (isShrine) {
+    S.qs = Array.from({length:QC}, ()=>null);
+  } else {
+    S.qs = genTowerQs(lvl.mult);
+  }
+
+  renderDots();show('battle');
+  const worldLabel = isDungeon ? `${lvl.name} · Geometry` : isVault ? `${lvl.name} · ${lvl.type==='sa'?'Surface Area':lvl.type==='vol'?'Volume':'Mixed'}` : isShrine ? `${lvl.name} · ${lvl.type==='peri'?'Perimeter':lvl.type==='area'?'Area':'Mixed'}` : `Floor ${lvl.id} · ×${lvl.mult}`;
+  document.getElementById('bfl').textContent=worldLabel;
+  updateMon();updatePlr();nextQ();
+}
+
+function renderDots(){
+  const c=document.getElementById('qdots');c.innerHTML='';
+  for(let i=0;i<QC;i++){const d=document.createElement('div');d.className='qdot'+(i===0?' c':'');d.id='qd'+i;c.appendChild(d);}
+}
+function setDot(i,ok){const d=document.getElementById('qd'+i);if(!d)return;d.classList.remove('c');d.classList.add(ok?'r':'w');const nx=document.getElementById('qd'+(i+1));if(nx)nx.classList.add('c');}
+
+function updateMon(){
+  const isVault=S.world==='vault';
+  const isShrine=S.world==='shrine';
+  const isDungeon=S.world==='dungeon';
+  const lvl=isDungeon?DUNGEON_LEVELS[S.dungeonLevel]:isVault?VAULT_LEVELS[S.vaultLevel]:isShrine?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
+  document.getElementById('memoji').textContent=lvl.monster;
+  document.getElementById('mname').textContent=lvl.mname;
+  document.getElementById('mlvl').textContent=lvl.mlvl;
+  document.getElementById('mhpb').style.width=Math.max(0,S.monHP/S.monMaxHP*100)+'%';
+  document.getElementById('mhplbl').textContent=`${lvl.mname} HP: ${Math.max(0,S.monHP)}/${S.monMaxHP}`;
+}
+function updatePlr(){
+  document.getElementById('plrhb').style.width=Math.max(0,S.plrHP/PHP*100)+'%';
+  document.getElementById('plrhl').textContent=`HP ${Math.max(0,S.plrHP)}/${PHP}`;
+}
+
+function nextQ(){
+  S.answered=false;
+  // Clean up any explanation panel and next button from previous question
+  const ep=document.getElementById('expl-panel'); if(ep)ep.remove();
+  const nb=document.getElementById('next-q-btn'); if(nb)nb.remove();
+  // Re-show the Show Answer button for the new question
+  const sab=document.getElementById('show-ans-btn');
+  if(sab)sab.classList.remove('hidden');
+  resetHintPanel();
+  document.getElementById('feedback').className='feedback hidden';
+  document.getElementById('qctr').textContent=`Q ${S.qi+1}/${QC}`;
+  if(S.world==='dungeon') renderGeomQ();
+  else if(S.world==='vault') renderVaultQ();
+  else if(S.world==='shrine') renderShapeQ();
+  else renderTowerQ();
+}
+
+// ─── Tower question render ─────────────────────────────────
+function renderTowerQ(){
+  const q=S.qs[S.qi];if(!q){advance();return;}
+  // Store as currentShapeQ so explanation can reference it
+  S.currentShapeQ={answer:q.ans, formulaUsed:`${q.a} × ${q.b} = ${q.ans}`, steps:`${q.a} × ${q.b}`};
+  S.currentHint={formulaLbl:'Trick',formula:`${q.a} × ${q.b} = ${q.ans}`,tip:`Try skip-counting by ${q.a}, or use ${q.a} × ${q.b-1} + ${q.a}.`,why:`${q.a} groups of ${q.b} objects = ${q.ans} objects total. Multiplication is repeated addition!`};
+  document.getElementById('q-area').innerHTML=`
+    <div class="shape-card" style="padding:16px 14px;margin-bottom:11px;">
+      <div class="shape-q-main">${q.a} × ${q.b} = ?</div>
+      <div class="shape-tip" style="text-align:center">${q.weak?'⚠ This one tripped you up before!':"What's the answer?"}</div>
+      <div class="timer-out"><div class="timer-in" id="timer-bar" style="width:100%"></div></div>
+    </div>`;
+  const g=document.getElementById('ansgrid');g.innerHTML='';
+  genTowerOpts(q.ans,q.a).forEach(opt=>{
+    const b=document.createElement('button');b.className='abtn';b.textContent=opt;
+    b.onclick=()=>submitAnswer(opt,q.ans,`${q.a}×${q.b}`,b,'tower');g.appendChild(b);
+  });
+  resetHintPanel();
+  startTimer();
+}
+
+// ─── Shape question render ─────────────────────────────────
+function renderShapeQ(){
+  const lvl=SHRINE_LEVELS[S.shLevel];
+  const sq=genShapeQ(lvl);
+  S.currentShapeQ=sq;
+  S.currentHint={formulaLbl:'Formula',formula:lvl.formula,tip:lvl.tip,why:lvl.why||''};
+  const svgHtml=shapesvg(sq.shapeType,sq.dims,lvl.type);
+  document.getElementById('q-area').innerHTML=`
+    <div class="shape-card">
+      <div class="shape-top">
+        <div class="shape-svg-wrap">${svgHtml}</div>
+        <div class="shape-meta">
+          <div class="shape-name-big">${lvl.name}</div>
+        </div>
+      </div>
+      <div class="shape-q-label">${lvl.type==='peri'?'Find the Perimeter / Circumference':'Find the Area'}</div>
+      <div class="shape-q-main" style="font-size:clamp(13px,3.5vw,17px);line-height:1.4;padding:0 4px">${sq.questionText}</div>
+      <div class="timer-out" style="margin-top:10px"><div class="timer-in" id="timer-bar" style="width:100%"></div></div>
+    </div>`;
+  const g=document.getElementById('ansgrid');g.innerHTML='';
+  genShapeOpts(sq.answer).forEach(opt=>{
+    const b=document.createElement('button');b.className='abtn';b.textContent=opt+' cm²';
+    if(lvl.type==='peri'||lvl.type==='boss') b.textContent=opt+' cm';
+    if(sq.shapeType==='sector'||sq.shapeType==='circle') b.textContent=opt+' cm²';
+    b.onclick=()=>submitAnswer(opt,sq.answer,`${lvl.name}:q${S.qi}`,b,'shrine');g.appendChild(b);
+  });
+  resetHintPanel();
+  startTimer();
+}
+
+// ─── Vault question render ─────────────────────────────────
+function renderVaultQ(){
+  const lvl=VAULT_LEVELS[S.vaultLevel];
+  const vq=genVaultQ(lvl);
+  S.currentShapeQ=vq;
+  S.currentHint={formulaLbl:'Formula',formula:lvl.formula,tip:lvl.tip,why:lvl.why||''};
+  const svgHtml=solidSVG(vq.solidType,vq.dims);
+  const qLabel=lvl.type==='sa'?'Find the Surface Area':lvl.type==='vol'?'Find the Volume':'Find Volume or Surface Area';
+  const unit=lvl.type==='vol'?'cm³':'cm²';
+  document.getElementById('q-area').innerHTML=`
+    <div class="shape-card">
+      <div class="shape-top">
+        <div class="shape-svg-wrap">${svgHtml}</div>
+        <div class="shape-meta">
+          <div class="shape-name-big">${lvl.name}</div>
+        </div>
+      </div>
+      <div class="shape-q-label">${qLabel}</div>
+      <div class="shape-q-main" style="font-size:clamp(12px,3.2vw,16px);line-height:1.4;padding:0 4px">${vq.questionText}</div>
+      <div class="timer-out" style="margin-top:10px"><div class="timer-in" id="timer-bar" style="width:100%"></div></div>
+    </div>`;
+  const g=document.getElementById('ansgrid');g.innerHTML='';
+  genShapeOpts(vq.answer).forEach(opt=>{
+    const b=document.createElement('button');b.className='abtn';b.textContent=opt+' '+unit;
+    b.onclick=()=>submitAnswer(opt,vq.answer,`${lvl.name}:q${S.qi}`,b,'vault');g.appendChild(b);
+  });
+  resetHintPanel();
+  startTimer();
+}
+
+// ─── Dungeon question render ───────────────────────────────
+function renderGeomQ(){
+  const lvl=DUNGEON_LEVELS[S.dungeonLevel];
+  const gq=genGeomQ(lvl);
+  S.currentShapeQ=gq;
+  S.currentHint={formulaLbl:'Theorem',formula:lvl.formula,tip:lvl.tip,why:lvl.why||''};
+  const svgHtml=geomSVG(gq.topic, gq.dims);
+  document.getElementById('q-area').innerHTML=`
+    <div class="shape-card">
+      <div class="shape-top">
+        <div class="shape-svg-wrap">${svgHtml}</div>
+        <div class="shape-meta">
+          <div class="shape-name-big">${lvl.name}</div>
+        </div>
+      </div>
+      <div class="shape-q-label">Find the missing angle (in degrees)</div>
+      <div class="shape-q-main" style="font-size:clamp(12px,3vw,15px);line-height:1.45;padding:0 4px">${gq.questionText}</div>
+      <div class="timer-out" style="margin-top:10px"><div class="timer-in" id="timer-bar" style="width:100%"></div></div>
+    </div>`;
+  const g=document.getElementById('ansgrid');g.innerHTML='';
+  genGeomOpts(gq.answer).forEach(opt=>{
+    const b=document.createElement('button');b.className='abtn';b.textContent=opt+'°';
+    b.onclick=()=>submitAnswer(opt,gq.answer,`${lvl.name}:q${S.qi}`,b,'dungeon');g.appendChild(b);
+  });
+  resetHintPanel();
+  startTimer();
+}
+
+function genGeomOpts(correct){
+  const o=new Set([correct]);
+  for(const d of shuf([-10,-5,-15,5,10,15,-20,20,-25,25,-30,30])){if(o.size>=4)break;const c=correct+d;if(c>0&&c<360&&c!==correct)o.add(c);}
+  let p=5;while(o.size<4&&p<180){if(!o.has(correct+p)&&correct+p>0&&correct+p<360)o.add(correct+p);if(o.size<4&&!o.has(correct-p)&&correct-p>0)o.add(correct-p);p+=5;}
+  return shuf([...o].slice(0,4));
+}
+
+// ─── Hint panel ───────────────────────────────────────────
+function resetHintPanel(){
+  const wrap=document.getElementById('hint-panel-wrap');
+  if(wrap)wrap.innerHTML='';
+  const hb=document.getElementById('hint-btn');
+  if(hb){hb.classList.remove('hidden','active');hb.textContent='💡 Hint';}
+}
+
+function toggleHint(){
+  if(S.answered)return;
+  const wrap=document.getElementById('hint-panel-wrap');
+  const hb=document.getElementById('hint-btn');
+  const h=S.currentHint;
+  if(!h||!wrap)return;
+  if(wrap.innerHTML!==''){
+    wrap.innerHTML='';
+    hb.classList.remove('active');
+    hb.textContent='💡 Hint';
+    return;
+  }
+  hb.classList.add('active');
+  hb.textContent='💡 Hide Hint';
+  wrap.innerHTML=`
+    <div class="hint-panel">
+      <div class="hint-panel-formula-lbl">${h.formulaLbl}</div>
+      <div class="hint-panel-formula">${h.formula}</div>
+      <div class="hint-panel-tip">${h.tip}</div>
+      ${h.why?`<div class="hint-panel-why">
+        <div class="hint-panel-why-lbl">💡 Why it works</div>
+        <div class="hint-panel-why-txt">${h.why}</div>
+      </div>`:''}
+    </div>`;
+}
+
+// ─── Timer ────────────────────────────────────────────────
+function startTimer(){
+  clearInterval(S.tid);S.tleft=TSEC;
+  const bar=document.getElementById('timer-bar');if(bar)bar.style.width='100%';
+  S.tid=setInterval(()=>{
+    S.tleft-=.1;
+    const b=document.getElementById('timer-bar');if(b)b.style.width=Math.max(0,S.tleft/TSEC*100)+'%';
+    if(S.tleft<=0){clearInterval(S.tid);if(!S.answered)timeOut();}
+  },100);
+}
+
+// ─── Time out ─────────────────────────────────────────────
+function timeOut(){
+  if(S.answered)return;
+  S.answered=true;clearInterval(S.tid);
+  const sab=document.getElementById('show-ans-btn');if(sab)sab.classList.add('hidden');
+  const hb2=document.getElementById('hint-btn');if(hb2)hb2.classList.add('hidden');
+  const isV=S.world==='vault', isSh=S.world==='shrine', isDg=S.world==='dungeon';
+  const lvl=isDg?DUNGEON_LEVELS[S.dungeonLevel]:isV?VAULT_LEVELS[S.vaultLevel]:isSh?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
+  const q=S.currentShapeQ;
+  const ans=(isV||isSh||isDg)&&q?q.answer:'?';
+  const suffix=isDg?'°':isV&&lvl.type==='vol'?' cm³':isV?' cm²':isSh&&(lvl.type==='peri'||lvl.type==='boss')?' cm':' cm²';
+  S.streak=0;updateHUD();
+  S.plrHP=Math.max(0,S.plrHP-lvl.dmg);updatePlr();
+  dmgPop(lvl.dmg,false);animMon('hit');
+  S.results.push(false);
+  setDot(S.qi,false);S.qi++;
+
+  const working=(isV||isSh||isDg)&&q?q.formulaUsed:'';
+  const steps=isDg&&q&&q.steps?q.steps:'';
+  const explWhy=isDg?lvl.why:(isV||isSh)?lvl.fdesc:'';
+  showExplanation('timeout',`⏰ Time's up!`,`Answer: ${ans}${suffix}`,working,steps,explWhy);
+}
+
+// ─── Submit answer ────────────────────────────────────────
+function submitAnswer(val,correct,key,btn,world){
+  if(S.answered)return;
+  S.answered=true;clearInterval(S.tid);
+  const sab=document.getElementById('show-ans-btn');if(sab)sab.classList.add('hidden');
+  const hb3=document.getElementById('hint-btn');if(hb3)hb3.classList.add('hidden');
+  const ok=val===correct;
+  const isV=S.world==='vault', isSh=S.world==='shrine', isDg=S.world==='dungeon';
+  // Highlight all buttons
+  document.querySelectorAll('#ansgrid .abtn').forEach(b=>{
+    b.disabled=true;
+    if(parseInt(b.textContent)===correct||b.textContent.replace(/[°\scm²³]/g,'').trim()==String(correct))b.classList.add('correct');
+  });
+  if(!ok)btn.classList.add('wrong');
+  const lvl=isDg?DUNGEON_LEVELS[S.dungeonLevel]:isV?VAULT_LEVELS[S.vaultLevel]:isSh?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
+  const q=S.currentShapeQ;
+  const suffix=isDg?'°':isV&&lvl.type==='vol'?' cm³':isV?' cm²':isSh&&(lvl.type==='peri'||lvl.type==='boss')?' cm':' cm²';
+  const working=(isV||isSh||isDg)&&q?q.formulaUsed:'';
+  const steps=isDg&&q&&q.steps?q.steps:'';
+  const explWhy=isDg?lvl.why:(isV||isSh)?lvl.fdesc:'';
+
+  if(ok){
+    S.streak++;
+    const bonus=S.streak>=3?S.streak:1, tb=Math.floor(S.tleft/TSEC*20), xp=10*bonus+tb;
+    addXP(xp);
+    if(S.weak[key]>0)S.weak[key]--;
+    const dmg=Math.floor(20+S.streak*3+tb);
+    S.monHP=Math.max(0,S.monHP-dmg);updateMon();
+    dmgPop(dmg,true);animMon('shake');S.results.push(true);
+    const streakMsg=S.streak>=5?`🔥 ${S.streak}× COMBO! +${xp} XP!`:S.streak>=3?`⚡ Hot streak! +${xp} XP`:`+${xp} XP`;
+    toast(streakMsg);
+    showExplanation('correct',streakMsg,`Answer: ${correct}${suffix}`,working,steps,explWhy);
+  } else {
+    S.weak[key]=(S.weak[key]||0)+1;S.streak=0;updateHUD();
+    S.plrHP=Math.max(0,S.plrHP-lvl.dmg);updatePlr();
+    dmgPop(lvl.dmg,false);animMon('hit');S.results.push(false);
+    showExplanation('wrong','❌ Wrong answer',`Correct answer: ${correct}${suffix}`,working,steps,explWhy);
+  }
+  updateHUD();setDot(S.qi,ok);S.qi++;
+}
+
+// ─── Give up: show answer without waiting for timeout ─────
+function giveUp(){
+  if(S.answered)return;
+  S.answered=true;clearInterval(S.tid);
+  const isV=S.world==='vault', isSh=S.world==='shrine', isDg=S.world==='dungeon';
+  const lvl=isDg?DUNGEON_LEVELS[S.dungeonLevel]:isV?VAULT_LEVELS[S.vaultLevel]:isSh?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
+  const q=S.currentShapeQ;
+  const ans=(isV||isSh||isDg)&&q?q.answer:'?';
+  const suffix=isDg?'°':isV&&lvl.type==='vol'?' cm³':isV?' cm²':isSh&&(lvl.type==='peri'||lvl.type==='boss')?' cm':' cm²';
+  const working=(isV||isSh||isDg)&&q?q.formulaUsed:'';
+  const steps=isDg&&q&&q.steps?q.steps:'';
+  const explWhy=isDg?lvl.why:(isV||isSh)?lvl.fdesc:'';
+
+  // Highlight correct answer button
+  document.querySelectorAll('#ansgrid .abtn').forEach(b=>{
+    b.disabled=true;
+    if(parseInt(b.textContent)===ans||b.textContent.replace(/[°\scm²³]/g,'').trim()==String(ans))b.classList.add('correct');
+  });
+
+  // Penalise: monster attacks, streak resets
+  S.weak[q?`${q.steps||'q'}:skip`:(isDg?`geom:skip`:'skip')]=(S.weak['skip']||0)+1;
+  S.streak=0;updateHUD();
+  S.plrHP=Math.max(0,S.plrHP-lvl.dmg);updatePlr();
+  dmgPop(lvl.dmg,false);animMon('hit');
+  S.results.push(false);
+  setDot(S.qi,false);S.qi++;
+
+  showExplanation('timeout','🤔 Answer revealed',`Answer: ${ans}${suffix}`,working,steps,explWhy);
+}
+
+// ─── Explanation panel with Next button ───────────────────
+function showExplanation(type, verdict, ansLine, working, steps, why){
+  // Hide the Show Answer and Hint buttons — no longer needed
+  const sab=document.getElementById('show-ans-btn');
+  if(sab)sab.classList.add('hidden');
+  const hb4=document.getElementById('hint-btn');if(hb4)hb4.classList.add('hidden');
+
+  // Auto-expand the hint panel so formula + why are visible with the answer
+  const hw=document.getElementById('hint-panel-wrap');
+  if(hw){
+    const h=S.currentHint;
+    if(h){
+      hw.innerHTML=`
+        <div class="hint-panel" style="margin-bottom:8px">
+          <div class="hint-panel-formula-lbl">${h.formulaLbl}</div>
+          <div class="hint-panel-formula">${h.formula}</div>
+          <div class="hint-panel-tip">${h.tip}</div>
+          ${h.why?`<div class="hint-panel-why">
+            <div class="hint-panel-why-lbl">💡 Why it works</div>
+            <div class="hint-panel-why-txt">${h.why}</div>
+          </div>`:''}
+        </div>`;
+    } else {
+      hw.innerHTML='';
+    }
+  }
+  // Replace the feedback div with a rich explanation panel + Next button
+  const fb=document.getElementById('feedback');
+  fb.className='feedback hidden'; fb.textContent='';
+
+  // Insert explanation panel after feedback div
+  let panel=document.getElementById('expl-panel');
+  if(panel)panel.remove();
+  panel=document.createElement('div');
+  panel.id='expl-panel';
+  panel.className=`expl-panel ${type}`;
+
+  const icons={correct:'✅',wrong:'❌',timeout:'⏰'};
+  const verdictClass={correct:'c',wrong:'w',timeout:'t'};
+
+  panel.innerHTML=`
+    <div class="expl-row">
+      <span class="expl-icon">${icons[type]}</span>
+      <span class="expl-verdict ${verdictClass[type]}">${verdict}</span>
+    </div>
+    <div class="expl-ans">${ansLine}</div>
+    ${working?`<div class="expl-working">${steps?steps+': ':''} ${working}</div>`:''}
+    ${why?`<div class="expl-why">💡 ${why}</div>`:''}
+  `;
+
+  // Insert after feedback
+  fb.parentNode.insertBefore(panel, fb.nextSibling);
+
+  // Insert Next button after panel
+  let nextBtn=document.getElementById('next-q-btn');
+  if(nextBtn)nextBtn.remove();
+  nextBtn=document.createElement('button');
+  nextBtn.id='next-q-btn';
+  nextBtn.className='next-q-btn';
+
+  // Label depends on what comes next
+  if(S.monHP<=0) nextBtn.textContent='🏆 Victory! →';
+  else if(S.plrHP<=0) nextBtn.textContent='💀 See Results →';
+  else if(S.qi>=QC) nextBtn.textContent='📊 See Results →';
+  else nextBtn.textContent=`Question ${Math.min(S.qi+1,QC)} of ${QC} →`;
+
+  nextBtn.onclick=()=>{
+    panel.remove();nextBtn.remove();
+    advance();
+  };
+  panel.parentNode.insertBefore(nextBtn, panel.nextSibling);
+}
+
+// ─── Advance ──────────────────────────────────────────────
+function advance(){
+  clearInterval(S.tid);
+  if(S.monHP<=0){show('victory');renderVic();return;}
+  if(S.plrHP<=0){show('defeat');renderDef();return;}
+  if(S.qi>=QC){const ok=S.results.filter(Boolean).length;if(ok>=6){show('victory');renderVic();}else{show('defeat');renderDef();}return;}
+  nextQ();
+}
+
+function showFb(ok,msg){const f=document.getElementById('feedback');f.className='feedback '+(ok?'correct':'wrong');f.textContent=msg;}
+function dmgPop(n,deal){const box=document.getElementById('mbox');const p=document.createElement('div');p.className='dpop '+(deal?'h':'d');p.textContent=(deal?'💥 -':'🗡 -')+n;box.appendChild(p);setTimeout(()=>p.remove(),1100);}
+function animMon(t){const el=document.getElementById('mbox');el.classList.remove('mshake','mhit');void el.offsetWidth;el.classList.add(t==='shake'?'mshake':'mhit');}
+
+// ════════════════════════════════════════
+// VICTORY / DEFEAT
+// ════════════════════════════════════════
+function renderVic(){
+  clearInterval(S.tid);
+  const isVault=S.world==='vault';
+  const isShrine=S.world==='shrine';
+  const isDungeon=S.world==='dungeon';
+  const lvl=isDungeon?DUNGEON_LEVELS[S.dungeonLevel]:isVault?VAULT_LEVELS[S.vaultLevel]:isShrine?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
+  const ok=S.results.filter(Boolean).length;
+  const bonus=Math.floor(lvl.xpReward*(ok/QC));addXP(bonus);
+  if(isDungeon)S.dungeonCleared.add(lvl.id);
+  else if(isVault)S.vaultCleared.add(lvl.id);
+  else if(isShrine)S.shrineCleared.add(lvl.id);
+  else S.cleared.add(lvl.id);
+  updateHUD();
+  document.getElementById('vsub').textContent=`You defeated ${lvl.mname} with ${ok}/${QC} correct! +${bonus} bonus XP`;
+  document.getElementById('vstats').innerHTML=stbs([{v:`${ok}/${QC}`,c:'var(--green)',l:'Correct'},{v:`+${S.xpg}`,c:'var(--amber)',l:'XP Earned'},{v:S.streak,c:'var(--coral)',l:'Best Streak'}]);
+  document.getElementById('vformula').innerHTML=`<div class="fcrev"><div class="fclbl">✨ Formula Card Unlocked!</div><div class="fcbig">${lvl.formula}</div><div class="fcdesc">${lvl.fdesc}</div></div>`;
+  renderWk('vweak');
+  document.getElementById('vback-btn').textContent=isDungeon?'← Dungeon':isVault?'← Vault':isShrine?'← Shrine':'← Tower';
+  document.getElementById('vback-btn').onclick=isDungeon?showDungeon:isVault?showVault:isShrine?showShrine:showTower;
+  const nb=document.getElementById('vnext-btn');
+  const arr=isDungeon?DUNGEON_LEVELS:isVault?VAULT_LEVELS:isShrine?SHRINE_LEVELS:FLOORS;
+  const ni=isDungeon?S.dungeonLevel+1:isVault?S.vaultLevel+1:isShrine?S.shLevel+1:S.floor+1;
+  if(ni<arr.length){
+    const nextName=isDungeon?DUNGEON_LEVELS[ni].name:isVault?VAULT_LEVELS[ni].name:isShrine?SHRINE_LEVELS[ni].name:`Floor ${ni+1}`;
+    nb.textContent=`Next: ${nextName} →`;
+    nb.onclick=()=>{if(isDungeon)S.dungeonLevel=ni;else if(isVault)S.vaultLevel=ni;else if(isShrine)S.shLevel=ni;else S.floor=ni;startBattle();};
+  } else {
+    nb.textContent=isDungeon?'△ Dungeon Complete!':isVault?'◆ Vault Complete!':isShrine?'◻ Shrine Complete!':'🏆 Tower Complete!';
+    nb.onclick=goHome;
+  }
+}
+function renderDef(){
+  clearInterval(S.tid);
+  const isVault=S.world==='vault';
+  const isShrine=S.world==='shrine';
+  const isDungeon=S.world==='dungeon';
+  const lvl=isDungeon?DUNGEON_LEVELS[S.dungeonLevel]:isVault?VAULT_LEVELS[S.vaultLevel]:isShrine?SHRINE_LEVELS[S.shLevel]:FLOORS[S.floor];
+  const ok=S.results.filter(Boolean).length;
+  document.getElementById('dsub').textContent=`${lvl.mname} was too strong. You got ${ok}/${S.results.length} right. Try again!`;
+  document.getElementById('dstats').innerHTML=stbs([{v:`${ok}/${S.results.length}`,c:'var(--red)',l:'Correct'},{v:`+${S.xpg}`,c:'var(--amber)',l:'XP Earned'},{v:Math.max(0,S.monMaxHP-S.monHP),c:'var(--purple)',l:'Dmg Dealt'}]);
+  document.getElementById('dback-btn').textContent=isDungeon?'← Dungeon':isVault?'← Vault':isShrine?'← Shrine':'← Tower';
+  document.getElementById('dback-btn').onclick=isDungeon?showDungeon:isVault?showVault:isShrine?showShrine:showTower;
+  renderWk('dweak');
+}
+function renderWk(id){
+  const w=Object.entries(S.weak).filter(([,v])=>v>0).sort(([,a],[,b])=>b-a).slice(0,5);
+  const c=document.getElementById(id);if(!c)return;
+  c.innerHTML=w.length?`<div class="wklbl">⚠ Practise these:</div><div class="wkpills">${w.map(([k])=>`<span class="wkpill">${k}</span>`).join('')}</div>`:'';
+}
+function stbs(arr){return arr.map(({v,c,l})=>`<div class="stbox"><div class="stval" style="color:${c}">${v}</div><div class="stlbl">${l}</div></div>`).join('');}
+
+// ════════════════════════════════════════
+// DRILL ENGINE — no timer, no HP, hint always visible
+// ════════════════════════════════════════
+const DS = { world:'tower', levelIdx:0, correct:0, wrong:0, answered:false };
+
+function startDrill(world, levelIdx){
+  DS.world=world; DS.levelIdx=levelIdx;
+  DS.correct=0; DS.wrong=0;
+  show('drill');
+  // Set back button
+  const backMap = {tower:showTower, shrine:showShrine, vault:showVault, dungeon:showDungeon};
+  document.getElementById('drill-back-btn').onclick = backMap[world] || goHome;
+  // Set title
+  const lvl = drillGetLevel();
+  const titleMap = {
+    tower:   `🥋 ×${lvl.mult} Table`,
+    shrine:  `🥋 ${lvl.name}`,
+    vault:   `🥋 ${lvl.name}`,
+    dungeon: `🥋 ${lvl.name}`,
+  };
+  document.getElementById('drill-title').textContent = titleMap[world] || '🥋 Drill';
+  updateDrillScore();
+  renderDrillQ();
+}
+
+function drillGetLevel(){
+  if(DS.world==='shrine')  return SHRINE_LEVELS[DS.levelIdx];
+  if(DS.world==='vault')   return VAULT_LEVELS[DS.levelIdx];
+  if(DS.world==='dungeon') return DUNGEON_LEVELS[DS.levelIdx];
+  return FLOORS[DS.levelIdx]; // tower
+}
+
+function updateDrillScore(){
+  document.getElementById('drill-correct').textContent=DS.correct;
+  document.getElementById('drill-wrong').textContent=DS.wrong;
+}
+
+function renderDrillQ(){
+  DS.answered=false;
+  const lvl=drillGetLevel();
+  // Always-visible hint panel
+  const hint=document.getElementById('drill-hint-always');
+  const formulaLbl = DS.world==='dungeon'?'Theorem':'Formula';
+  hint.innerHTML=`
+    <div class="drill-hint-formula-lbl">${formulaLbl}</div>
+    <div class="drill-hint-formula">${lvl.formula}</div>
+    <div class="drill-hint-tip">${lvl.tip||lvl.fdesc||''}</div>
+    ${lvl.why?`<div class="drill-hint-why"><div class="drill-hint-why-lbl">💡 Why it works</div><div class="drill-hint-why-txt">${lvl.why}</div></div>`:''}`;
+
+  // Generate question
+  let q, svgHtml='', qLabel='', opts=[], suffix='';
+  if(DS.world==='tower'){
+    const f=FLOORS[DS.levelIdx];
+    const b=rnd(1,12);
+    q={answer:f.mult*b, formulaUsed:`${f.mult} × ${b} = ${f.mult*b}`, questionText:`${f.mult} × ${b} = ?`};
+    qLabel=`×${f.mult} Table`;
+    opts=genTowerOpts(q.answer, f.mult);
+    suffix='';
+  } else if(DS.world==='shrine'){
+    const sq=genShapeQ(lvl);
+    svgHtml=shapesvg(sq.shapeType,sq.dims,lvl.type);
+    q=sq; qLabel=lvl.type==='peri'?'Find the Perimeter / Circumference':'Find the Area';
+    suffix=lvl.type==='peri'?' cm':sq.shapeType==='circle'||sq.shapeType==='sector'?' cm²':' cm²';
+    opts=genShapeOpts(sq.answer);
+  } else if(DS.world==='vault'){
+    const vq=genVaultQ(lvl);
+    svgHtml=solidSVG(vq.solidType,vq.dims);
+    q=vq; qLabel=lvl.type==='sa'?'Find the Surface Area':lvl.type==='vol'?'Find the Volume':'Volume or Surface Area';
+    suffix=lvl.type==='vol'?' cm³':' cm²';
+    opts=genShapeOpts(vq.answer);
+  } else if(DS.world==='dungeon'){
+    const gq=genGeomQ(lvl);
+    svgHtml=geomSVG(gq.topic,gq.dims);
+    q=gq; qLabel='Find the missing angle';
+    suffix='°';
+    opts=genGeomOpts(gq.answer);
+  }
+
+  // SVG diagram
+  const svgWrap=document.getElementById('drill-svg-wrap');
+  if(svgHtml){
+    svgWrap.style.display='flex';
+    svgWrap.style.justifyContent='center';
+    svgWrap.innerHTML=`<div style="width:150px;height:120px">${svgHtml}</div>`;
+  } else {
+    svgWrap.style.display='none';
+    svgWrap.innerHTML='';
+  }
+
+  document.getElementById('drill-q-label').textContent=qLabel;
+  document.getElementById('drill-q-text').textContent=q.questionText||q.answer;
+
+  // Reset feedback
+  const fb=document.getElementById('drill-fb');
+  const wk=document.getElementById('drill-working');
+  const nb=document.getElementById('drill-next-btn');
+  fb.className='drill-fb'; fb.textContent=''; fb.style.display='none';
+  wk.style.display='none';
+  nb.style.display='none';
+
+  // Answer buttons
+  const g=document.getElementById('drill-ansgrid');g.innerHTML='';
+  opts.forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='abtn';
+    btn.textContent=opt+suffix;
+    btn.onclick=()=>submitDrillAnswer(opt, q.answer, q.formulaUsed||'', suffix, btn, g);
+    g.appendChild(btn);
+  });
+}
+
+function submitDrillAnswer(val, correct, formulaUsed, suffix, btn, grid){
+  if(DS.answered)return;
+  DS.answered=true;
+  const ok=val===correct;
+
+  // Highlight buttons
+  grid.querySelectorAll('.abtn').forEach(b=>{
+    b.disabled=true;
+    if(parseInt(b.textContent)===correct||b.textContent.replace(/[°\scm²³]/g,'').trim()===String(correct))
+      b.classList.add('correct');
+  });
+  if(!ok)btn.classList.add('wrong');
+
+  // Score
+  if(ok){ DS.correct++; addXP(5); toast('+5 XP'); }
+  else  { DS.wrong++; }
+  updateDrillScore();
+
+  // Feedback
+  const fb=document.getElementById('drill-fb');
+  fb.className=`drill-fb ${ok?'correct':'wrong'}`;
+  fb.textContent=ok?`✓ Correct! ${correct}${suffix}`:`❌ Wrong! Answer = ${correct}${suffix}`;
+  fb.style.display='flex';
+
+  // Working
+  if(formulaUsed){
+    const wk=document.getElementById('drill-working');
+    wk.textContent=formulaUsed;
+    wk.style.display='block';
+  }
+
+  // Next button
+  const nb=document.getElementById('drill-next-btn');
+  nb.style.display='block';
+  nb.textContent='Next Question →';
+}
+
+function drillNext(){
+  renderDrillQ();
+}
+
+// ════════════════════════════════════════
+// STUDY MODE
+// ════════════════════════════════════════
+let studyWorld = 'tower';
+
+function showStudy(world){
+  studyWorld = world;
+  show('study');
+  const backMap = {tower:showTower, shrine:showShrine, vault:showVault, dungeon:showDungeon};
+  document.getElementById('study-back-btn').onclick = backMap[world] || goHome;
+  const titles = {tower:'📖 Times Tables', shrine:'📖 Shape Formulas', vault:'📖 3D Solids', dungeon:'📖 Geometry Theorems'};
+  document.getElementById('study-title').textContent = titles[world];
+  buildStudyTabs(world);
+}
+
+function buildStudyTabs(world){
+  const tabsEl = document.getElementById('study-tabs');
+  const contentEl = document.getElementById('study-content');
+  tabsEl.innerHTML = '';
+  contentEl.innerHTML = '';
+
+  if(world === 'tower'){
+    // One big full table (×2–×30), tabs just scroll to sections
+    const groups = [
+      {label:'×2 – ×10',  range:[0,8]},
+      {label:'×11 – ×20', range:[9,18]},
+      {label:'×21 – ×30', range:[19,28]},
+    ];
+    groups.forEach((g,i) => {
+      const tab = mkTab(g.label, i===0, ()=>renderTableStudy(g.range));
+      tabsEl.appendChild(tab);
+    });
+    renderTableStudy(groups[0].range);
+
+  } else if(world === 'shrine'){
+    const sections = [
+      {label:'Area',     filter: l => l.type==='area'},
+      {label:'Perimeter',filter: l => l.type==='peri'},
+      {label:'Advanced', filter: l => l.type==='mixed'||l.type==='boss'},
+    ];
+    sections.forEach((s,i) => {
+      const tab = mkTab(s.label, i===0, ()=>renderShapeStudy(s.filter));
+      tabsEl.appendChild(tab);
+    });
+    renderShapeStudy(sections[0].filter);
+
+  } else if(world === 'vault'){
+    const sections = [
+      {label:'Volume',      filter: l => l.type==='vol'},
+      {label:'Surface Area',filter: l => l.type==='sa'},
+      {label:'Advanced',    filter: l => l.type==='mixed'||l.type==='boss'},
+    ];
+    sections.forEach((s,i) => {
+      const tab = mkTab(s.label, i===0, ()=>renderVaultStudy(s.filter));
+      tabsEl.appendChild(tab);
+    });
+    renderVaultStudy(sections[0].filter);
+
+  } else if(world === 'dungeon'){
+    const sections = [
+      {label:'Angles',         filter: l => l.type==='angles'},
+      {label:'Triangles',      filter: l => l.type==='tri'},
+      {label:'Circle Theorems',filter: l => l.type==='circle'},
+      {label:'Boss',           filter: l => l.type==='boss'},
+    ];
+    sections.forEach((s,i) => {
+      const tab = mkTab(s.label, i===0, ()=>renderDungeonStudy(s.filter));
+      tabsEl.appendChild(tab);
+    });
+    renderDungeonStudy(sections[0].filter);
+  }
+}
+
+function mkTab(label, active, fn){
+  const t = document.createElement('button');
+  t.className = 'study-tab' + (active ? ' active' : '');
+  t.textContent = label;
+  t.onclick = () => {
+    document.querySelectorAll('.study-tab').forEach(b => b.classList.remove('active'));
+    t.classList.add('active');
+    fn();
+  };
+  return t;
+}
+
+// ── TOWER study ───────────────────────────────────────────
+function renderTableStudy(range){
+  const el = document.getElementById('study-content');
+  el.innerHTML = '';
+
+  const [from, to] = range;
+  const tables = FLOORS.slice(from, to+1).map(f => f.mult);
+
+  // ── Big multiplication grid ──
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'overflow-x:auto;margin-bottom:20px;border-radius:14px;border:1.5px solid var(--border);';
+
+  const tbl = document.createElement('table');
+  tbl.style.cssText = 'border-collapse:collapse;width:100%;min-width:' + (tables.length * 56 + 56) + 'px;';
+
+  // Header row
+  let headerHtml = '<tr><th style="' + thStyle(true) + '">×</th>';
+  for(let n=1;n<=12;n++){
+    headerHtml += `<th style="${thStyle(false)}">${n}</th>`;
+  }
+  headerHtml += '</tr>';
+
+  // Data rows — one per table
+  let rowsHtml = '';
+  tables.forEach(mult => {
+    const fl = FLOORS.find(f => f.mult===mult);
+    rowsHtml += `<tr>`;
+    rowsHtml += `<td style="${tdStyle(true)}">${mult}</td>`;
+    for(let n=1;n<=12;n++){
+      const val = mult*n;
+      // Highlight "famous" facts in amber
+      const famous = (mult===7&&n===8)||(mult===8&&n===7)||(mult===6&&n===9)||(mult===9&&n===6);
+      const bg = famous ? 'background:rgba(217,119,6,.15);font-weight:800;color:var(--amber);' : '';
+      rowsHtml += `<td style="${tdStyle(false)}${bg}">${val}</td>`;
+    }
+    rowsHtml += `</tr>`;
+  });
+
+  tbl.innerHTML = headerHtml + rowsHtml;
+  wrap.appendChild(tbl);
+  el.appendChild(wrap);
+
+  // ── Trick cards row beneath the table ──
+  const tricksLabel = document.createElement('div');
+  tricksLabel.className = 'study-sec-lbl';
+  tricksLabel.textContent = 'Memory Tricks & Practice';
+  el.appendChild(tricksLabel);
+
+  const tricksGrid = document.createElement('div');
+  tricksGrid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:16px;';
+
+  tables.forEach(mult => {
+    const fl = FLOORS.find(f => f.mult===mult);
+    const idx = FLOORS.indexOf(fl);
+    const ex_b = rnd(2,12);
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px;';
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span style="font-family:'Fredoka One',cursive;font-size:16px;color:var(--purple)">×${mult} Table</span>
+        <span style="font-size:18px">${fl.monster}</span>
+      </div>
+      <div style="background:var(--bg2);border-radius:8px;padding:6px 9px;font-size:11px;color:var(--t2);margin-bottom:8px;line-height:1.5">
+        💡 <strong>${fl.formula}</strong><br>${fl.fdesc}
+      </div>
+      <div style="background:linear-gradient(135deg,#fef9c3,#fef3c7);border:1.5px solid #fde68a;border-radius:8px;padding:7px 9px;margin-bottom:8px">
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#92400e;margin-bottom:2px">Example</div>
+        <div style="font-size:12px;color:#78350f">${mult} × ${ex_b} = <strong>${mult*ex_b}</strong></div>
+      </div>
+      <button class="study-table-drill" onclick="startDrill('tower',${idx})">🥋 Drill ×${mult} Table</button>
+    `;
+    tricksGrid.appendChild(card);
+  });
+  el.appendChild(tricksGrid);
+}
+
+function thStyle(isFirst){
+  return `padding:8px 10px;text-align:center;font-family:'Fredoka One',cursive;font-size:13px;` +
+    (isFirst
+      ? `background:var(--purple);color:#fff;position:sticky;left:0;z-index:2;`
+      : `background:var(--bg2);color:var(--t2);border-bottom:2px solid var(--border);`);
+}
+function tdStyle(isFirst){
+  return `padding:7px 8px;text-align:center;font-size:13px;font-weight:700;border:0.5px solid var(--border);` +
+    (isFirst
+      ? `background:var(--bg2);color:var(--purple);font-family:'Fredoka One',cursive;font-size:14px;position:sticky;left:0;z-index:1;`
+      : `color:var(--text);`);
+}
+
+// ── SHRINE study ──────────────────────────────────────────
+function renderShapeStudy(filter){
+  const el = document.getElementById('study-content');
+  el.innerHTML = '';
+  const levels = SHRINE_LEVELS.filter(filter);
+  const grid = document.createElement('div');
+  grid.className = 'study-shape-grid';
+
+  levels.forEach(lv => {
+    // Generate a worked example
+    const ex = genShapeQ(lv);
+    const svgHtml = shapesvg(ex.shapeType, ex.dims, lv.type);
+    const idx = SHRINE_LEVELS.indexOf(lv);
+    const qLabel = lv.type==='peri' ? 'Perimeter' : lv.type==='area' ? 'Area' : 'Area / Perimeter';
+    const unit = lv.type==='peri' ? 'cm' : 'cm²';
+
+    const card = document.createElement('div');
+    card.className = 'study-shape-card';
+    card.innerHTML = `
+      <div class="study-shape-top">
+        <div class="study-shape-svg">${svgHtml}</div>
+        <div class="study-shape-meta">
+          <div class="study-shape-name">${lv.name.replace(/Floor \d+: /,'')}</div>
+          <div class="study-formula-row">
+            <div class="study-formula-lbl">${qLabel} Formula</div>
+            <div class="study-formula-val">${lv.formula}</div>
+          </div>
+          <div class="study-why">${lv.fdesc}</div>
+        </div>
+      </div>
+      <div style="background:var(--bg2);border-radius:8px;padding:6px 9px;margin-bottom:6px;font-size:11px;color:var(--t2)">
+        💡 <strong>Why:</strong> ${lv.why||lv.tip}
+      </div>
+      <div class="study-example">
+        <div class="study-ex-lbl">Worked Example</div>
+        <div class="study-ex-q">${ex.questionText}</div>
+        <div class="study-ex-ans">Answer: ${ex.answer} ${unit}</div>
+        <div style="font-size:11px;color:#78350f;margin-top:2px">${ex.formulaUsed}</div>
+      </div>
+      <button class="study-shape-drill" onclick="startDrill('shrine',${idx})">🥋 Practice ${lv.name}</button>
+    `;
+    grid.appendChild(card);
+  });
+  el.appendChild(grid);
+}
+
+// ── VAULT study ───────────────────────────────────────────
+function renderVaultStudy(filter){
+  const el = document.getElementById('study-content');
+  el.innerHTML = '';
+  const levels = VAULT_LEVELS.filter(filter);
+  const grid = document.createElement('div');
+  grid.className = 'study-shape-grid';
+
+  levels.forEach(lv => {
+    const ex = genVaultQ(lv);
+    const svgHtml = solidSVG(ex.solidType, ex.dims);
+    const idx = VAULT_LEVELS.indexOf(lv);
+    const unit = lv.type==='vol' ? 'cm³' : 'cm²';
+    const qLabel = lv.type==='vol' ? 'Volume' : lv.type==='sa' ? 'Surface Area' : 'Volume / SA';
+
+    const card = document.createElement('div');
+    card.className = 'study-shape-card';
+    card.innerHTML = `
+      <div class="study-shape-top">
+        <div class="study-shape-svg">${svgHtml}</div>
+        <div class="study-shape-meta">
+          <div class="study-shape-name">${lv.name}</div>
+          <div class="study-formula-row">
+            <div class="study-formula-lbl">${qLabel} Formula</div>
+            <div class="study-formula-val">${lv.formula}</div>
+          </div>
+          <div class="study-why">${lv.fdesc}</div>
+        </div>
+      </div>
+      <div style="background:var(--bg2);border-radius:8px;padding:6px 9px;margin-bottom:6px;font-size:11px;color:var(--t2)">
+        💡 <strong>Why:</strong> ${lv.why}
+      </div>
+      <div class="study-example">
+        <div class="study-ex-lbl">Worked Example</div>
+        <div class="study-ex-q">${ex.questionText}</div>
+        <div class="study-ex-ans">Answer: ${ex.answer} ${unit}</div>
+        <div style="font-size:11px;color:#78350f;margin-top:2px">${ex.formulaUsed}</div>
+      </div>
+      <button class="study-shape-drill" onclick="startDrill('vault',${idx})">🥋 Practice ${lv.name}</button>
+    `;
+    grid.appendChild(card);
+  });
+  el.appendChild(grid);
+}
+
+// ── DUNGEON study ─────────────────────────────────────────
+function renderDungeonStudy(filter){
+  const el = document.getElementById('study-content');
+  el.innerHTML = '';
+  const levels = DUNGEON_LEVELS.filter(filter);
+  const grid = document.createElement('div');
+  grid.className = 'study-shape-grid';
+
+  levels.forEach(lv => {
+    const ex = genGeomQ(lv);
+    const svgHtml = geomSVG(ex.topic, ex.dims);
+    const idx = DUNGEON_LEVELS.indexOf(lv);
+
+    const card = document.createElement('div');
+    card.className = 'study-shape-card';
+    card.innerHTML = `
+      <div class="study-shape-top">
+        <div class="study-shape-svg">${svgHtml}</div>
+        <div class="study-shape-meta">
+          <div class="study-shape-name">${lv.name}</div>
+          <div class="study-formula-row">
+            <div class="study-formula-lbl">Theorem / Rule</div>
+            <div class="study-formula-val">${lv.formula}</div>
+          </div>
+          <div class="study-why">${lv.tip}</div>
+        </div>
+      </div>
+      <div style="background:var(--bg2);border-radius:8px;padding:6px 9px;margin-bottom:6px;font-size:11px;color:var(--t2)">
+        💡 <strong>Why it works:</strong> ${lv.why}
+      </div>
+      <div class="study-example">
+        <div class="study-ex-lbl">Worked Example</div>
+        <div class="study-ex-q">${ex.questionText}</div>
+        <div class="study-ex-ans">Answer: ${ex.answer}°</div>
+        <div style="font-size:11px;color:#78350f;margin-top:2px">${ex.steps ? ex.steps + ': ' : ''}${ex.formulaUsed}</div>
+      </div>
+      <button class="study-shape-drill" onclick="startDrill('dungeon',${idx})">🥋 Practice ${lv.name}</button>
+    `;
+    grid.appendChild(card);
+  });
+  el.appendChild(grid);
+}
+
+// ════════════════════════════════════════
+// QUICK BATTLE
+// ════════════════════════════════════════
+function startQB(){
+  clearInterval(S.qbTid);clearInterval(S.tid);
+  S.qbLeft=60;S.qbC=0;S.qbW=0;S.qbSt=0;
+  show('qb');
+  ['qbtimer','qbc','qbw','qbst'].forEach((id,i)=>document.getElementById(id).textContent=i===0?60:0);
+  nextQBQ();
+  S.qbTid=setInterval(()=>{S.qbLeft--;document.getElementById('qbtimer').textContent=S.qbLeft;if(S.qbLeft<=0){clearInterval(S.qbTid);endQB();}},1000);
+}
+function nextQBQ(){
+  const mult=Math.floor(Math.random()*29)+2,b=Math.floor(Math.random()*12)+1,ans=mult*b;
+  document.getElementById('qbq').textContent=`${mult} × ${b} = ?`;
+  document.getElementById('qbfb').className='feedback hidden';
+  const g=document.getElementById('qbans');g.innerHTML='';
+  genTowerOpts(ans,mult).forEach(opt=>{
+    const btn=document.createElement('button');btn.className='abtn';btn.textContent=opt;
+    btn.onclick=()=>{
+      g.querySelectorAll('.abtn').forEach(b=>{b.disabled=true;if(Number(b.textContent)===ans)b.classList.add('correct');});
+      if(opt!==ans)btn.classList.add('wrong');
+      const ok=opt===ans;
+      if(ok){S.qbC++;S.qbSt++;addXP(5);toast('+5 XP');}else{S.qbW++;S.qbSt=0;}
+      document.getElementById('qbc').textContent=S.qbC;
+      document.getElementById('qbw').textContent=S.qbW;
+      document.getElementById('qbst').textContent=S.qbSt;
+      const f=document.getElementById('qbfb');f.className='feedback '+(ok?'correct':'wrong');
+      f.textContent=ok?'✓ Correct! +5 XP':'❌ Answer was '+ans;
+      updateHUD();setTimeout(nextQBQ,900);
+    };g.appendChild(btn);
+  });
+}
+function endQB(){
+  clearInterval(S.qbTid);show('qbr');
+  const tot=S.qbC+S.qbW,pct=tot>0?Math.round(S.qbC/tot*100):0;
+  document.getElementById('qbremoji').textContent=pct>=80?'🏆':pct>=50?'⚡':'💪';
+  document.getElementById('qbrtitle').textContent=pct>=80?'Incredible!':pct>=50?'Nice Work!':'Keep Practising!';
+  document.getElementById('qbrsub').textContent=`${tot} questions in 60 seconds — ${pct}% accuracy!`;
+  document.getElementById('qbrstats').innerHTML=stbs([{v:S.qbC,c:'var(--green)',l:'Correct'},{v:S.qbW,c:'var(--red)',l:'Wrong'},{v:pct+'%',c:'var(--purple)',l:'Accuracy'}]);
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+updateHUD();
+show('home');
+</script>
+</body>
+</html>
