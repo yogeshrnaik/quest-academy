@@ -396,6 +396,47 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
 /* auto-next toggle */
 .tbtn.an-on{background:var(--green);border-color:var(--green);color:#fff;}
 [data-theme="dark"] .tbtn.an-on{background:#2d6e40;border-color:#2d6e40;}
+/* ── Table Fill-In ─────────────────────────────────────────── */
+.fi-open-btn{width:100%;font-family:'Fredoka One',cursive;font-size:15px;background:linear-gradient(135deg,#34A853,#81C995);color:#fff;border:none;border-radius:12px;padding:12px;cursor:pointer;box-shadow:0 3px 12px rgba(52,168,83,.3);transition:all .2s;margin-bottom:10px;letter-spacing:.3px;}
+.fi-open-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(52,168,83,.45);}
+.fiwrap{width:100%;max-width:480px;margin-top:68px;padding-top:8px;}
+.fi-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:16px;justify-content:center;}
+.fi-mult-scroll{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;width:100%;}
+.fi-mult-btn{flex-shrink:0;min-width:40px;padding:6px 10px;border-radius:10px;border:2px solid var(--border);background:var(--card);font-family:'Fredoka One',cursive;font-size:15px;cursor:pointer;transition:all .15s;color:var(--text);}
+.fi-mult-btn:hover{border-color:var(--green);color:var(--green);}
+.fi-mult-btn.active{background:var(--green);border-color:var(--green);color:#fff;}
+.fi-diff-row{display:flex;gap:6px;justify-content:center;margin-bottom:14px;}
+.fi-diff-btn{padding:5px 14px;border-radius:99px;border:2px solid var(--border);background:var(--card);font-size:12px;font-weight:800;cursor:pointer;transition:all .15s;color:var(--t2);}
+.fi-diff-btn.active{border-color:var(--purple);background:var(--purple);color:#fff;}
+.fi-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.fi-timer{font-family:'Fredoka One',cursive;font-size:22px;color:var(--green);min-width:60px;text-align:right;transition:color .3s;}
+.fi-timer.warn{color:var(--amber);}
+.fi-timer.danger{color:var(--red);}
+.fi-progress{font-size:13px;font-weight:700;color:var(--t2);}
+.fi-table{display:flex;flex-direction:column;gap:7px;}
+.fi-row{display:flex;align-items:center;gap:8px;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:10px 14px;transition:border-color .2s;}
+.fi-row.fi-correct{border-color:var(--green);background:rgba(52,168,83,.07);}
+.fi-row.fi-wrong{border-color:var(--red);background:rgba(234,67,53,.07);animation:fiwrong .35s ease;}
+@keyframes fiwrong{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.fi-lhs{font-family:'Fredoka One',cursive;font-size:18px;color:var(--text);min-width:90px;}
+.fi-eq{font-family:'Fredoka One',cursive;font-size:18px;color:var(--t3);}
+.fi-ans{display:flex;align-items:center;gap:4px;}
+.fi-given{font-family:'Fredoka One',cursive;font-size:20px;color:var(--green);min-width:40px;}
+.fi-input{width:56px;font-family:'Fredoka One',cursive;font-size:20px;text-align:center;border:2px solid var(--border);border-radius:8px;background:var(--bg2);color:var(--text);padding:4px 2px;outline:none;transition:border-color .15s,background .15s;}
+.fi-input:focus{border-color:var(--purple);}
+.fi-input.fi-inp-correct{border-color:var(--green);background:rgba(52,168,83,.12);color:var(--green);}
+.fi-input.fi-inp-wrong{border-color:var(--red);background:rgba(234,67,53,.1);color:var(--red);}
+.fi-hint{font-size:10px;color:var(--t3);margin-left:2px;font-weight:700;letter-spacing:.05em;}
+.fi-complete-banner{text-align:center;padding:18px;background:linear-gradient(135deg,#E6F4EA,#D2E3FC);border:2px solid var(--green);border-radius:16px;margin-top:14px;display:none;}
+[data-theme="dark"] .fi-complete-banner{background:linear-gradient(135deg,#1a2e1e,#1e2a3a);}
+.fi-complete-banner .fi-cb-emoji{font-size:44px;margin-bottom:6px;}
+.fi-complete-banner .fi-cb-title{font-family:'Fredoka One',cursive;font-size:22px;color:var(--green);}
+.fi-complete-banner .fi-cb-time{font-size:14px;color:var(--t2);margin-top:4px;}
+.fi-start-btn{width:100%;font-family:'Fredoka One',cursive;font-size:16px;background:linear-gradient(135deg,var(--green),#81C995);color:#fff;border:none;border-radius:12px;padding:12px;cursor:pointer;margin-top:12px;transition:all .2s;}
+.fi-start-btn:hover{transform:translateY(-2px);}
+[data-theme="dark"] .fi-input{background:var(--bg3);}
+[data-theme="dark"] .fi-input.fi-inp-correct{background:rgba(52,168,83,.18);}
+[data-theme="dark"] .fi-input.fi-inp-wrong{background:rgba(234,67,53,.15);}
 /* daily streak banner */
 .day-streak-banner{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--coral),#FBBC05);border-radius:14px;padding:10px 16px;margin-bottom:14px;color:#fff;font-weight:700;font-size:15px;}
 .day-streak-banner .dsn{font-family:'Fredoka One',cursive;font-size:26px;line-height:1;}
@@ -465,6 +506,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
   <div class="wtitle">⚔ Times Table Tower</div>
   <div class="wsub">Tap any floor to battle · All 29 floors unlocked</div>
   <button class="lr-open-btn" onclick="startLR(0)">⚡ Lightning Round — 20 Questions, Beat the Clock!</button>
+  <button class="fi-open-btn" onclick="showFillIn()">✏️ Fill-In Table — Complete the Blanks!</button>
   <button class="study-open-btn" onclick="showStudy('tower')">📖 Study All Tables First</button>
   <div class="flist" id="floor-list"></div>
 </div>
@@ -699,6 +741,42 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
   <div class="btnrow">
     <button class="bsec" onclick="showTower()">← Tower</button>
     <button class="bpri" onclick="startLR(LR.mult)">Play Again!</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══ FILL-IN TABLE ═══ -->
+<div class="screen" id="screen-fillin" style="display:none">
+<div class="fiwrap">
+  <div class="bbtn" onclick="showTower()">← Tower</div>
+  <div class="wtitle">✏️ Fill-In Table</div>
+  <div class="wsub">Complete the blanks — correct answers lock green!</div>
+
+  <!-- multiplier picker -->
+  <div class="fi-mult-scroll" id="fi-mult-scroll"></div>
+
+  <!-- difficulty -->
+  <div class="fi-diff-row">
+    <button class="fi-diff-btn active" id="fi-diff-easy"   onclick="setFiDiff('easy')">Easy — 4 blanks</button>
+    <button class="fi-diff-btn"        id="fi-diff-medium" onclick="setFiDiff('medium')">Medium — 8</button>
+    <button class="fi-diff-btn"        id="fi-diff-hard"   onclick="setFiDiff('hard')">Hard — all 12</button>
+  </div>
+
+  <!-- header: progress + timer -->
+  <div class="fi-hdr">
+    <div class="fi-progress" id="fi-progress">0 / 0 correct</div>
+    <div class="fi-timer" id="fi-timer">0:00</div>
+  </div>
+
+  <!-- the table rows -->
+  <div class="fi-table" id="fi-table"></div>
+
+  <!-- completion banner -->
+  <div class="fi-complete-banner" id="fi-complete-banner">
+    <div class="fi-cb-emoji">🎉</div>
+    <div class="fi-cb-title">Table Complete!</div>
+    <div class="fi-cb-time" id="fi-cb-time"></div>
+    <button class="fi-start-btn" onclick="startFillIn()">Try Again ↺</button>
   </div>
 </div>
 </div>
@@ -1103,7 +1181,7 @@ function toast(msg){const t=document.createElement('div');t.className='toast';t.
 // ════════════════════════════════════════
 // NAVIGATION
 // ════════════════════════════════════════
-const SCRS=['home','tower','shrine','vault','dungeon','fortress','study','drill','battle','victory','defeat','qb','qbr','lr','lrr'];
+const SCRS=['home','tower','shrine','vault','dungeon','fortress','study','drill','battle','victory','defeat','qb','qbr','lr','lrr','fillin'];
 function show(n){SCRS.forEach(s=>{const e=document.getElementById('screen-'+s);if(e)e.style.display=s===n?'flex':'none';});}
 function goHome(){clearInterval(S.tid);clearInterval(S.qbTid);clearInterval(LR.tid);show('home');updateHUD();}
 function confirmQuit(){clearInterval(S.tid);if(S.world==='shrine')showShrine();else if(S.world==='vault')showVault();else if(S.world==='dungeon')showDungeon();else if(S.world==='fortress')showFortress();else showTower();}
@@ -3493,6 +3571,242 @@ function renderReviewQ(){
     };
     g.appendChild(btn);
   });
+}
+
+// ════════════════════════════════════════
+// FILL-IN TABLE
+// ════════════════════════════════════════
+const FI = {
+  mult: 2, diff: 'easy', blanks: new Set(),
+  correct: new Set(), tid: null, elapsed: 0, running: false
+};
+const FI_BLANK_COUNT = {easy: 4, medium: 8, hard: 12};
+
+function showFillIn(){
+  show('fillin');
+  // Build multiplier picker 2–12 (focused practice range)
+  const scroll = document.getElementById('fi-mult-scroll');
+  scroll.innerHTML = '';
+  for(let m = 2; m <= 12; m++){
+    const btn = document.createElement('button');
+    btn.className = 'fi-mult-btn' + (m === FI.mult ? ' active' : '');
+    btn.textContent = '×' + m;
+    btn.onclick = () => { FI.mult = m; showFillIn(); };
+    scroll.appendChild(btn);
+  }
+  // Sync diff buttons
+  ['easy','medium','hard'].forEach(d => {
+    document.getElementById('fi-diff-'+d).classList.toggle('active', d === FI.diff);
+  });
+  startFillIn();
+}
+
+function setFiDiff(d){
+  FI.diff = d;
+  ['easy','medium','hard'].forEach(dd =>
+    document.getElementById('fi-diff-'+dd).classList.toggle('active', dd === d)
+  );
+  startFillIn();
+}
+
+function startFillIn(){
+  // Stop any running timer
+  clearInterval(FI.tid); FI.running = false; FI.elapsed = 0;
+  FI.correct = new Set();
+
+  // Choose which rows to blank out
+  const count = FI_BLANK_COUNT[FI.diff];
+  const allRows = Array.from({length:12}, (_,i) => i+1);
+  FI.blanks = new Set(shuf([...allRows]).slice(0, count));
+
+  // Hide completion banner
+  const banner = document.getElementById('fi-complete-banner');
+  banner.style.display = 'none';
+
+  // Render table
+  renderFiTable();
+
+  // Update progress
+  updateFiProgress();
+
+  // Reset + start timer
+  updateFiTimer();
+  FI.tid = setInterval(() => {
+    if(!FI.running) return;
+    FI.elapsed++;
+    updateFiTimer();
+  }, 1000);
+  FI.running = true;
+
+  // Focus first blank input after render
+  setTimeout(() => {
+    const first = document.querySelector('#fi-table .fi-input');
+    if(first) first.focus();
+  }, 50);
+}
+
+function renderFiTable(){
+  const tbl = document.getElementById('fi-table');
+  tbl.innerHTML = '';
+  for(let n = 1; n <= 12; n++){
+    const ans = FI.mult * n;
+    const isBlank = FI.blanks.has(n);
+    const digits = String(ans).length;
+
+    const row = document.createElement('div');
+    row.className = 'fi-row';
+    row.id = 'fi-row-' + n;
+
+    const lhs = document.createElement('div');
+    lhs.className = 'fi-lhs';
+    lhs.textContent = `${FI.mult} × ${n}`;
+
+    const eq = document.createElement('div');
+    eq.className = 'fi-eq';
+    eq.textContent = '=';
+
+    const ansDiv = document.createElement('div');
+    ansDiv.className = 'fi-ans';
+
+    if(!isBlank){
+      // Pre-filled
+      const given = document.createElement('div');
+      given.className = 'fi-given';
+      given.textContent = ans;
+      ansDiv.appendChild(given);
+    } else {
+      // Blank input
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.inputMode = 'numeric';
+      inp.pattern = '[0-9]*';
+      inp.maxLength = digits;
+      inp.className = 'fi-input';
+      inp.id = 'fi-inp-' + n;
+      inp.setAttribute('autocomplete','off');
+      // Digit-count hint: show underscores e.g. "_ _" for 2-digit
+      inp.placeholder = '_'.repeat(digits);
+
+      inp.addEventListener('input', () => handleFiInput(inp, n, ans, digits));
+      inp.addEventListener('keydown', e => {
+        // Move to next blank on Enter or Tab (Tab already does this natively)
+        if(e.key === 'Enter'){ e.preventDefault(); focusNextFiInput(n); }
+      });
+      ansDiv.appendChild(inp);
+
+      // Digit hint label
+      const hint = document.createElement('span');
+      hint.className = 'fi-hint';
+      hint.id = 'fi-hint-' + n;
+      hint.textContent = digits === 1 ? '1 digit' : `${digits} digits`;
+      ansDiv.appendChild(hint);
+    }
+
+    row.appendChild(lhs);
+    row.appendChild(eq);
+    row.appendChild(ansDiv);
+    tbl.appendChild(row);
+  }
+}
+
+function handleFiInput(inp, n, ans, digits){
+  const val = inp.value.replace(/\D/g,'');
+  inp.value = val; // strip non-digits live
+
+  // Only evaluate when enough digits typed
+  if(val.length < digits) {
+    // Partial — clear any wrong state but don't judge yet
+    inp.classList.remove('fi-inp-wrong');
+    document.getElementById('fi-row-'+n).classList.remove('fi-wrong');
+    return;
+  }
+
+  const num = parseInt(val, 10);
+  if(num === ans){
+    // Correct
+    inp.classList.remove('fi-inp-wrong');
+    inp.classList.add('fi-inp-correct');
+    inp.readOnly = true;
+    inp.blur();
+    document.getElementById('fi-row-'+n).classList.remove('fi-wrong');
+    document.getElementById('fi-row-'+n).classList.add('fi-correct');
+    // Hide digit hint
+    const hint = document.getElementById('fi-hint-'+n);
+    if(hint) hint.style.display = 'none';
+    SFX.correct();
+    screenFlash('rgba(52,168,83,.15)');
+    FI.correct.add(n);
+    updateFiProgress();
+    // Auto-focus next blank
+    focusNextFiInput(n);
+    // Check complete
+    if(FI.correct.size === FI.blanks.size) completeFillIn();
+  } else {
+    // Wrong — shake, stay editable
+    inp.classList.remove('fi-inp-correct');
+    inp.classList.add('fi-inp-wrong');
+    const row = document.getElementById('fi-row-'+n);
+    row.classList.remove('fi-wrong');
+    void row.offsetWidth; // reflow to restart animation
+    row.classList.add('fi-wrong');
+    SFX.wrong();
+    // Clear after brief delay so user can retype
+    setTimeout(() => {
+      if(!FI.correct.has(n)){
+        inp.classList.remove('fi-inp-wrong');
+        inp.value = '';
+        row.classList.remove('fi-wrong');
+      }
+    }, 600);
+  }
+}
+
+function focusNextFiInput(currentN){
+  // Find next blank that isn't yet correct
+  for(let n = currentN + 1; n <= 12; n++){
+    if(FI.blanks.has(n) && !FI.correct.has(n)){
+      const next = document.getElementById('fi-inp-'+n);
+      if(next){ next.focus(); return; }
+    }
+  }
+  // Wrap around from top
+  for(let n = 1; n < currentN; n++){
+    if(FI.blanks.has(n) && !FI.correct.has(n)){
+      const next = document.getElementById('fi-inp-'+n);
+      if(next){ next.focus(); return; }
+    }
+  }
+}
+
+function updateFiProgress(){
+  const total = FI.blanks.size;
+  const done  = FI.correct.size;
+  document.getElementById('fi-progress').textContent = `${done} / ${total} correct`;
+}
+
+function updateFiTimer(){
+  const s = FI.elapsed;
+  const mm = Math.floor(s / 60);
+  const ss = String(s % 60).padStart(2,'0');
+  const el = document.getElementById('fi-timer');
+  if(!el) return;
+  el.textContent = `${mm}:${ss}`;
+  el.className = 'fi-timer' + (s >= 120 ? ' danger' : s >= 60 ? ' warn' : '');
+}
+
+function completeFillIn(){
+  FI.running = false;
+  clearInterval(FI.tid);
+  burstConfetti();
+  burstConfetti();
+  SFX.lrFinish();
+  addXP(FI.diff === 'hard' ? 40 : FI.diff === 'medium' ? 25 : 15);
+  const s = FI.elapsed;
+  const mm = Math.floor(s/60), ss = String(s%60).padStart(2,'0');
+  document.getElementById('fi-cb-time').textContent =
+    `Completed in ${mm}:${ss} · +${FI.diff==='hard'?40:FI.diff==='medium'?25:15} XP`;
+  document.getElementById('fi-complete-banner').style.display = 'block';
+  document.getElementById('fi-complete-banner').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 // ════════════════════════════════════════
