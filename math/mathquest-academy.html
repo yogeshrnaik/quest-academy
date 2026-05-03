@@ -3386,13 +3386,26 @@ function fxOnAnswer(ok, streak){
 // ════════════════════════════════════════
 // LIGHTNING ROUND
 // ════════════════════════════════════════
-const LR_TOTAL=20;
-const LR={mult:0,qi:0,correct:0,streak:0,startMs:0,elapsed:0,tid:null,answered:false,usedPairs:new Set()};
+const LR={mult:0,qi:0,correct:0,streak:0,startMs:0,elapsed:0,tid:null,answered:false,pool:[],total:20};
+
+function buildLRPool(mult){
+  // Build every unique pair, shuffle, cap at 20
+  let pairs=[];
+  if(mult===0){
+    for(let m=2;m<=12;m++) for(let b=1;b<=12;b++) pairs.push([m,b]);
+  } else {
+    for(let b=1;b<=12;b++) pairs.push([mult,b]);
+  }
+  shuf(pairs);
+  return pairs.slice(0,20); // at most 20; specific table = exactly 12
+}
 
 function startLR(mult){
   clearInterval(LR.tid);clearInterval(S.tid);clearInterval(S.qbTid);
-  LR.mult=mult; LR.qi=0; LR.correct=0; LR.streak=0; LR.answered=false; LR.usedPairs=new Set();
-  LR.startMs=performance.now();
+  LR.mult=mult; LR.qi=0; LR.correct=0; LR.streak=0; LR.answered=false;
+  LR.pool=buildLRPool(mult);
+  LR.total=LR.pool.length;
+  LR.startMs=performance.now(); LR.elapsed=0;
   show('lr');
   const title=mult===0?'⚡ Lightning Round — All Tables':`⚡ ×${mult} Lightning Round`;
   document.querySelector('#screen-lr .lrtitle').textContent=title;
@@ -3409,20 +3422,10 @@ function startLR(mult){
 
 function nextLRQ(){
   LR.answered=false;
-  document.getElementById('lr-qnum').textContent=`${LR.qi+1}/${LR_TOTAL}`;
-  document.getElementById('lr-progress').style.width=(LR.qi/LR_TOTAL*100)+'%';
+  document.getElementById('lr-qnum').textContent=`${LR.qi+1}/${LR.total}`;
+  document.getElementById('lr-progress').style.width=(LR.qi/LR.total*100)+'%';
   document.getElementById('lr-fb').className='feedback hidden';
-  // Pick a pair not yet seen this session; reset pool when exhausted
-  let mult, b, pairKey;
-  let tries=0;
-  do {
-    mult = LR.mult===0 ? rnd(2,12) : LR.mult;
-    b = rnd(1,12);
-    pairKey = `${mult}x${b}`;
-    tries++;
-    if(tries>200){ LR.usedPairs=new Set(); break; }
-  } while(LR.usedPairs.has(pairKey));
-  LR.usedPairs.add(pairKey);
+  const [mult,b]=LR.pool[LR.qi];
   const ans=mult*b;
   document.getElementById('lr-q').textContent=`${mult} × ${b} = ?`;
   const g=document.getElementById('lr-ans');g.innerHTML='';
@@ -3466,7 +3469,7 @@ function submitLR(val,correct,mult,btn,grid){
   LR.qi++;
   const lrnb=document.getElementById('lr-next-btn');
   if(lrnb) lrnb.style.display='none';
-  if(LR.qi>=LR_TOTAL){
+  if(LR.qi>=LR.total){
     setTimeout(()=>{clearInterval(LR.tid);endLR(true);},500);
   } else if(ok){
     setTimeout(nextLRQ, 400);
@@ -3508,10 +3511,10 @@ function endLR(finished){
   const elapsed=finished?(performance.now()-LR.startMs)/1000:LR.elapsed;
   const t=elapsed.toFixed(1);
   const mult=LR.mult;
-  const pct=Math.round(LR.correct/LR_TOTAL*100);
+  const pct=Math.round(LR.correct/LR.total*100);
   // Personal best
   let isPB=false;
-  if(finished && LR.correct===LR_TOTAL){
+  if(finished && LR.correct===LR.total){
     if(!S.lrBest[mult]||elapsed<S.lrBest[mult]){S.lrBest[mult]=parseFloat(t);isPB=true;}
   }
   show('lrr');
@@ -3520,14 +3523,14 @@ function endLR(finished){
   document.getElementById('lrremoji').textContent=emoji;
   document.getElementById('lrrtitle').textContent=title;
   document.getElementById('lrrsub').textContent=finished
-    ? `${LR.correct}/${LR_TOTAL} correct in ${t} seconds${mult?` on ×${mult} table`:' (mixed)'}!`
+    ? `${LR.correct}/${LR.total} correct in ${t} seconds${mult?` on ×${mult} table`:' (mixed)'}!`
     : `Stopped early — ${LR.correct}/${LR.qi} correct so far.`;
   const pb=S.lrBest[mult];
   document.getElementById('lr-pb-badge').innerHTML=isPB
     ? `<div class="pb-badge">🏅 NEW PERSONAL BEST — ${t}s!</div>`
     : (pb&&finished?`<div class="pb-badge">🏅 Best: ${pb}s</div>`:'');
   document.getElementById('lrrstats').innerHTML=stbs([
-    {v:`${LR.correct}/${LR_TOTAL}`,c:'var(--green)',l:'Correct'},
+    {v:`${LR.correct}/${LR.total}`,c:'var(--green)',l:'Correct'},
     {v:t+'s',c:'var(--amber)',l:'Time'},
     {v:pct+'%',c:'var(--purple)',l:'Accuracy'},
   ]);
