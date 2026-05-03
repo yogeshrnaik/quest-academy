@@ -450,6 +450,76 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
 .review-card-sub{font-size:12px;color:var(--t2);}
 .review-card-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:800;}
 
+/* ── Powers Palace (squares & cubes) ───────────────────────── */
+.w6{background:#F3E5F5;border-color:#CE93D8;}
+[data-theme="dark"] .w6{background:#2D0050;border-color:#6A1B9A;}
+.pp-open-btn{width:100%;font-family:'Fredoka One',cursive;font-size:15px;background:linear-gradient(135deg,#9C27B0,#CE93D8);color:#fff;border:none;border-radius:12px;padding:12px;cursor:pointer;box-shadow:0 3px 12px rgba(156,39,176,.3);transition:all .2s;margin-bottom:10px;letter-spacing:.3px;}
+.pp-open-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(156,39,176,.4);}
+/* Powers screen wrap */
+.ppwrap{width:100%;max-width:520px;margin-top:68px;padding-top:8px;}
+/* type tabs */
+.pp-tabs{display:flex;gap:8px;margin-bottom:14px;}
+.pp-tab{flex:1;font-family:'Fredoka One',cursive;font-size:16px;padding:10px;border-radius:12px;border:2px solid var(--border);background:var(--card);cursor:pointer;text-align:center;transition:all .18s;color:var(--t2);}
+.pp-tab.active{border-color:#9C27B0;background:#9C27B0;color:#fff;}
+/* mode row */
+.pp-mode-row{display:flex;gap:7px;margin-bottom:16px;}
+.pp-mode-btn{flex:1;padding:8px 4px;border-radius:10px;border:2px solid var(--border);background:var(--card);font-size:12px;font-weight:800;cursor:pointer;transition:all .15s;color:var(--t2);text-align:center;}
+.pp-mode-btn.active{border-color:#9C27B0;background:#9C27B0;color:#fff;}
+/* ── STUDY mode ── */
+.pp-study-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;}
+.pp-cell{border-radius:12px;padding:10px 6px;text-align:center;background:var(--card);border:2px solid var(--border);transition:all .2s;}
+.pp-cell:hover{transform:translateY(-2px);box-shadow:0 4px 12px var(--shadow);}
+.pp-cell-n{font-family:'Fredoka One',cursive;font-size:15px;color:var(--purple);}
+.pp-cell-expr{font-size:11px;color:var(--t3);margin:1px 0;}
+.pp-cell-val{font-family:'Fredoka One',cursive;font-size:18px;color:var(--text);}
+.pp-cell.pp-perfect{border-color:#9C27B0;background:linear-gradient(135deg,#F3E5F5,#EDE7F6);}
+[data-theme="dark"] .pp-cell.pp-perfect{background:linear-gradient(135deg,#2D0050,#1A0030);}
+/* ── FLASH CARD mode ── */
+.pp-flash-wrap{perspective:800px;}
+.pp-flash-card{width:100%;min-height:180px;border-radius:20px;cursor:pointer;position:relative;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.4,0,.2,1);margin-bottom:14px;}
+.pp-flash-card.flipped{transform:rotateY(180deg);}
+.pp-flash-face{position:absolute;inset:0;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;padding:20px;}
+.pp-flash-front{background:linear-gradient(135deg,#9C27B0,#CE93D8);color:#fff;}
+.pp-flash-back{background:linear-gradient(135deg,#34A853,#81C995);color:#fff;transform:rotateY(180deg);}
+.pp-flash-q{font-family:'Fredoka One',cursive;font-size:42px;}
+.pp-flash-hint{font-size:13px;opacity:.8;margin-top:6px;}
+.pp-flash-ans{font-family:'Fredoka One',cursive;font-size:48px;}
+.pp-flash-expr{font-size:14px;opacity:.85;margin-top:4px;}
+.pp-flash-nav{display:flex;gap:10px;align-items:center;justify-content:center;margin-bottom:14px;}
+.pp-flash-nav button{padding:8px 20px;border-radius:10px;border:2px solid var(--border);background:var(--card);font-family:'Fredoka One',cursive;font-size:15px;cursor:pointer;transition:all .15s;color:var(--text);}
+.pp-flash-nav button:hover{border-color:#9C27B0;color:#9C27B0;}
+.pp-flash-ctr{font-size:13px;font-weight:700;color:var(--t2);}
+.pp-flash-prog{width:100%;height:5px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:16px;}
+.pp-flash-prog-fill{height:100%;background:linear-gradient(90deg,#9C27B0,#CE93D8);border-radius:99px;transition:width .3s;}
+/* ── QUIZ mode ── */
+.pp-quiz-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.pp-quiz-prog{font-size:13px;font-weight:700;color:var(--t2);}
+.pp-quiz-timer{font-family:'Fredoka One',cursive;font-size:22px;color:#9C27B0;transition:color .3s;}
+.pp-quiz-timer.warn{color:var(--amber);}
+.pp-quiz-timer.danger{color:var(--red);}
+.pp-quiz-grid{display:flex;flex-direction:column;gap:7px;}
+.pp-quiz-row{display:flex;align-items:center;gap:10px;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:10px 14px;transition:border-color .2s;}
+.pp-quiz-row.pq-correct{border-color:var(--green);background:rgba(52,168,83,.07);}
+.pp-quiz-row.pq-wrong{border-color:var(--red);background:rgba(234,67,53,.07);animation:fiwrong .35s ease;}
+.pp-quiz-lhs{font-family:'Fredoka One',cursive;font-size:17px;color:var(--text);min-width:70px;}
+.pp-quiz-eq{font-family:'Fredoka One',cursive;font-size:17px;color:var(--t3);}
+.pp-quiz-input{width:68px;font-family:'Fredoka One',cursive;font-size:18px;text-align:center;border:2px solid var(--border);border-radius:8px;background:var(--bg2);color:var(--text);padding:4px 2px;outline:none;transition:border-color .15s,background .15s;}
+.pp-quiz-input:focus{border-color:#9C27B0;}
+.pp-quiz-input.pqi-correct{border-color:var(--green);background:rgba(52,168,83,.12);color:var(--green);}
+.pp-quiz-input.pqi-wrong{border-color:var(--red);background:rgba(234,67,53,.1);color:var(--red);}
+.pp-quiz-hint{font-size:10px;color:var(--t3);font-weight:700;margin-left:2px;}
+.pp-quiz-complete{text-align:center;padding:18px;background:linear-gradient(135deg,#F3E5F5,#E8F0FE);border:2px solid #9C27B0;border-radius:16px;margin-top:14px;display:none;}
+[data-theme="dark"] .pp-quiz-complete{background:linear-gradient(135deg,#2D0050,#1e2a3a);}
+.pp-quiz-complete .pqc-emoji{font-size:44px;margin-bottom:6px;}
+.pp-quiz-complete .pqc-title{font-family:'Fredoka One',cursive;font-size:22px;color:#9C27B0;}
+.pp-quiz-complete .pqc-time{font-size:14px;color:var(--t2);margin-top:4px;}
+.pp-diff-row{display:flex;gap:6px;justify-content:center;margin-bottom:14px;}
+.pp-diff-btn{padding:5px 14px;border-radius:99px;border:2px solid var(--border);background:var(--card);font-size:12px;font-weight:800;cursor:pointer;transition:all .15s;color:var(--t2);}
+.pp-diff-btn.active{border-color:#9C27B0;background:#9C27B0;color:#fff;}
+[data-theme="dark"] .pp-quiz-input{background:var(--bg3);}
+[data-theme="dark"] .pp-quiz-input.pqi-correct{background:rgba(52,168,83,.18);}
+[data-theme="dark"] .pp-quiz-input.pqi-wrong{background:rgba(234,67,53,.15);}
+
 @media(max-width:480px){
   .wgrid{grid-template-columns:repeat(2,1fr);}
   .hpill.hides{display:none;}
@@ -487,13 +557,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
     <div class="sb"><div class="sv" id="snclr" style="color:var(--green)">0</div><div class="sl">Levels Done</div></div>
     <div class="sb"><div class="sv" id="snlvl" style="color:var(--purple)">1</div><div class="sl">Level</div></div>
   </div>
-  <div class="slbl">5 quest worlds</div>
+  <div class="slbl">6 quest worlds</div>
   <div class="wgrid">
     <div class="wcard w1" onclick="showTower()"><span class="wi">✕</span><div class="wt">Times Table Tower</div><div class="ws">×2 – ×30 mastery</div></div>
     <div class="wcard w2" onclick="showShrine()"><span class="wi">◻</span><div class="wt">Shape Shrine</div><div class="ws">Area & perimeter</div></div>
     <div class="wcard w3" onclick="showVault()"><span class="wi">◆</span><div class="wt">Volume Vault</div><div class="ws">3D solids & formulas</div></div>
     <div class="wcard w4" onclick="showDungeon()"><span class="wi">△</span><div class="wt">Geometry Dungeon</div><div class="ws">Angles & theorems</div></div>
     <div class="wcard w5" onclick="showFortress()"><span class="wi">∞</span><div class="wt">Formula Fortress</div><div class="ws">Master key formulas</div></div>
+    <div class="wcard w6" onclick="showPowers()"><span class="wi">²³</span><div class="wt">Powers Palace</div><div class="ws">Squares 1²–50² · Cubes 1³–25³</div></div>
   </div>
   </div>
 </div>
@@ -778,6 +849,31 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
     <div class="fi-cb-time" id="fi-cb-time"></div>
     <button class="fi-start-btn" onclick="startFillIn()">Try Again ↺</button>
   </div>
+</div>
+</div>
+
+<!-- ═══ POWERS PALACE ═══ -->
+<div class="screen" id="screen-powers" style="display:none">
+<div class="ppwrap">
+  <div class="bbtn" onclick="goHome()">← Home</div>
+  <div class="wtitle">²³ Powers Palace</div>
+  <div class="wsub">Squares 1²–50² · Cubes 1³–25³</div>
+
+  <!-- type tabs -->
+  <div class="pp-tabs">
+    <button class="pp-tab active" id="pp-tab-sq" onclick="setPPType('sq')">² Squares</button>
+    <button class="pp-tab"        id="pp-tab-cb" onclick="setPPType('cb')">³ Cubes</button>
+  </div>
+
+  <!-- mode buttons -->
+  <div class="pp-mode-row">
+    <button class="pp-mode-btn active" id="pp-mode-study" onclick="setPPMode('study')">📖 Study</button>
+    <button class="pp-mode-btn"        id="pp-mode-flash" onclick="setPPMode('flash')">🃏 Flash Cards</button>
+    <button class="pp-mode-btn"        id="pp-mode-quiz"  onclick="setPPMode('quiz')">✏️ Quiz</button>
+  </div>
+
+  <!-- dynamic content area -->
+  <div id="pp-content"></div>
 </div>
 </div>
 
@@ -1181,7 +1277,7 @@ function toast(msg){const t=document.createElement('div');t.className='toast';t.
 // ════════════════════════════════════════
 // NAVIGATION
 // ════════════════════════════════════════
-const SCRS=['home','tower','shrine','vault','dungeon','fortress','study','drill','battle','victory','defeat','qb','qbr','lr','lrr','fillin'];
+const SCRS=['home','tower','shrine','vault','dungeon','fortress','study','drill','battle','victory','defeat','qb','qbr','lr','lrr','fillin','powers'];
 function show(n){SCRS.forEach(s=>{const e=document.getElementById('screen-'+s);if(e)e.style.display=s===n?'flex':'none';});}
 function goHome(){clearInterval(S.tid);clearInterval(S.qbTid);clearInterval(LR.tid);show('home');updateHUD();}
 function confirmQuit(){clearInterval(S.tid);if(S.world==='shrine')showShrine();else if(S.world==='vault')showVault();else if(S.world==='dungeon')showDungeon();else if(S.world==='fortress')showFortress();else showTower();}
@@ -3807,6 +3903,228 @@ function completeFillIn(){
     `Completed in ${mm}:${ss} · +${FI.diff==='hard'?40:FI.diff==='medium'?25:15} XP`;
   document.getElementById('fi-complete-banner').style.display = 'block';
   document.getElementById('fi-complete-banner').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ════════════════════════════════════════
+// POWERS PALACE — squares & cubes
+// ════════════════════════════════════════
+const PP = {
+  type: 'sq',   // 'sq' | 'cb'
+  mode: 'study', // 'study' | 'flash' | 'quiz'
+  diff: 'easy',  // 'easy' | 'medium' | 'hard'
+  flashIdx: 0, flashFlipped: false,
+  quizBlanks: new Set(), quizCorrect: new Set(),
+  tid: null, elapsed: 0, running: false,
+};
+
+// Build the full data arrays once
+function ppData(){
+  if(PP.type==='sq') return Array.from({length:50},(_,i)=>({n:i+1,val:(i+1)**2,expr:`${i+1}²`}));
+  return Array.from({length:25},(_,i)=>({n:i+1,val:(i+1)**3,expr:`${i+1}³`}));
+}
+const PP_BLANK_COUNT={easy:5,medium:10,hard:PP.type==='sq'?50:25};
+
+function showPowers(){
+  show('powers');
+  ['sq','cb'].forEach(t=>document.getElementById('pp-tab-'+t).classList.toggle('active',t===PP.type));
+  ['study','flash','quiz'].forEach(m=>document.getElementById('pp-mode-'+m).classList.toggle('active',m===PP.mode));
+  renderPPContent();
+}
+
+function setPPType(t){ PP.type=t; PP.flashIdx=0; PP.flashFlipped=false; showPowers(); }
+function setPPMode(m){ PP.mode=m; showPowers(); }
+
+function renderPPContent(){
+  if(PP.mode==='study') renderPPStudy();
+  else if(PP.mode==='flash') renderPPFlash();
+  else renderPPQuiz();
+}
+
+// ── STUDY ────────────────────────────────
+function renderPPStudy(){
+  const data=ppData();
+  // Group into "perfect square/cube" highlights — powers of perfect integers stand out
+  const rows=data.map(({n,val,expr})=>{
+    // Flag visually notable entries: n=1,2,3,4,5,10,12 etc for squares; perfect cube roots for cubes
+    const notable=(PP.type==='sq' && [1,2,3,4,5,6,7,8,9,10,11,12].includes(n))
+                ||(PP.type==='cb' && [1,2,3,4,5,6,7,8,9,10].includes(n));
+    return `<div class="pp-cell${notable?' pp-perfect':''}">
+      <div class="pp-cell-n">${n}</div>
+      <div class="pp-cell-expr">${expr}</div>
+      <div class="pp-cell-val">${val}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('pp-content').innerHTML=`<div class="pp-study-grid">${rows}</div>`;
+}
+
+// ── FLASH CARDS ──────────────────────────
+function renderPPFlash(){
+  const data=ppData();
+  const total=data.length;
+  const item=data[PP.flashIdx];
+  PP.flashFlipped=false;
+  const pct=((PP.flashIdx)/total*100).toFixed(1);
+
+  document.getElementById('pp-content').innerHTML=`
+    <div class="pp-flash-prog"><div class="pp-flash-prog-fill" id="pp-fp" style="width:${pct}%"></div></div>
+    <div class="pp-flash-wrap">
+      <div class="pp-flash-card" id="pp-card" onclick="flipPPCard()">
+        <div class="pp-flash-face pp-flash-front">
+          <div class="pp-flash-q">${item.expr}</div>
+          <div class="pp-flash-hint">Tap to reveal</div>
+        </div>
+        <div class="pp-flash-face pp-flash-back">
+          <div class="pp-flash-ans">${item.val}</div>
+          <div class="pp-flash-expr">${item.n} × ${PP.type==='sq'?item.n:`${item.n} × ${item.n}`} = ${item.val}</div>
+        </div>
+      </div>
+    </div>
+    <div class="pp-flash-nav">
+      <button onclick="movePPFlash(-1)">← Prev</button>
+      <span class="pp-flash-ctr">${PP.flashIdx+1} / ${total}</span>
+      <button onclick="movePPFlash(1)">Next →</button>
+    </div>
+    <div style="text-align:center;margin-top:6px">
+      <button class="fi-start-btn" style="max-width:220px" onclick="PP.flashIdx=0;renderPPFlash()">↺ Restart</button>
+    </div>`;
+}
+
+function flipPPCard(){
+  PP.flashFlipped=!PP.flashFlipped;
+  const card=document.getElementById('pp-card');
+  if(!card)return;
+  card.classList.toggle('flipped',PP.flashFlipped);
+  if(PP.flashFlipped) SFX.correct();
+}
+
+function movePPFlash(dir){
+  const data=ppData();
+  PP.flashIdx=Math.max(0,Math.min(data.length-1,PP.flashIdx+dir));
+  renderPPFlash();
+  if(dir>0) SFX.tick();
+}
+
+// ── QUIZ ─────────────────────────────────
+function renderPPQuiz(){
+  // Diff selector + start fresh
+  clearInterval(PP.tid); PP.running=false; PP.elapsed=0;
+  PP.quizCorrect=new Set();
+  const data=ppData();
+  const maxBlanks=data.length;
+  const count=PP.diff==='hard'?maxBlanks:PP.diff==='medium'?Math.min(10,maxBlanks):Math.min(5,maxBlanks);
+  PP.quizBlanks=new Set(shuf(data.map(d=>d.n)).slice(0,count));
+
+  document.getElementById('pp-content').innerHTML=`
+    <div class="pp-diff-row">
+      <button class="pp-diff-btn${PP.diff==='easy'?' active':''}"  onclick="setPPDiff('easy')">Easy — 5</button>
+      <button class="pp-diff-btn${PP.diff==='medium'?' active':''}" onclick="setPPDiff('medium')">Medium — 10</button>
+      <button class="pp-diff-btn${PP.diff==='hard'?' active':''}"   onclick="setPPDiff('hard')">Hard — all</button>
+    </div>
+    <div class="pp-quiz-hdr">
+      <div class="pp-quiz-prog" id="pp-qprog">0 / ${count} correct</div>
+      <div class="pp-quiz-timer" id="pp-qtimer">0:00</div>
+    </div>
+    <div class="pp-quiz-grid" id="pp-qgrid"></div>
+    <div class="pp-quiz-complete" id="pp-qcomplete">
+      <div class="pqc-emoji">🏆</div>
+      <div class="pqc-title">All correct!</div>
+      <div class="pqc-time" id="pp-qctime"></div>
+      <button class="fi-start-btn" onclick="renderPPQuiz()">Try Again ↺</button>
+    </div>`;
+
+  // Render rows
+  const grid=document.getElementById('pp-qgrid');
+  data.forEach(({n,val,expr})=>{
+    const isBlank=PP.quizBlanks.has(n);
+    const digits=String(val).length;
+    const row=document.createElement('div');
+    row.className='pp-quiz-row'; row.id='ppqr-'+n;
+    row.innerHTML=`<div class="pp-quiz-lhs">${expr}</div><div class="pp-quiz-eq">=</div>`;
+    const ansDiv=document.createElement('div');
+    if(!isBlank){
+      ansDiv.innerHTML=`<span style="font-family:'Fredoka One',cursive;font-size:18px;color:var(--green)">${val}</span>`;
+    } else {
+      const inp=document.createElement('input');
+      inp.type='text'; inp.inputMode='numeric'; inp.pattern='[0-9]*';
+      inp.maxLength=digits; inp.className='pp-quiz-input'; inp.id='ppqi-'+n;
+      inp.placeholder='_'.repeat(digits); inp.autocomplete='off';
+      inp.addEventListener('input',()=>handlePPQuizInput(inp,n,val,digits));
+      inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();focusNextPPInput(n);}});
+      const hint=document.createElement('span');
+      hint.className='pp-quiz-hint'; hint.id='ppqh-'+n;
+      hint.textContent=digits===1?'1 digit':`${digits} digits`;
+      ansDiv.appendChild(inp); ansDiv.appendChild(hint);
+    }
+    row.appendChild(ansDiv);
+    grid.appendChild(row);
+  });
+
+  // Start timer
+  PP.tid=setInterval(()=>{
+    if(!PP.running)return;
+    PP.elapsed++;
+    const s=PP.elapsed, mm=Math.floor(s/60), ss=String(s%60).padStart(2,'0');
+    const el=document.getElementById('pp-qtimer');
+    if(!el)return;
+    el.textContent=`${mm}:${ss}`;
+    el.className='pp-quiz-timer'+(s>=120?' danger':s>=60?' warn':'');
+  },1000);
+  PP.running=true;
+
+  setTimeout(()=>{
+    const first=document.querySelector('#pp-qgrid .pp-quiz-input');
+    if(first)first.focus();
+  },50);
+}
+
+function setPPDiff(d){ PP.diff=d; renderPPQuiz(); }
+
+function handlePPQuizInput(inp,n,val,digits){
+  const v=inp.value.replace(/\D/g,''); inp.value=v;
+  if(v.length<digits){ inp.classList.remove('pqi-wrong'); document.getElementById('ppqr-'+n).classList.remove('pq-wrong'); return; }
+  if(parseInt(v,10)===val){
+    inp.classList.remove('pqi-wrong'); inp.classList.add('pqi-correct');
+    inp.readOnly=true; inp.blur();
+    const row=document.getElementById('ppqr-'+n);
+    row.classList.remove('pq-wrong'); row.classList.add('pq-correct');
+    const hint=document.getElementById('ppqh-'+n); if(hint)hint.style.display='none';
+    SFX.correct(); screenFlash('rgba(52,168,83,.12)');
+    PP.quizCorrect.add(n);
+    const prog=document.getElementById('pp-qprog');
+    if(prog)prog.textContent=`${PP.quizCorrect.size} / ${PP.quizBlanks.size} correct`;
+    focusNextPPInput(n);
+    if(PP.quizCorrect.size===PP.quizBlanks.size) completePPQuiz();
+  } else {
+    inp.classList.remove('pqi-correct'); inp.classList.add('pqi-wrong');
+    const row=document.getElementById('ppqr-'+n);
+    row.classList.remove('pq-wrong'); void row.offsetWidth; row.classList.add('pq-wrong');
+    SFX.wrong();
+    setTimeout(()=>{ if(!PP.quizCorrect.has(n)){ inp.classList.remove('pqi-wrong'); inp.value=''; row.classList.remove('pq-wrong'); }},600);
+  }
+}
+
+function focusNextPPInput(currentN){
+  const data=ppData();
+  const ns=[...PP.quizBlanks].sort((a,b)=>a-b);
+  const idx=ns.indexOf(currentN);
+  for(let i=idx+1;i<ns.length;i++){
+    if(!PP.quizCorrect.has(ns[i])){ const el=document.getElementById('ppqi-'+ns[i]); if(el){el.focus();return;} }
+  }
+  for(let i=0;i<idx;i++){
+    if(!PP.quizCorrect.has(ns[i])){ const el=document.getElementById('ppqi-'+ns[i]); if(el){el.focus();return;} }
+  }
+}
+
+function completePPQuiz(){
+  PP.running=false; clearInterval(PP.tid);
+  burstConfetti(); burstConfetti(); SFX.lrFinish();
+  const xp=PP.diff==='hard'?50:PP.diff==='medium'?30:20;
+  addXP(xp);
+  const s=PP.elapsed, mm=Math.floor(s/60), ss=String(s%60).padStart(2,'0');
+  const banner=document.getElementById('pp-qcomplete');
+  document.getElementById('pp-qctime').textContent=`Completed in ${mm}:${ss} · +${xp} XP`;
+  banner.style.display='block';
+  banner.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 // ════════════════════════════════════════
