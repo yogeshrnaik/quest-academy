@@ -520,6 +520,45 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto
 [data-theme="dark"] .pp-quiz-input.pqi-correct{background:rgba(52,168,83,.18);}
 [data-theme="dark"] .pp-quiz-input.pqi-wrong{background:rgba(234,67,53,.15);}
 
+/* ── PET ──────────────────────────────────────────────────── */
+.pet-card{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:14px 16px;margin-bottom:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.pet-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--shadow);}
+.pet-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(66,133,244,.06),rgba(234,67,53,.04));pointer-events:none;}
+.pet-row{display:flex;align-items:center;gap:14px;}
+.pet-emo-wrap{position:relative;flex-shrink:0;}
+.pet-emo{font-size:52px;line-height:1;display:block;transition:transform .2s;}
+.pet-badge{position:absolute;bottom:-4px;right:-6px;background:var(--purple);color:#fff;border-radius:99px;font-size:9px;font-weight:800;padding:2px 6px;white-space:nowrap;}
+.pet-info{flex:1;min-width:0;}
+.pet-name-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+.pet-name{font-family:'Fredoka One',cursive;font-size:18px;color:var(--text);}
+.pet-stage{font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;}
+.pet-bubble{font-size:12px;color:var(--t2);font-style:italic;margin-bottom:7px;min-height:16px;line-height:1.4;}
+.pet-bars{display:flex;flex-direction:column;gap:4px;}
+.pet-bar-row{display:flex;align-items:center;gap:6px;}
+.pet-bar-lbl{font-size:10px;font-weight:800;color:var(--t3);width:62px;flex-shrink:0;}
+.pet-bar-track{flex:1;height:7px;background:var(--bg3);border-radius:99px;overflow:hidden;}
+.pet-bar-fill{height:100%;border-radius:99px;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+.pet-bar-fill.hunger{background:linear-gradient(90deg,var(--amber),var(--coral));}
+.pet-bar-fill.happy{background:linear-gradient(90deg,var(--green),#81C995);}
+/* animations */
+@keyframes petbounce{0%,100%{transform:scale(1) translateY(0)}25%{transform:scale(1.15) translateY(-8px)}50%{transform:scale(.95) translateY(0)}75%{transform:scale(1.05) translateY(-3px)}}
+@keyframes petshake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes petevolve{0%{transform:scale(1);filter:brightness(1)}30%{transform:scale(1.4);filter:brightness(2)}60%{transform:scale(.9);filter:brightness(1.5)}100%{transform:scale(1);filter:brightness(1)}}
+@keyframes petsparkle{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+.pet-anim-bounce .pet-emo{animation:petbounce .6s ease;}
+.pet-anim-shake .pet-emo{animation:petshake .5s ease;}
+.pet-anim-evolve .pet-emo{animation:petevolve .8s ease;}
+/* sparkles */
+.pet-sparkle{position:absolute;pointer-events:none;font-size:16px;animation:petsparkle .8s ease forwards;}
+/* name modal */
+.pet-name-modal{position:fixed;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);}
+.pet-name-box{background:var(--card);border:2px solid var(--border);border-radius:20px;padding:24px 20px;width:min(320px,90vw);text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.2);}
+.pet-name-box h3{font-family:'Fredoka One',cursive;font-size:22px;color:var(--purple);margin-bottom:6px;}
+.pet-name-box .pnb-emo{font-size:60px;margin-bottom:10px;}
+.pet-name-input{width:100%;font-family:'Fredoka One',cursive;font-size:20px;text-align:center;border:2px solid var(--border);border-radius:12px;padding:10px;background:var(--bg2);color:var(--text);outline:none;margin-bottom:14px;}
+.pet-name-input:focus{border-color:var(--purple);}
+.pet-name-confirm{width:100%;font-family:'Fredoka One',cursive;font-size:17px;background:linear-gradient(135deg,var(--purple),var(--pl));color:#fff;border:none;border-radius:12px;padding:11px;cursor:pointer;}
+
 @media(max-width:480px){
   .wgrid{grid-template-columns:repeat(2,1fr);}
   .hpill.hides{display:none;}
@@ -1175,6 +1214,7 @@ function saveState(){
       dailyStreak:S.dailyStreak,lastPlayDate:S.lastPlayDate,
       theme:document.documentElement.getAttribute('data-theme')||'light',
       autoNext:S.autoNext,
+      pet:PET,
     };
     localStorage.setItem(SAVE_KEY,JSON.stringify(d));
   }catch(e){}
@@ -1194,6 +1234,7 @@ function loadState(){
     S.dailyStreak=d.dailyStreak||0; S.lastPlayDate=d.lastPlayDate||'';
     if(d.autoNext!==undefined) S.autoNext=d.autoNext;
     if(d.theme){document.documentElement.setAttribute('data-theme',d.theme);document.getElementById('tbtn').textContent=d.theme==='dark'?'☀️':'🌙';}
+    petLoad(d);
   }catch(e){S.sr={};}
   // Update daily streak
   const today=new Date().toISOString().slice(0,10);
@@ -1204,6 +1245,7 @@ function loadState(){
     // same day: no change
   } else { S.dailyStreak=1; }
   S.lastPlayDate=today;
+  petDecay();
   saveState();
 }
 
@@ -1271,7 +1313,7 @@ function updateHUD(){
   document.getElementById('snlvl').textContent=S.level;
   document.getElementById('snbar').style.width=pct+'%';
 }
-function addXP(n){S.xp+=n;S.xpg+=n;const nl=Math.floor(S.xp/XPL)+1;if(nl>S.level){S.level=nl;toast('LEVEL UP! Level '+S.level+' ⚡');}updateHUD();saveState();}
+function addXP(n){S.xp+=n;S.xpg+=n;const nl=Math.floor(S.xp/XPL)+1;if(nl>S.level){S.level=nl;toast('LEVEL UP! Level '+S.level+' ⚡');}updateHUD();petFeed(n);saveState();}
 function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),1500);}
 
 // ════════════════════════════════════════
@@ -1279,7 +1321,7 @@ function toast(msg){const t=document.createElement('div');t.className='toast';t.
 // ════════════════════════════════════════
 const SCRS=['home','tower','shrine','vault','dungeon','fortress','study','drill','battle','victory','defeat','qb','qbr','lr','lrr','fillin','powers'];
 function show(n){SCRS.forEach(s=>{const e=document.getElementById('screen-'+s);if(e)e.style.display=s===n?'flex':'none';});}
-function goHome(){clearInterval(S.tid);clearInterval(S.qbTid);clearInterval(LR.tid);show('home');updateHUD();}
+function goHome(){clearInterval(S.tid);clearInterval(S.qbTid);clearInterval(LR.tid);show('home');updateHUD();renderHomeExtras();}
 function confirmQuit(){clearInterval(S.tid);if(S.world==='shrine')showShrine();else if(S.world==='vault')showVault();else if(S.world==='dungeon')showDungeon();else if(S.world==='fortress')showFortress();else showTower();}
 
 // ════════════════════════════════════════
@@ -3547,7 +3589,15 @@ function endQB(){
 function renderHomeExtras(){
   const hw=document.querySelector('#screen-home .hw');
   // Remove any previously rendered extras
-  ['home-streak-banner','home-review-card'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
+  ['home-streak-banner','home-review-card','pet-card-slot'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
+
+  // Pet card — sits at the very top, before progress stats
+  const petSlot=document.createElement('div');
+  petSlot.id='pet-card-slot';
+  const ssnap=hw.querySelector('.ssnap');
+  ssnap?ssnap.before(petSlot):hw.prepend(petSlot);
+  renderPetCard();
+  startPetBubbleRotation();
 
   // Daily streak banner (only if streak >= 1)
   if(S.dailyStreak>=1){
@@ -4125,6 +4175,204 @@ function completePPQuiz(){
   document.getElementById('pp-qctime').textContent=`Completed in ${mm}:${ss} · +${xp} XP`;
   banner.style.display='block';
   banner.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ════════════════════════════════════════
+// PET SYSTEM
+// ════════════════════════════════════════
+const PET_STAGES=[
+  {minXP:0,    name:'Egg',        emoji:'🥚', label:'Egg'},
+  {minXP:100,  name:'Hatchling',  emoji:'🐣', label:'Hatchling'},
+  {minXP:400,  name:'Baby',       emoji:'🐥', label:'Baby'},
+  {minXP:1000, name:'Child',      emoji:'🦕', label:'Child'},
+  {minXP:2500, name:'Teen',       emoji:'🐲', label:'Teen'},
+  {minXP:6000, name:'Adult',      emoji:'🐉', label:'Adult'},
+  {minXP:15000,name:'Legendary',  emoji:'✨🐉✨',label:'Legendary'},
+];
+// Default pet state
+const PET_DEFAULT={name:'Buddy',hunger:60,happy:60,xpSeen:0,lastFed:'',lastVisit:''};
+let PET=Object.assign({},PET_DEFAULT);
+
+function petSave(){
+  try{const d=JSON.parse(localStorage.getItem(SAVE_KEY)||'{}');d.pet=PET;localStorage.setItem(SAVE_KEY,JSON.stringify(d));}catch(e){}
+}
+function petLoad(d){
+  if(d&&d.pet) PET=Object.assign({},PET_DEFAULT,d.pet);
+}
+
+function petStage(){
+  let stage=PET_STAGES[0];
+  for(const s of PET_STAGES) if(S.xp>=s.minXP) stage=s;
+  return stage;
+}
+function petNextStage(){
+  for(let i=PET_STAGES.length-1;i>=0;i--){
+    if(S.xp>=PET_STAGES[i].minXP){
+      return PET_STAGES[i+1]||null;
+    }
+  }
+  return PET_STAGES[1];
+}
+
+function petDecay(){
+  // Called on load — reduce hunger/happy based on time away
+  const today=new Date().toISOString().slice(0,10);
+  if(PET.lastVisit&&PET.lastVisit!==today){
+    const days=Math.round((new Date(today)-new Date(PET.lastVisit))/(1000*60*60*24));
+    PET.hunger=Math.max(0,PET.hunger-days*18);
+    PET.happy=Math.max(0,PET.happy-days*12);
+  }
+  PET.lastVisit=today;
+}
+
+function petFeed(xpEarned){
+  // Called whenever XP is added — hunger goes up, happiness too
+  const gain=Math.min(xpEarned*0.6,25);
+  const prevStage=petStage().name;
+  PET.hunger=Math.min(100,PET.hunger+gain);
+  PET.happy=Math.min(100,PET.happy+gain*0.5);
+  PET.xpSeen=S.xp;
+  PET.lastFed=new Date().toISOString().slice(0,10);
+  petSave();
+  // Animate feed
+  const card=document.getElementById('pet-card');
+  if(card){
+    card.classList.remove('pet-anim-bounce','pet-anim-evolve');
+    void card.offsetWidth;
+    const newStage=petStage().name;
+    if(newStage!==prevStage){
+      card.classList.add('pet-anim-evolve');
+      spawnPetSparkles();
+      setTimeout(()=>toast(`🎉 ${PET.name} evolved into ${newStage}! 🐲`),400);
+    } else {
+      card.classList.add('pet-anim-bounce');
+    }
+    setTimeout(()=>renderPetCard(),100); // refresh emoji/bars after short delay
+  }
+}
+
+function petBubble(){
+  const h=PET.hunger, hap=PET.happy, stage=petStage();
+  const nextS=petNextStage();
+  const xpToNext=nextS?nextS.minXP-S.xp:0;
+  const dayStr=S.dailyStreak>1?`${S.dailyStreak} days in a row! 🔥`:'';
+  // Priority order: very hungry > happy taunt > streak praise > xp tease
+  if(stage.name==='Egg') return "Tap me to give me a name! 🥚";
+  if(h<15) return `${PET.name} is STARVING! 😢 Answer some questions!`;
+  if(h<35) return `I'm hungry… please practise some maths! 🥺`;
+  if(hap<20) return `${PET.name} misses you… where have you been? 😟`;
+  if(S.dailyStreak>=7) return `${dayStr} You're my favourite human! 😍`;
+  if(S.dailyStreak>=3) return `${dayStr} Keep it up! ⚡`;
+  if(nextS&&xpToNext<=50) return `Only ${xpToNext} XP until I evolve! 👀 Go fight!`;
+  if(h>80&&hap>80) return `${PET.name} is so happy! 🌟 You're amazing!`;
+  if(h>60) return `Mmm, maths tastes great today 😋`;
+  const taunts=[
+    `Did you know 7×8=56? 5-6-7-8! 😄`,
+    `The ×9 trick: digits always add to 9! 🤓`,
+    `Come battle a monster! I'll cheer for you 🐉`,
+    `${PET.name} believes in you! Go practise! 💪`,
+    `Try Lightning Round — it's so fast! ⚡`,
+  ];
+  return taunts[Math.floor(Date.now()/60000)%taunts.length];
+}
+
+function renderPetCard(){
+  const container=document.getElementById('pet-card-slot');
+  if(!container)return;
+  const stage=petStage();
+  const nextS=petNextStage();
+  const xpToNext=nextS?nextS.minXP-S.xp:0;
+  const badge=nextS?`+${xpToNext} XP to evolve`:'MAX LEVEL';
+  const hPct=Math.round(PET.hunger), hapPct=Math.round(PET.happy);
+  container.innerHTML=`
+    <div class="pet-card" id="pet-card" onclick="openPetModal()">
+      <div class="pet-row">
+        <div class="pet-emo-wrap">
+          <span class="pet-emo">${stage.emoji}</span>
+          <span class="pet-badge">${badge}</span>
+        </div>
+        <div class="pet-info">
+          <div class="pet-name-row">
+            <span class="pet-name">${PET.name}</span>
+            <span class="pet-stage">${stage.label}</span>
+          </div>
+          <div class="pet-bubble" id="pet-bubble">${petBubble()}</div>
+          <div class="pet-bars">
+            <div class="pet-bar-row">
+              <span class="pet-bar-lbl">🍖 Hunger</span>
+              <div class="pet-bar-track"><div class="pet-bar-fill hunger" style="width:${hPct}%"></div></div>
+            </div>
+            <div class="pet-bar-row">
+              <span class="pet-bar-lbl">😊 Happy</span>
+              <div class="pet-bar-track"><div class="pet-bar-fill happy" style="width:${hapPct}%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  // Shake if very hungry
+  if(PET.hunger<20){
+    setTimeout(()=>{
+      const c=document.getElementById('pet-card');
+      if(c){c.classList.add('pet-anim-shake');setTimeout(()=>c.classList.remove('pet-anim-shake'),600);}
+    },300);
+  }
+}
+
+function spawnPetSparkles(){
+  const card=document.getElementById('pet-card');
+  if(!card)return;
+  const rect=card.getBoundingClientRect();
+  ['⭐','✨','💫','🌟','⚡'].forEach((em,i)=>{
+    const s=document.createElement('div');
+    s.className='pet-sparkle'; s.textContent=em;
+    s.style.cssText=`left:${rect.left+Math.random()*rect.width}px;top:${rect.top+Math.random()*rect.height}px;animation-delay:${i*0.12}s;position:fixed;z-index:500;pointer-events:none;font-size:${16+Math.random()*12}px;`;
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),900);
+  });
+}
+
+function openPetModal(){
+  const stage=petStage();
+  const modal=document.createElement('div');
+  modal.className='pet-name-modal';
+  modal.id='pet-modal';
+  const nextS=petNextStage();
+  const progress=nextS
+    ? `<div style="font-size:12px;color:var(--t2);margin-bottom:14px">${S.xp} / ${nextS.minXP} XP to next stage (${nextS.label} ${nextS.emoji})</div>`
+    : `<div style="font-size:12px;color:var(--amber);margin-bottom:14px">MAX LEVEL — Legendary! ✨</div>`;
+  modal.innerHTML=`
+    <div class="pet-name-box">
+      <div class="pnb-emo">${stage.emoji}</div>
+      <h3>My Pet</h3>
+      <div style="font-size:12px;color:var(--t3);margin-bottom:12px">${stage.label} · Hunger ${Math.round(PET.hunger)}% · Happy ${Math.round(PET.happy)}%</div>
+      ${progress}
+      <input class="pet-name-input" id="pet-name-inp" maxlength="14" placeholder="Give me a name!" value="${PET.name}">
+      <button class="pet-name-confirm" onclick="savePetName()">💾 Save Name</button>
+      <div style="margin-top:10px"><button style="background:none;border:none;color:var(--t3);font-size:13px;cursor:pointer" onclick="closePetModal()">Close</button></div>
+    </div>`;
+  modal.addEventListener('click',e=>{if(e.target===modal)closePetModal();});
+  document.body.appendChild(modal);
+  setTimeout(()=>document.getElementById('pet-name-inp').focus(),50);
+}
+function savePetName(){
+  const inp=document.getElementById('pet-name-inp');
+  if(inp&&inp.value.trim()) PET.name=inp.value.trim().slice(0,14);
+  petSave(); closePetModal(); renderPetCard();
+  toast(`Named your pet "${PET.name}"! 🐾`);
+}
+function closePetModal(){
+  const m=document.getElementById('pet-modal'); if(m)m.remove();
+}
+
+// Rotate bubble message every 30s while on home screen
+let _petBubbleTid=null;
+function startPetBubbleRotation(){
+  clearInterval(_petBubbleTid);
+  _petBubbleTid=setInterval(()=>{
+    const el=document.getElementById('pet-bubble');
+    if(el) el.textContent=petBubble();
+  },30000);
 }
 
 // ════════════════════════════════════════
